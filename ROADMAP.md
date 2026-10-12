@@ -6,7 +6,7 @@
 
 **Stage: alpha** · next: beta, ~13 points (ready for real work ~62% → ~75%, and reliable `.ai` exchange) and ~170–270 h away
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-12 · **Change:** minor (Transform dialogs preview and the transform tools act on direct-selected anchors, #1412 and #1408; `.ai` compound path paint, #1410, overprint, #1388, and text-only PDF parts, #1387; community PRs: strokes wider than their shape, corner drags without the bounding box, pasted pictures, compound paths in `document.inspect`, MCP guide; headline numbers unchanged; community PRs: `.ai` editing-data follow-ups (gradient stops, type of objects with an appearance, short area-type frames), PDF bleed with editing data, dialog keyboard focus, art flush with an artboard, font rescan, symbol instance redraw, `--control` port check; headline numbers unchanged; Rectangular Grid and Polar Grid tool options, #1377 in part; `.ai` files with placed (linked) pictures open from their editing data, #1264; community PRs: `.ai` and PDF bleed and editing-data import, gradient shapes imported as paths, ruler origin, Align To, Live Corners corner selection; headline numbers unchanged; G2: Film Grain added; Photoshop effects 29/57; 28 filters remain; community PRs: graph designs, Graph Data worksheet and Graph Type options; Align both centres; Pen endpoint fixes; earlier: Effect › Brush Strokes landed: Photoshop-style filters 28 of 57, raster effects 40% → 48%; `.ai` gradients, meshes and artboard names from the editing data; headline numbers unchanged; `.ai` art styles and clipping fills from the editing data; headline numbers unchanged; `editingData: "always"`; headline numbers unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-13 · **Change:** minor (Image Trace places edges to a fraction of a pixel, measured in `docs/image-trace-quality.md`, headline numbers unchanged; Transform dialogs preview and the transform tools act on direct-selected anchors, #1412 and #1408; `.ai` compound path paint, #1410, overprint, #1388, and text-only PDF parts, #1387; community PRs: strokes wider than their shape, corner drags without the bounding box, pasted pictures, compound paths in `document.inspect`, MCP guide; headline numbers unchanged; community PRs: `.ai` editing-data follow-ups (gradient stops, type of objects with an appearance, short area-type frames), PDF bleed with editing data, dialog keyboard focus, art flush with an artboard, font rescan, symbol instance redraw, `--control` port check; headline numbers unchanged; Rectangular Grid and Polar Grid tool options, #1377 in part; `.ai` files with placed (linked) pictures open from their editing data, #1264; community PRs: `.ai` and PDF bleed and editing-data import, gradient shapes imported as paths, ruler origin, Align To, Live Corners corner selection; headline numbers unchanged; G2: Film Grain added; Photoshop effects 29/57; 28 filters remain; community PRs: graph designs, Graph Data worksheet and Graph Type options; Align both centres; Pen endpoint fixes; earlier: Effect › Brush Strokes landed: Photoshop-style filters 28 of 57, raster effects 40% → 48%; `.ai` gradients, meshes and artboard names from the editing data; headline numbers unchanged; `.ai` art styles and clipping fills from the editing data; headline numbers unchanged; `editingData: "always"`; headline numbers unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 VectorCraft is a clean-room, open-source, pure-Rust reimplementation of the Adobe Illustrator workflow. It runs
 on macOS, Windows, Linux, FreeBSD and the web (WASM), and agents can drive all of it over MCP, the CLI and a JSON
@@ -26,7 +26,7 @@ blocking it ([Alpha gate](docs/roadmap.md#alpha-gate)).
 
 | | Value | Kind |
 |---|---|---|
-| **Feature breadth** (Illustrator's menu items, tools, effects, formats exist) | **~88%** | measured in part: menu items 348/375 wired (92.8%), tools 89/92, Illustrator effects 44/50, Photoshop effects 29/57, 3D 1/4 (initial Revolve) |
+| **Feature breadth** (Illustrator's menu items, tools, effects, formats exist) | **~88%** | measured in part: menu items 348/375 wired (92.8%), tools 89/92, Illustrator effects 44/50, Photoshop effects 29/57, 3D 4/4 (initial types, no materials) |
 | **Feature depth** (weighted by use, scored by behaviour) | **~75%** | estimated |
 | **To beta** | **~170–270 h** one agent · ~50–80 h with 4–6 agents | estimated |
 | **To full parity** | **~360–590 h** one agent · ~95–165 h with 4–6 agents | estimated |
@@ -74,7 +74,7 @@ The dimension hours overlap (feature rows hold some UI, format and AI work), so 
 | Appearance, transparency, graphic styles, masks | 97% | 1–2 |
 | Live vector effects | 85% | 6–10 |
 | Raster effects (Effect Gallery) — [effects-parity.md](docs/effects-parity.md) | 49% | 23–39 |
-| 3D and Materials | ~8% | 50–85 |
+| 3D and Materials | ~25% | 30–55 |
 | Type core — [type-parity.md](docs/type-parity.md) | 80% | 14–19 |
 | Type advanced (CJK, spelling, Touch Type) | 50% | 20–28 |
 | Symbols, blends, envelopes, Repeat, perspective | 85% | 6–10 |
@@ -127,6 +127,8 @@ Ranked; detail in [docs/roadmap.md](docs/roadmap.md) and [docs/gaps.md](docs/gap
 
 | Date | What landed |
 |---|---|
+| 2026-10-13 | Image Trace traces anti-aliased and blurred images to a fraction of a pixel in Black and White, Grayscale and Color, with corners put back, straight edges as lines and round outlines as circles; a harness measures every preset before and after ([`docs/image-trace-quality.md`](docs/image-trace-quality.md)): outlines 0.31 → 0.09 px off on average (Default), 0.27 → 0.06 (Black and White Logo). |
+| 2026-10-12 | Effect › 3D and Materials: Extrude & Bevel (depth, twist, taper, solid or hollow caps, five bevel shapes with repeat, spacing, inside and both sides), Inflate (volume, both sides) and Rotate, with Position presets and the rotation and light gizmos; live, exported as vector faces, expandable (#1407). |
 | 2026-10-12 | `convert --editing-data` (`editingData: "always"`) opens a `.ai` from its editing data even where its page, which can be older, draws differently, with a note. |
 | 2026-10-12 | `.ai` import reads an object's art style (a fill and a stroke, variable widths too, with an Outer Glow or Drop Shadow) as its own appearance, paints a clipping path's own fill under what it clips and keeps a group's transparency as its PDF part draws them. |
 | 2026-10-12 | `.ai` import reads gradients with their matrix (radials and skew too), focal point and stop order, gradient meshes and the artboards' names from the editing data. |

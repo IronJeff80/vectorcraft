@@ -240,7 +240,7 @@ The older names below remain listed because existing workflows use them.
 | Tool | Arguments and result |
 |---|---|
 | `command_list` | Optional `filter`, `enabled_only`; returns the command array |
-| `command_run` | `id`, optional `params`; runs the command through the existing backend |
+| `command_run` | `id`, optional `params`; runs the command through the existing backend. An unknown key in `params` is an error that names it and the nearest key the command takes (`invalid parameters for `file.new`: unknown parameter `widht`; did you mean `width`?`), so a misspelt key no longer runs the command with its default (see [Parameter keys](#parameter-keys)) |
 | `command_batch` | `steps: [{id, params?}]`, optional `stop_on_error` (default true), `atomic` and `label`; returns `completed`, `failed`, `results: [{ok, result\|error}]`. Each edit has its own undo step, or with `atomic: true` the batch's edits are one undo step named `label` (else after its first edit; `edit.undoGroup.begin`/`end` underneath); failures set `isError`. A param string `"$N.path"` or `"$last.path"` takes a value from an earlier step's result (see `run` below) |
 | `doc_inspect` | Optional `depth`, `childLimit`; same summary as `inspect_document` |
 | `render_preview` | Optional `max_side` (1–4096, default 1024) and `artboard` (0-based, default 0); inline PNG of that artboard without editing it. Artboards too large to render within the allocation bound return a tool error |
@@ -663,6 +663,25 @@ applies to the `--cmd` just before it. `run` also accepts the host commands `fil
 `file.exportForScreens` and `tool.select`. `run --in`, `convert` and `info` read every format `document.open` reads
 (`vectorcraft-cli --help` lists them).
 
+### Parameter keys
+
+`command_run`, each step of `command_batch`, `run --cmd … --params` and the control channel's `engine.execute` check
+the keys of `params` against the command's params description (the `params` text `command_list` returns): the object
+it starts with, `{x, width?: pt, name?|title?: …}`, names the keys; `?` marks an optional one. A key it doesn't name
+is refused before the command runs:
+
+```json
+{"id": "file.new", "params": {"widht": 300}}
+→ invalid parameters for `file.new`: unknown parameter `widht`; did you mean `width`?
+```
+
+Only the top level is checked: the keys of an object inside a value (`artboardLayout: {…}`, an effect's `params`) are
+the command's to read. A description with a `…` entry takes more keys than it lists: those of the command it names
+(`…settings as file.new`), or any key when it names none, as `document.export` and `document.save` do for the options
+of the format they write (one object can carry several formats' options). A command that takes its own reply back
+(`document.setup`, `text.areaOptions`) says so the same way. The app's own journal isn't checked: an action or
+journal recorded by an older version replays as it did.
+
 A step can use an earlier step's result, in `run` as in the `command_batch` tool. A parameter string that is exactly
 `$N` or `$N.path` takes that value from the result of step `N` (counting from 0, in the order they ran; `run --in`'s
 open isn't a step), and `$last…` from the step before. A path goes into objects by key and arrays by index:
@@ -923,6 +942,21 @@ See [Revolve](revolve.md) for the scope and limitations.
 {"name":"run_command","arguments":{"command":"effect.setParams","params":{"index":0,"item":null,"params":{"expandVisibleOnly":true}}}}
 {"name":"run_command","arguments":{"command":"effect.expandAppearance","params":{}}}
 ```
+
+## Extrude & Bevel, Inflate and Rotate
+
+`effect.apply {effect: "threeD.extrude" | "threeD.inflate" | "threeD.rotate", params: {...}, ids?, item?}` applies
+the other 3D types to a path or compound path, live like Revolve (the source stays editable; SVG/PDF exports and
+`effect.expandAppearance` use the same shaded faces). An object takes one 3D effect, Revolve included.
+
+`threeD.extrude`: `depth` (points, 0..2000, default 50), `twist` (degrees, -360..360, 0), `taper` (1..100%, 100),
+`cap` (true solid, false hollow), `bevel` (`none`, `classic`, `rounded`, `cove`, `step`, `ogee`), `bevelWidth`
+and `bevelHeight` (points, default 4), `bevelRepeat` (1..32), `bevelSpace` (0..90%), `bevelInside`,
+`bevelBothSides`. `threeD.inflate`: `depth` (points, default 0), `volume` (0..100%, default 50), `bothSides`.
+All three take `rotationX/Y/Z` (degrees, -180..180, default the Off-Axis Front position -21.88/-23.4/9.06),
+`perspective` and the lighting parameters as Revolve. See [three-d.md](three-d.md) for the Position presets,
+the scope and what differs from the public documentation.
+
 
 ## Edit Colors and Recolor Artwork
 

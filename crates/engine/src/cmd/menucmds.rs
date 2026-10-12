@@ -75,7 +75,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Transform Each…",
             ["Object", "Transform"],
             Some("Cmd+Alt+Shift+D"),
-            "{scaleH?: % (100), scaleV?: % (100), moveH?: pt, moveV?: pt (down = +), rotate?: deg (counter-clockwise), reflectX?: bool (flip vertically), reflectY?: bool (flip horizontally), random?: bool, seed?: n, reference?: 0..8 (9-point grid, 4 = centre), copy?: bool, strokes?: bool (Scale Strokes & Effects), corners?: bool (Scale Corners; both default to the preferences), patterns?: bool (Transform Patterns; default: prefs transformPatternTiles)} transform every selected object about its own reference point → {ids}",
+            "{scaleH?: % (100), scaleV?: % (100), moveH?: pt, moveV?: pt (down = +), rotate?: deg (counter-clockwise), reflectX?: bool (flip vertically), reflectY?: bool (flip horizontally), random?: bool, seed?: n, reference?: 0..8 (9-point grid, 4 = centre), copy?: bool, strokes?: bool (Scale Strokes & Effects), corners?: bool (Scale Corners; both default to the preferences), objects?: bool (Transform Objects, default true; false: the art stays and, with patterns, only its pattern tiles transform), patterns?: bool (Transform Patterns; default: prefs transformPatternTiles)} transform every selected object about its own reference point → {ids}",
             has_selection,
             transform_each
         ),
@@ -156,7 +156,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Rearrange All Artboards…",
             ["Object", "Artboards"],
             None,
-            "{layout?: gridByRow|gridByColumn|row|column (gridByRow; byColumn?: true is gridByColumn), order?: leftToRight|rightToLeft (leftToRight: right-to-left mirrors the order along the rows), columns?: n (2; the rows for gridByColumn; row and column ignore it), spacing?: pt (20), moveArtwork?: true (locked and hidden art only with prefs moveLockedWithArtboard), patterns?: bool (Transform Patterns: pattern fills and strokes transform with the art; default: prefs transformPatternTiles)} lay the artboards out in their order, the grid's top-left at the first artboard's → {artboards, rows, columns}",
+            "{layout?: gridByRow|gridByColumn|row|column (gridByRow; byColumn?: true is gridByColumn), order?: leftToRight|rightToLeft (leftToRight: right-to-left mirrors the order along the rows), columns?: n (2; the rows for gridByColumn; row and column ignore it), spacing?: pt (20), moveArtwork?: true (locked and hidden art only with prefs moveLockedWithArtboard), patterns?: bool (Transform Patterns: pattern fills and strokes transform with the art; default: prefs transformPatternTiles), byColumn?: bool (an older way to ask for layout gridByColumn)} lay the artboards out in their order, the grid's top-left at the first artboard's → {artboards, rows, columns}",
             has_doc,
             rearrange_artboards
         ),
@@ -307,6 +307,7 @@ fn transform_each(s: &mut Session, p: &Value) -> Result<Value> {
     let random = bool_or(p, "random", false);
     let refi = p.get("reference").and_then(Value::as_u64).unwrap_or(4).min(8) as usize;
     let copy = bool_or(p, "copy", false);
+    let objects = super::object::transforms_objects(p);
     if sh == 0.0 || sv == 0.0 {
         return Err(bad("object.transformEach", "scale must be non-zero"));
     }
@@ -336,7 +337,7 @@ fn transform_each(s: &mut Session, p: &Value) -> Result<Value> {
             let m = Affine::translate((k_mh, k_mv))
                 * about(o, Affine::rotate(-k_rot.to_radians()) * refl * Affine::scale_non_uniform(k_sh / 100.0, k_sv / 100.0));
             if let Some(n) = d.node_mut(*id) {
-                n.transform(m, sc);
+                super::object::transform_node(n, m, sc, objects);
             }
         }
         Ok(targets)

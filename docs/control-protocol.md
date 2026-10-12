@@ -55,7 +55,7 @@ the two can still win that race.
 
 | Method | Params | |
 |---|---|---|
-| `engine.execute` | `{command, params}` | run any engine or UI command (see `engine.commands`) |
+| `engine.execute` | `{command, params}` | run any engine or UI command (see `engine.commands`). A key of `params` that the command's params description doesn't name is an error naming it and the nearest key the command takes, before anything runs (`unknown parameter `widht`; did you mean `width`?`); see [Parameter keys](mcp.md#parameter-keys) |
 | `engine.commands` | | every command with label, shortcut, params doc, enablement |
 | `document.inspect` | `{depth?, childLimit?}` | layer tree, selection, the key object (`key`, null without one), history, paint defaults; the options slice the layer tree as `document.node {summary: true}` does. Each node reports `opacity` below 1 and `blend` when it isn't Normal; objects and compound paths report `fill`, `stroke` and `strokeWidth`, a compound path's members `compoundMember: true` instead |
 | `ui.inspect` | | tool, UI state, `screenMode` (0 normal, 1 full screen with menu bar, 2 full screen, 3 Presentation Mode), `taskBar` (`pinned`, and `rect` `[x, y, w, h]` while the Contextual Task Bar shows), `freeTransformWidget` (`[x, y, w, h]` while the Free Transform widget shows), view, canvas rect, window size, perf, background saves and exports still running, `nativeMenuBar` (true when the menus are in the macOS menu bar rather than the window; `ui.menu.list` lists the in-window menus either way), `fileDialog` (`"open"`, `"place"`, `"save"` or `"folder"` while a native file dialog is open, `null` otherwise; see below) |
@@ -390,7 +390,7 @@ Perspective plane options: double-clicking a plane widget of the perspective gri
 opens the `perspectivePlane` dialog (fields `plane`: left, right or ground; `location`: points along the plane's
 normal; `objects`: none, move or copy). `ui.dialog.confirm` runs `perspective.plane.move` with them.
 
-Units: dialog distance fields (Move's `dx`/`dy`, shape sizes, Offset Path's `offset`, Split Into Grid's `gutter`,
+Units: dialog distance fields (Move's `dx`/`dy`, shape sizes, Offset Path's `offset`, Split Into Grid's gutters and totals,
 Artboard Options' sizes, effects' distances, `transformEach`'s `moveH`/`moveV`, New Document's `width`/`height`, the
 length preferences in `preferences`) show in the General unit (the active document's units, or `unitsGeneral` without a
 document). Through `ui.dialog.set` a number is in points and a string may carry its unit (`"10 mm"`; a bare number in a
