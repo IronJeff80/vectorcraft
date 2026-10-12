@@ -1,0 +1,23 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    # Runs every 6 hours (at minute 0)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual trigger from the UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Fork
+        uses: actions/checkout@v4
+
+      - name: Sync with Upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Adjust 'main' below if the repo's primary branch is 'master'
+          gh repo sync ${{ github.repository }} --branch main
