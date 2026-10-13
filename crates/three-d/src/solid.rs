@@ -11,7 +11,7 @@
 
 use vectorcraft_geom::{BezPath, ParamCurve, PathData, Point, Rect};
 
-use crate::{MAX_FACES, MAX_PROFILE_POINTS, Revolve, V3};
+use crate::{MAX_FACES, Revolve, V3};
 
 /// The view shared by every 3D effect: rotation, perspective and one directional light.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -161,7 +161,7 @@ impl Default for Bevel {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Extrude {
     pub depth: f64,
-    /// The turn of the back face against the front, about the shape's centre.
+    /// The turn of the back face against the front, about the shape's centre: 0° to 360°.
     pub twist: f64,
     /// The size of the back face, as a share (0.01..1) of the front's.
     pub taper: f64,
@@ -185,11 +185,17 @@ pub struct Inflate {
     pub volume: f64,
     /// Puff the back out too; otherwise it stays flat.
     pub both_sides: bool,
+    /// The turn of the back against the front, about the shape's centre: 0° to 360°.
+    pub twist: f64,
+    /// The size of the back, as a share (0.01..1) of the front's.
+    pub taper: f64,
+    /// A closed back (a solid) or none, so the inflated front is a shell open behind.
+    pub cap: bool,
 }
 
 impl Default for Inflate {
     fn default() -> Self {
-        Self { depth: 0.0, volume: 50.0, both_sides: false }
+        Self { depth: 0.0, volume: 50.0, both_sides: false, twist: 0.0, taper: 1.0, cap: true }
     }
 }
 
@@ -233,7 +239,7 @@ impl Extrude {
     fn sanitized(self) -> Self {
         Self {
             depth: finite(self.depth, 50.0, 0.0, 2000.0),
-            twist: finite(self.twist, 0.0, -360.0, 360.0),
+            twist: finite(self.twist, 0.0, 0.0, 360.0),
             taper: finite(self.taper, 1.0, 0.01, 1.0),
             bevel: self.bevel.map(|b| Bevel {
                 width: finite(b.width, 4.0, 0.0, 1000.0),
@@ -249,18 +255,42 @@ impl Extrude {
 
 impl Inflate {
     fn sanitized(self) -> Self {
-        Self { depth: finite(self.depth, 0.0, 0.0, 2000.0), volume: finite(self.volume, 50.0, 0.0, 100.0), ..self }
+        Self {
+            depth: finite(self.depth, 0.0, 0.0, 2000.0),
+            volume: finite(self.volume, 50.0, 0.0, 100.0),
+            twist: finite(self.twist, 0.0, 0.0, 360.0),
+            taper: finite(self.taper, 1.0, 0.01, 1.0),
+            ..self
+        }
     }
 }
 
+/// Outline points Extrude & Bevel and Inflate sample at most: every point costs walls, bevel
+/// bands and distance tests.
+const MAX_SOLID_POINTS: usize = 2048;
+/// Outline points Rotate samples at most: it only turns the outline, so an outlined paragraph fits.
+const MAX_PLANE_POINTS: usize = 65536;
+
+/// How many straight pieces follow `c` within `tolerance` (Wang's bound on a cubic's distance from
+/// its chords), 1 to 32.
+fn pieces(c: vectorcraft_geom::CubicBez, tolerance: f64) -> u32 {
+    let d = |a: Point, b: Point, c: Point| (a.to_vec2() - 2.0 * b.to_vec2() + c.to_vec2()).hypot();
+    let bend = d(c.p0, c.p1, c.p2).max(d(c.p1, c.p2, c.p3));
+    let n = (0.75 * bend / tolerance).sqrt().ceil();
+    if n.is_finite() { (n as u32).clamp(1, 32) } else { 32 }
+}
+
 /// The rings of a shape: closed polygons with the filled side on their left, (-dy, dx): outer
-/// outlines run one way and holes the other, so nonzero winding fills them as the art is.
-fn rings(path: &PathData) -> Result<Vec<Vec<Point>>, String> {
+/// outlines run one way and holes the other, so nonzero winding fills them as the art is. Curves
+/// are followed within a tolerance of 1/2000 of `size` (at least 0.05 pt), so small curves take
+/// few points and large ones more; more than `limit` points in all is refused.
+fn rings(path: &PathData, size: f64, limit: usize) -> Result<Vec<Vec<Point>>, String> {
+    let tolerance = (size / 2000.0).max(0.05);
     let mut count = 0;
     let mut out = vec![];
     for sp in &path.subpaths {
         let segments = if sp.closed { sp.anchors.len() } else { sp.anchors.len().saturating_sub(1) };
-        if segments > MAX_PROFILE_POINTS {
+        if segments > limit {
             return Err("The shape is too complex for a 3D effect".into());
         }
         let mut ring: Vec<Point> = vec![];
@@ -269,13 +299,13 @@ fn rings(path: &PathData) -> Result<Vec<Vec<Point>>, String> {
         }
         for i in 0..segments {
             let curve = sp.segment(i);
-            let samples: u32 = if sp.segment_is_line(i) { 1 } else { 16 };
+            let samples = if sp.segment_is_line(i) { 1 } else { pieces(curve, tolerance) };
+            count += samples as usize;
+            if count > limit {
+                return Err("The shape is too complex for a 3D effect".into());
+            }
             for k in 1..=samples {
                 ring.push(curve.eval(f64::from(k) / f64::from(samples)));
-            }
-            count += samples as usize;
-            if count > MAX_PROFILE_POINTS {
-                return Err("The shape is too complex for a 3D effect".into());
             }
         }
         if ring.iter().any(|p| !p.x.is_finite() || !p.y.is_finite() || p.x.abs() > 1e8 || p.y.abs() > 1e8) {
@@ -446,10 +476,9 @@ impl Builder<'_> {
         for i in 0..n {
             let j = (i + 1) % n;
             let quad = vec![a[i], a[j], b[j], b[i]];
-            let mut normal = quad[1].sub(quad[0]).cross(quad[2].sub(quad[0]));
-            if normal.dot(normal) < 1e-18 {
-                normal = quad[2].sub(quad[0]).cross(quad[3].sub(quad[0]));
-            }
+            // A twist bends the strip between two slices into a saddle: its normal is the whole
+            // quad's average (Newell's), not one corner's triangle, which leans far to one side.
+            let mut normal = newell(std::slice::from_ref(&quad));
             if normal.dot(normal) < 1e-18 {
                 continue;
             }
@@ -499,15 +528,29 @@ fn outward(ring: &[Point], i: usize, z: f64) -> V3 {
 /// The cross-section of a side: each ring of the shape at depth fraction `t` (0 front, 1 back),
 /// turned by the twist and scaled by the taper about the centre of `bounds`.
 fn section(ring: &[Point], bounds: Rect, o: &Extrude, t: f64) -> Vec<Point> {
-    let c = bounds.center();
-    let (s, cos) = (o.twist * t).to_radians().sin_cos();
-    let k = 1.0 + (o.taper - 1.0) * t;
-    ring.iter()
-        .map(|p| {
-            let (x, y) = ((p.x - c.x) * k, (p.y - c.y) * k);
-            Point::new(c.x + x * cos - y * s, c.y + x * s + y * cos)
-        })
-        .collect()
+    let turn = Turn::new(bounds, o.twist, o.taper, t);
+    ring.iter().map(|p| turn.apply(*p)).collect()
+}
+
+/// The twist and taper at depth fraction `t` (0 front, 1 back): a turn by `twist · t` and a
+/// scale from 1 to `taper`, about the centre of the bounds.
+#[derive(Clone, Copy)]
+struct Turn {
+    centre: Point,
+    sin: f64,
+    cos: f64,
+    scale: f64,
+}
+
+impl Turn {
+    fn new(bounds: Rect, twist: f64, taper: f64, t: f64) -> Self {
+        let (sin, cos) = (twist * t).to_radians().sin_cos();
+        Self { centre: bounds.center(), sin, cos, scale: 1.0 + (taper - 1.0) * t }
+    }
+    fn apply(&self, p: Point) -> Point {
+        let (x, y) = ((p.x - self.centre.x) * self.scale, (p.y - self.centre.y) * self.scale);
+        Point::new(self.centre.x + x * self.cos - y * self.sin, self.centre.y + x * self.sin + y * self.cos)
+    }
 }
 
 /// One step of an extrusion's outline: how far it is inset (negative: outset) and its depth
@@ -585,11 +628,11 @@ fn steps(o: &Extrude) -> Vec<Step> {
 pub fn extrude(path: &PathData, bounds: Rect, options: Extrude, view: View) -> Result<Vec<Facet>, String> {
     check_bounds(bounds)?;
     let o = options.sanitized();
-    let rings = rings(path)?;
     // No depth: the flat shape, seen from either side.
     if o.depth <= 0.0 {
         return plane(path, bounds, view);
     }
+    let rings = rings(path, bounds.width().max(bounds.height()), MAX_SOLID_POINTS)?;
     let camera = Camera::new(view, bounds, o.depth);
     let mut b = Builder { camera: &camera, closed: o.cap, facets: vec![] };
     let steps = steps(&o);
@@ -625,7 +668,7 @@ pub fn extrude(path: &PathData, bounds: Rect, options: Extrude, view: View) -> R
 /// shape's own, so that every part of one object turns about the same point).
 pub fn plane(path: &PathData, bounds: Rect, view: View) -> Result<Vec<Facet>, String> {
     check_bounds(bounds)?;
-    let rings = rings(path)?;
+    let rings = rings(path, bounds.width().max(bounds.height()), MAX_PLANE_POINTS)?;
     let camera = Camera::new(view, bounds, 0.0);
     let mut b = Builder { camera: &camera, closed: false, facets: vec![] };
     let contours: Vec<Vec<V3>> = rings.iter().map(|r| r.iter().map(|p| camera.place(*p, 0.0)).collect()).collect();
@@ -633,18 +676,142 @@ pub fn plane(path: &PathData, bounds: Rect, view: View) -> Result<Vec<Facet>, St
     Ok(b.finish())
 }
 
-/// The distance from `p` to the nearest edge of `rings`.
+/// The distance from `p` to the segment `a`–`b`.
+fn segment_distance(p: Point, a: Point, b: Point) -> f64 {
+    let (dx, dy) = (b.x - a.x, b.y - a.y);
+    let l2 = dx * dx + dy * dy;
+    let t = if l2 < 1e-18 { 0.0 } else { (((p.x - a.x) * dx + (p.y - a.y) * dy) / l2).clamp(0.0, 1.0) };
+    p.distance(Point::new(a.x + dx * t, a.y + dy * t))
+}
+
+/// The distance from `p` to the nearest edge of `rings`, edge by edge.
+#[cfg(test)]
 fn edge_distance(rings: &[Vec<Point>], p: Point) -> f64 {
-    let mut best = f64::INFINITY;
-    for r in rings {
-        for (a, b) in r.iter().zip(r.iter().cycle().skip(1)).take(r.len()) {
-            let (dx, dy) = (b.x - a.x, b.y - a.y);
-            let l2 = dx * dx + dy * dy;
-            let t = if l2 < 1e-18 { 0.0 } else { (((p.x - a.x) * dx + (p.y - a.y) * dy) / l2).clamp(0.0, 1.0) };
-            best = best.min(p.distance(Point::new(a.x + dx * t, a.y + dy * t)));
+    rings
+        .iter()
+        .flat_map(|r| r.iter().zip(r.iter().cycle().skip(1)).take(r.len()))
+        .map(|(a, b)| segment_distance(p, *a, *b))
+        .fold(f64::INFINITY, f64::min)
+}
+
+/// The edges of `rings` filed in a grid of square buckets, so the nearest edge to a point is
+/// found among the buckets around it rather than among all the edges.
+struct Edges {
+    edges: Vec<(Point, Point)>,
+    origin: Point,
+    size: f64,
+    n: usize,
+    buckets: Vec<Vec<u32>>,
+}
+
+impl Edges {
+    fn new(rings: &[Vec<Point>]) -> Self {
+        const N: usize = 64;
+        let edges: Vec<(Point, Point)> =
+            rings.iter().flat_map(|r| r.iter().zip(r.iter().cycle().skip(1)).take(r.len()).map(|(a, b)| (*a, *b))).collect();
+        let bounds = edges.iter().fold(None, |b: Option<Rect>, (a, c)| Some(b.map_or(Rect::from_points(*a, *c), |b| b.union_pt(*a).union_pt(*c))));
+        let bounds = bounds.unwrap_or(Rect::ZERO);
+        let size = (bounds.width().max(bounds.height()) / N as f64).max(1e-9);
+        let mut buckets = vec![vec![]; N * N];
+        let index = |v: f64, o: f64| (((v - o) / size).floor().max(0.0) as usize).min(N - 1);
+        for (k, (a, b)) in edges.iter().enumerate() {
+            let (i0, i1) = (index(a.x.min(b.x), bounds.x0), index(a.x.max(b.x), bounds.x0));
+            let (j0, j1) = (index(a.y.min(b.y), bounds.y0), index(a.y.max(b.y), bounds.y0));
+            for j in j0..=j1 {
+                for i in i0..=i1 {
+                    buckets[j * N + i].push(k as u32);
+                }
+            }
+        }
+        Self { edges, origin: bounds.origin(), size, n: N, buckets }
+    }
+
+    /// The bucket row or column of coordinate `v`, from the grid's origin `o` on that axis.
+    fn cell(&self, v: f64, o: f64) -> isize {
+        (((v - o) / self.size).floor() as isize).clamp(0, self.n as isize - 1)
+    }
+
+    /// Is `p` within `tolerance` of an edge? Only the buckets `p` could share an edge with are
+    /// looked at.
+    fn near(&self, p: Point, tolerance: f64) -> bool {
+        self.touch(Rect::new(p.x - tolerance, p.y - tolerance, p.x + tolerance, p.y + tolerance)) && {
+            let n = self.n as isize;
+            let (i0, i1) = (self.cell(p.x - tolerance, self.origin.x), self.cell(p.x + tolerance, self.origin.x));
+            let (j0, j1) = (self.cell(p.y - tolerance, self.origin.y), self.cell(p.y + tolerance, self.origin.y));
+            (j0..=j1).any(|j| {
+                (i0..=i1).any(|i| {
+                    self.buckets[(j * n + i) as usize]
+                        .iter()
+                        .filter_map(|k| self.edges.get(*k as usize))
+                        .any(|(a, b)| segment_distance(p, *a, *b) <= tolerance)
+                })
+            })
         }
     }
-    best
+
+    /// Call `f` with each edge whose bounding box overlaps `r` (an edge in several of the
+    /// buckets `r` covers comes more than once).
+    fn each(&self, r: Rect, mut f: impl FnMut(Point, Point)) {
+        let n = self.n as isize;
+        for j in self.cell(r.y0, self.origin.y)..=self.cell(r.y1, self.origin.y) {
+            for i in self.cell(r.x0, self.origin.x)..=self.cell(r.x1, self.origin.x) {
+                for (a, b) in self.buckets[(j * n + i) as usize].iter().filter_map(|k| self.edges.get(*k as usize)) {
+                    if a.x.min(b.x) <= r.x1 && a.x.max(b.x) >= r.x0 && a.y.min(b.y) <= r.y1 && a.y.max(b.y) >= r.y0 {
+                        f(*a, *b);
+                    }
+                }
+            }
+        }
+    }
+
+    /// Does any edge pass through `r` (its bounding box, at least, overlapping it)?
+    fn touch(&self, r: Rect) -> bool {
+        let n = self.n as isize;
+        let (i0, i1) = (self.cell(r.x0, self.origin.x), self.cell(r.x1, self.origin.x));
+        let (j0, j1) = (self.cell(r.y0, self.origin.y), self.cell(r.y1, self.origin.y));
+        (j0..=j1).any(|j| {
+            (i0..=i1).any(|i| {
+                self.buckets[(j * n + i) as usize]
+                    .iter()
+                    .filter_map(|k| self.edges.get(*k as usize))
+                    .any(|(a, b)| a.x.min(b.x) <= r.x1 && a.x.max(b.x) >= r.x0 && a.y.min(b.y) <= r.y1 && a.y.max(b.y) >= r.y0)
+            })
+        })
+    }
+
+    /// The distance from `p` to the nearest edge: the buckets are searched in growing squares
+    /// around `p`'s, until no unsearched bucket could hold a nearer edge.
+    fn distance(&self, p: Point) -> f64 {
+        let (fx, fy) = ((p.x - self.origin.x) / self.size, (p.y - self.origin.y) / self.size);
+        if !fx.is_finite() || !fy.is_finite() {
+            return f64::INFINITY;
+        }
+        let n = self.n as isize;
+        let (ci, cj) = ((fx.floor() as isize).clamp(0, n - 1), (fy.floor() as isize).clamp(0, n - 1));
+        // How far `p` is outside the grid: the nearest point of the grid to it lies in `p`'s bucket.
+        let outside = (fx.clamp(0.0, n as f64) - fx).hypot(fy.clamp(0.0, n as f64) - fy) * self.size;
+        let mut best = f64::INFINITY;
+        for r in 0..n {
+            for j in (cj - r)..=(cj + r) {
+                for i in (ci - r)..=(ci + r) {
+                    if (j - cj).abs() != r && (i - ci).abs() != r || i < 0 || j < 0 || i >= n || j >= n {
+                        continue;
+                    }
+                    for k in &self.buckets[(j * n + i) as usize] {
+                        if let Some((a, b)) = self.edges.get(*k as usize) {
+                            best = best.min(segment_distance(p, *a, *b));
+                        }
+                    }
+                }
+            }
+            // Buckets r + 1 away are at least r buckets from any point of `p`'s own, and that
+            // far across the grid from a `p` outside it (at right angles to its way in, at worst).
+            if best <= outside.hypot(r as f64 * self.size) {
+                break;
+            }
+        }
+        best
+    }
 }
 
 /// Is `p` filled by `rings` (nonzero winding, as they are oriented)?
@@ -695,36 +862,36 @@ struct Membrane {
 
 impl Membrane {
     fn solve(rings: &[Vec<Point>], origin: Point, step: f64, nx: usize, ny: usize) -> Self {
+        let edges = Edges::new(rings);
         let node = |i: usize, j: usize| Point::new(origin.x + i as f64 * step, origin.y + j as f64 * step);
         let idx = |i: usize, j: usize| j * nx + i;
         // A node on the outline itself is held at zero with the outside.
         let inside: Vec<bool> = (0..nx * ny)
             .map(|k| {
                 let p = node(k % nx, k / nx);
-                filled(rings, p) && edge_distance(rings, p) > 1e-6 * step
+                filled(rings, p) && !edges.near(p, 1e-6 * step)
             })
             .collect();
         // The nearest crossing of the outline from `p` along (dx, dy), within one step.
         let crossing = |p: Point, dx: f64, dy: f64| -> f64 {
             let mut best = step;
-            for r in rings {
-                for (a, b) in r.iter().zip(r.iter().cycle().skip(1)).take(r.len()) {
-                    let t = if dy == 0.0 {
-                        if (a.y > p.y) == (b.y > p.y) {
-                            continue;
-                        }
-                        (a.x + (p.y - a.y) / (b.y - a.y) * (b.x - a.x) - p.x) * dx
-                    } else {
-                        if (a.x > p.x) == (b.x > p.x) {
-                            continue;
-                        }
-                        (a.y + (p.x - a.x) / (b.x - a.x) * (b.y - a.y) - p.y) * dy
-                    };
-                    if t > 1e-9 * step && t < best {
-                        best = t;
+            let reach = Rect::from_points(p, Point::new(p.x + dx * step, p.y + dy * step));
+            edges.each(reach, |a, b| {
+                let t = if dy == 0.0 {
+                    if (a.y > p.y) == (b.y > p.y) {
+                        return;
                     }
+                    (a.x + (p.y - a.y) / (b.y - a.y) * (b.x - a.x) - p.x) * dx
+                } else {
+                    if (a.x > p.x) == (b.x > p.x) {
+                        return;
+                    }
+                    (a.y + (p.x - a.x) / (b.x - a.x) * (b.y - a.y) - p.y) * dy
+                };
+                if t > 1e-9 * step && t < best {
+                    best = t;
                 }
-            }
+            });
             best
         };
         // Each inside node's four neighbours: (weight, neighbour inside or None at the outline).
@@ -781,14 +948,14 @@ impl Membrane {
                 if inside[k] {
                     continue;
                 }
-                let d_out = edge_distance(rings, node(i, j));
+                let d_out = edges.distance(node(i, j));
                 let mut slopes = vec![];
                 for (di, dj) in [(1isize, 0isize), (-1, 0), (0, 1), (0, -1)] {
                     let (ni, nj) = (i as isize + di, j as isize + dj);
                     if ni < 0 || nj < 0 || ni as usize >= nx || nj as usize >= ny || !inside[idx(ni as usize, nj as usize)] {
                         continue;
                     }
-                    let d_in = edge_distance(rings, node(ni as usize, nj as usize)).max(1e-9);
+                    let d_in = edges.distance(node(ni as usize, nj as usize)).max(1e-9);
                     slopes.push(phi[idx(ni as usize, nj as usize)] / d_in);
                 }
                 if !slopes.is_empty() {
@@ -825,14 +992,14 @@ fn material(outline: &PathData, cell: Rect) -> Option<Vec<Vec<Point>>> {
     let part =
         vectorcraft_pathops::try_boolean(&r, rule, outline, rule, vectorcraft_pathops::BoolOp::Intersect, vectorcraft_pathops::DEFAULT_PRECISION)
             .ok()?;
-    rings(&part).ok()
+    rings(&part, cell.width(), MAX_PLANE_POINTS).ok()
 }
 
 /// Inflate: the shape puffed out like a cushion, its edge kept where the art's outline is.
 pub fn inflate(path: &PathData, bounds: Rect, options: Inflate, view: View) -> Result<Vec<Facet>, String> {
     check_bounds(bounds)?;
     let o = options.sanitized();
-    let rings = rings(path)?;
+    let rings = rings(path, bounds.width().max(bounds.height()), MAX_SOLID_POINTS)?;
     if rings.is_empty() {
         return Ok(vec![]);
     }
@@ -844,18 +1011,22 @@ pub fn inflate(path: &PathData, bounds: Rect, options: Inflate, view: View) -> R
     let cell = size / CELLS as f64;
     let (nx, ny) = (((bounds.width() / cell).ceil() as usize).max(1), ((bounds.height() / cell).ceil() as usize).max(1));
     let m = Membrane::solve(&rings, bounds.origin(), cell, nx + 1, ny + 1);
+    let edges = Edges::new(&rings);
     let outline = PathData::new(rings.iter().map(|r| vectorcraft_geom::SubPath::polyline(r, true)).collect());
     // A circle of radius r puffs into a half sphere of radius r at 50 % (its membrane peaks at r²/4).
     let height = 2.0 * m.peak.sqrt() * o.volume / 50.0;
     let lift = |p: Point| {
-        if edge_distance(&rings, p) < 1e-9 || m.peak <= 0.0 {
+        if m.peak <= 0.0 || edges.near(p, 1e-9) {
             return 0.0;
         }
         height * (m.at(p).max(0.0) / m.peak).sqrt()
     };
     let camera = Camera::new(view, bounds, o.depth + 2.0 * height);
-    let mut b = Builder { camera: &camera, closed: true, facets: vec![] };
+    // Without its back cap the object is a shell open behind, its inside showing.
+    let mut b = Builder { camera: &camera, closed: o.cap, facets: vec![] };
     let half = o.depth / 2.0;
+    // The back: turned and scaled by the twist and taper, its puff too.
+    let back_turn = Turn::new(bounds, o.twist, o.taper, 1.0);
     // The grid's cells, those the surface rises steeply across (near the outline) cut into
     // halves or quarters each way, so the steep rim is drawn in facets as fine as its curve.
     // Every corner sits on one fine lattice (a quarter cell), computed the same way wherever it
@@ -868,6 +1039,11 @@ pub fn inflate(path: &PathData, bounds: Rect, options: Inflate, view: View) -> R
     let base = |i: usize, j: usize| Rect::from_points(at(i * FINE, j * FINE), at((i + 1) * FINE, (j + 1) * FINE));
     // The shape's part of a rectangle, as rings.
     let cut = |r: Rect| -> Vec<Vec<Point>> {
+        // A cell no edge crosses is wholly inside the shape or wholly outside it.
+        if !edges.touch(r) {
+            let corners = vec![Point::new(r.x0, r.y0), Point::new(r.x1, r.y0), Point::new(r.x1, r.y1), Point::new(r.x0, r.y1)];
+            return if filled(&rings, r.center()) { vec![corners] } else { vec![] };
+        }
         let pieces: Vec<Vec<Point>> = rings.iter().map(|ring| clip(ring, r)).filter(|c| !c.is_empty()).collect();
         if pieces.iter().map(|p| signed_area(p)).sum::<f64>() <= 1e-9 * r.area() {
             return vec![];
@@ -971,16 +1147,18 @@ pub fn inflate(path: &PathData, bounds: Rect, options: Inflate, view: View) -> R
                     // Each piece lifted onto the surface. Its normal is the lifted piece's own average
                     // (Newell's), not the slope at one point: near the edge the surface turns
                     // vertical, and a point sample there misjudges which way a whole piece faces.
-                    let lifted = |sign: f64| -> Vec<Vec<V3>> {
-                        pieces.iter().zip(&lifts).map(|(p, h)| p.iter().zip(h).map(|(q, h)| camera.place(*q, sign * (half + h))).collect()).collect()
-                    };
-                    let front = lifted(1.0);
+                    let front: Vec<Vec<V3>> =
+                        pieces.iter().zip(&lifts).map(|(p, h)| p.iter().zip(h).map(|(q, h)| camera.place(*q, half + h)).collect()).collect();
                     let n = newell(&front);
                     b.face(front, n)?;
-                    if o.both_sides {
+                    if o.both_sides && o.cap {
                         // The back winds the same way round as the front, so its outward normal is
                         // reversed.
-                        let back = lifted(-1.0);
+                        let back: Vec<Vec<V3>> = pieces
+                            .iter()
+                            .zip(&lifts)
+                            .map(|(p, h)| p.iter().zip(h).map(|(q, h)| camera.place(back_turn.apply(*q), -half - h * back_turn.scale)).collect())
+                            .collect();
                         let n = newell(&back);
                         b.face(back, V3(-n.0, -n.1, -n.2))?;
                     }
@@ -988,15 +1166,22 @@ pub fn inflate(path: &PathData, bounds: Rect, options: Inflate, view: View) -> R
             }
         }
     }
-    if !o.both_sides {
-        let back: Vec<Vec<V3>> = rings.iter().map(|r| r.iter().map(|p| camera.place(*p, -half)).collect()).collect();
+    if !o.both_sides && o.cap {
+        let back: Vec<Vec<V3>> = rings.iter().map(|r| r.iter().map(|p| camera.place(back_turn.apply(*p), -half)).collect()).collect();
         b.face(back, camera.rotate(V3(0.0, 0.0, -1.0)))?;
     }
     if o.depth > 0.0 {
+        // The sides, cut into slices that follow a twist or taper.
+        let slices = if o.twist != 0.0 || o.taper != 1.0 { ((o.twist.abs() / 6.0).ceil() as usize).clamp(8, 64) } else { 1 };
         for ring in &rings {
-            let front: Vec<V3> = ring.iter().map(|p| camera.place(*p, half)).collect();
-            let back: Vec<V3> = ring.iter().map(|p| camera.place(*p, -half)).collect();
-            b.band(&front, &back, |i| outward(ring, i, 0.0))?;
+            let at = |k: usize| -> Vec<V3> {
+                let t = k as f64 / slices as f64;
+                let turn = Turn::new(bounds, o.twist, o.taper, t);
+                ring.iter().map(|p| camera.place(turn.apply(*p), half - o.depth * t)).collect()
+            };
+            for k in 0..slices {
+                b.band(&at(k), &at(k + 1), |i| outward(ring, i, 0.0))?;
+            }
         }
     }
     Ok(b.finish())

@@ -621,6 +621,7 @@
 	VectorCraft on GitHub	VectorCraft na GitHubu
 	Search Commands…	Hledat příkazy…
 	VectorCraft Help…	Nápověda VectorCraft…
+	Auto Color	Automatická barva
 	Automatic	Automaticky
 	Isolate Selected Group	Izolovat vybranou skupinu
 	Exit Isolation Mode	Ukončit izolovaný režim
@@ -807,6 +808,8 @@ lighting	Light	Světlo
 	File Info Dialog	Dialogové okno Informace o souboru
 	Go to Artboard	Přejít na pracovní plochu
 	Graphic Style Options…	Možnosti grafického stylu…
+	Symbol Options	Možnosti symbolu
+	Symbol Options…	Možnosti symbolu…
 	Home	Domů
 	Import Keyboard Shortcuts…	Importovat klávesové zkratky…
 	Justify all lines	Do bloku včetně posledního řádku
@@ -1424,6 +1427,7 @@ lighting	Light	Světlo
 	Abutting	Sousedící
 	Black and White	Černobílé
 	Corners	Rohy
+	Ignore Color	Ignorovat barvu
 	Ignore White	Ignorovat bílou
 	Palette:	Paleta:
 	Limited	Omezená
@@ -3660,6 +3664,7 @@ effect	Regular	Pravidelný
 	Stroke Pressure	Tlak tahu
 
 # Plurals: one|few|other
+imageTrace	Outline	Obrys
 @plural	{n} item|{n} items	{n} položka|{n} položky|{n} položek
 @plural	Color Table ({n} color)|Color Table ({n} colors)	Tabulka barev ({n} barva)|Tabulka barev ({n} barvy)|Tabulka barev ({n} barev)
 @plural	Delete this {n} graphic style?|Delete these {n} graphic styles?	Odstranit {n} grafický styl?|Odstranit {n} grafické styly?|Odstranit {n} grafických stylů?
@@ -3734,6 +3739,7 @@ effect	Regular	Pravidelný
 @msg	No saved selections (Select → Save Selection…)	Žádné uložené výběry (Výběr → Uložit výběr…)
 @msg	No saved views (View → New View…)	Žádná uložená zobrazení (Zobrazení → Nové zobrazení…)
 @msg	Offset Path: select paths	Odsadit cestu: vyberte cesty
+@msg	Offset Path: the offset leaves nothing of the selected paths (an inset larger than the shapes)	Odsadit cestu: po odsazení z vybraných cest nic nezbude (odsazení dovnitř větší než tvary)
 @msg	Opened with {_1} note(s): {_2}	Otevřeno, poznámky ({_1}): {_2}
 @msg	Opened {url}	Otevřeno {url}
 @msg	Outline Stroke: no stroked paths selected	Převést tah na obrys: nejsou vybrány žádné cesty s tahem
@@ -4683,3 +4689,5 @@ mark-style	Japanese	Japonské
 @msg	unknown parameter `{key}`; did you mean `{near}`?	neznámý parametr `{key}`; mysleli jste `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	neznámý parametr `{key}`; příkaz nemá žádné parametry
 @msg	unknown parameter `{key}`; the command takes: {keys}	neznámý parametr `{key}`; příkaz přijímá: {keys}
+	Load EPS into Clipboard	Načíst EPS do schránky
+@msg	an image of {w} × {h} pixels is too large to draw	obraz o velikosti {w} × {h} obrazových bodů je příliš velký na vykreslení

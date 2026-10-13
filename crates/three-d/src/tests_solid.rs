@@ -218,7 +218,10 @@ fn malformed_and_degenerate_input_is_bounded() {
     };
     let f = extrude(&p, b, wild, View { rotation_x: f64::NAN, perspective: 9.0, ..front() }).unwrap();
     assert!(f.iter().flat_map(|f| f.contours.iter().flatten()).all(|q| q.x.is_finite() && q.y.is_finite()));
-    assert!(inflate(&p, b, Inflate { depth: -5.0, volume: f64::NAN, both_sides: true }, front()).is_ok());
+    assert!(
+        inflate(&p, b, Inflate { depth: -5.0, volume: f64::NAN, both_sides: true, twist: f64::INFINITY, taper: f64::NAN, cap: true }, front())
+            .is_ok()
+    );
     assert!(extrude(&PathData::default(), b, Extrude::default(), front()).unwrap().is_empty());
     // A line has no area to extrude.
     let mut line = BezPath::new();
@@ -252,10 +255,10 @@ fn the_inflate_membrane_matches_known_solutions() {
     let mut c = BezPath::new();
     c.extend(vectorcraft_geom::kurbo::Shape::path_elements(&vectorcraft_geom::kurbo::Circle::new((100.0, 100.0), 50.0), 0.01));
     let (p, b) = shape(&c);
-    let disc = Membrane::solve(&rings(&p).unwrap(), b.origin(), b.width() / 48.0, 49, 49);
+    let disc = Membrane::solve(&rings(&p, 100.0, MAX_SOLID_POINTS).unwrap(), b.origin(), b.width() / 48.0, 49, 49);
     assert!(close(disc.peak, 50.0 * 50.0 / 4.0, 625.0 * 0.02), "{}", disc.peak);
     let (p, b) = shape(&square(0.0, 0.0, 100.0));
-    let sq = Membrane::solve(&rings(&p).unwrap(), b.origin(), 100.0 / 48.0, 49, 49);
+    let sq = Membrane::solve(&rings(&p, 100.0, MAX_SOLID_POINTS).unwrap(), b.origin(), 100.0 / 48.0, 49, 49);
     assert!(close(sq.peak, 0.07367 * 100.0 * 100.0, 736.7 * 0.02), "{}", sq.peak);
     // Smooth across the middle: no crease where a distance-to-the-edge height would have one
     // (the diagonals). The second difference along a diagonal stays small and even.
@@ -286,4 +289,189 @@ fn inflate_cells_across_a_hole_edge_are_cut_to_the_shape() {
     // Straight on, the facets still cover exactly the shape.
     let flat = inflate(&p, r, Inflate::default(), front()).unwrap();
     assert!(close(area(&flat), 220.0 * 220.0 - 100.0 * 90.0, 1e-3), "{}", area(&flat));
+}
+
+/// A row of `count` small bumps, each a curve, closed along the bottom: like an outlined word,
+/// many short curves.
+fn bumps(count: usize) -> (PathData, Rect) {
+    let mut b = BezPath::new();
+    b.move_to((0.0, 20.0));
+    for i in 0..count {
+        let x = i as f64 * 4.0;
+        b.curve_to((x + 1.0, 14.0), (x + 3.0, 14.0), (x + 4.0, 20.0));
+    }
+    b.line_to((count as f64 * 4.0, 30.0));
+    b.line_to((0.0, 30.0));
+    b.close_path();
+    shape(&b)
+}
+
+/// Curves are followed within a tolerance rather than by sixteen points each: small curves take a
+/// few points, so shapes of many curves (outlined type) fit; Rotate, which only turns the outline,
+/// takes far more.
+#[test]
+fn small_curves_take_few_points_and_rotate_takes_large_outlines() {
+    // 300 curves were 4,800 points at sixteen each, over the old limit of 1,024.
+    let (p, r) = bumps(300);
+    assert!(extrude(&p, r, Extrude::default(), front()).is_ok());
+    assert!(inflate(&p, r, Inflate { volume: 20.0, ..Inflate::default() }, front()).is_ok());
+    assert!(plane(&p, r, front()).is_ok());
+    // 4,000 curves: too many for a solid, not for Rotate.
+    let (p, r) = bumps(4000);
+    assert!(extrude(&p, r, Extrude::default(), front()).unwrap_err().contains("too complex"));
+    assert_eq!(plane(&p, r, front()).unwrap().len(), 1);
+    // Each piece stays within the tolerance of the curve: a circle's chords sag at most 0.05 pt
+    // here (1/2000 of its 100 pt size is less).
+    let mut c = BezPath::new();
+    c.extend(vectorcraft_geom::kurbo::Shape::path_elements(&vectorcraft_geom::kurbo::Circle::new((50.0, 50.0), 50.0), 0.01));
+    let (p, r) = shape(&c);
+    let ring = &rings(&p, 100.0, MAX_SOLID_POINTS).unwrap()[0];
+    for (a, b) in ring.iter().zip(ring.iter().cycle().skip(1)) {
+        let mid = a.midpoint(*b);
+        assert!(50.0 - mid.distance(Point::new(50.0, 50.0)) <= 0.05 + 1e-3, "{a:?} {b:?}");
+    }
+    assert!(r.width() > 0.0);
+    // A small bump takes a few points; a large curve more than sixteen where it needs them.
+    let (p, r) = bumps(300);
+    let small = rings(&p, r.width().max(r.height()), MAX_SOLID_POINTS).unwrap()[0].len();
+    assert!(small <= 300 * 4 + 3, "{small} points for 300 bumps");
+    assert!(ring.len() > 4 * 16, "a 100 pt circle within 0.05 pt: {}", ring.len());
+}
+
+/// The bucketed nearest-edge search agrees with checking every edge, inside, outside and far
+/// beyond the shape.
+#[test]
+fn the_edge_index_finds_the_nearest_edge() {
+    let (p, r) = bumps(200);
+    let rings = rings(&p, r.width(), MAX_SOLID_POINTS).unwrap();
+    let edges = Edges::new(&rings);
+    for k in 0..400 {
+        let t = f64::from(k);
+        let q = Point::new(-300.0 + (t * 37.0) % 1400.0, -50.0 + (t * 13.0) % 130.0);
+        let (fast, slow) = (edges.distance(q), edge_distance(&rings, q));
+        assert!((fast - slow).abs() < 1e-9, "{q:?}: {fast} against {slow}");
+    }
+}
+
+/// From a point outside the grid, an edge further along the grid's side can be nearer than one
+/// straight ahead: the search doesn't stop before it has looked there.
+#[test]
+fn the_edge_index_looks_along_the_side_from_outside() {
+    let ring = |b: BezPath| rings(&shape(&b).0, 64.0, MAX_SOLID_POINTS).unwrap().remove(0);
+    // Straight ahead of the point, a little further up its side, and the far corner (a 64 pt grid).
+    let rings = vec![ring(square(2.5, 0.0, 1.0)), ring(square(0.0, 4.2, 0.8)), ring(square(63.0, 63.0, 1.0))];
+    let edges = Edges::new(&rings);
+    let q = Point::new(-10.0, 0.5);
+    let (fast, slow) = (edges.distance(q), edge_distance(&rings, q));
+    assert!((fast - slow).abs() < 1e-9, "{fast} against {slow}");
+}
+
+/// Twist runs 0° to 360°, as documented: beyond either end it holds at that end.
+#[test]
+fn twist_holds_between_0_and_360_degrees() {
+    let (p, b) = shape(&square(0.0, 0.0, 100.0));
+    let v = View { rotation_x: -20.0, rotation_y: 30.0, ..front() };
+    let at = |twist: f64| extrude(&p, b, Extrude { twist, ..Extrude::default() }, v).unwrap();
+    assert_eq!(at(-45.0), at(0.0));
+    assert_eq!(at(500.0), at(360.0));
+    assert_ne!(at(45.0), at(0.0));
+}
+
+/// A twisted extrusion shows every wall facing the viewer: a twist bends each strip between two
+/// slices into a saddle, and its normal from one corner's triangle leaned so far back that from
+/// 60° on every wall was dropped. Checked against each strip's average normal, oriented away from
+/// the square's axis.
+#[test]
+fn twisted_walls_face_the_way_they_turn() {
+    let (p, b) = shape(&square(0.0, 0.0, 100.0));
+    let c = b.center();
+    for twist in [60.0, 120.0, 180.0, 300.0] {
+        for (x, y) in [(-20.0, 30.0), (0.0, 90.0), (30.0, -60.0), (-45.0, 150.0)] {
+            let v = View { rotation_x: x, rotation_y: y, ..front() };
+            let o = Extrude { twist, ..Extrude::default() };
+            let got = extrude(&p, b, o, v).unwrap();
+            // Expected: walls (and caps) whose outward normal faces the viewer.
+            let o = o.sanitized();
+            let camera = Camera::new(v, b, o.depth);
+            let ring = &rings(&p, b.width().max(b.height()), MAX_SOLID_POINTS).unwrap()[0];
+            let slices = ((twist / 6.0).ceil() as usize).clamp(8, 64);
+            let z = |t: f64| o.depth / 2.0 - o.depth * t;
+            let mut expected = 0;
+            for k in 0..slices {
+                let (t0, t1) = (k as f64 / slices as f64, (k + 1) as f64 / slices as f64);
+                let (r0, r1) = (section(ring, b, &o, t0), section(ring, b, &o, t1));
+                for i in 0..ring.len() {
+                    let j = (i + 1) % ring.len();
+                    let q = [camera.place(r0[i], z(t0)), camera.place(r0[j], z(t0)), camera.place(r1[j], z(t1)), camera.place(r1[i], z(t1))];
+                    let mut n = newell(&[q.to_vec()]).unit();
+                    let mid = r0[i].midpoint(r1[j]);
+                    let away = camera.rotate(V3(mid.x - c.x, mid.y - c.y, 0.0));
+                    if n.dot(away) < 0.0 {
+                        n = V3(-n.0, -n.1, -n.2);
+                    }
+                    let centre = V3((q[0].0 + q[2].0) / 2.0, (q[0].1 + q[2].1) / 2.0, (q[0].2 + q[2].2) / 2.0);
+                    // Kept as the builder keeps them: facing, or seen almost edge-on, with an area.
+                    let projected: Vec<Point> = q.iter().map(|v| camera.project(*v)).collect();
+                    if camera.facing(centre, n) > -0.02 && signed_area(&projected).abs() >= 1e-10 {
+                        expected += 1;
+                    }
+                }
+            }
+            for (n, t) in [(1.0, 0.0), (-1.0, 1.0)] {
+                let cap: Vec<Point> = section(ring, b, &o, t).iter().map(|p| camera.project(camera.place(*p, z(t)))).collect();
+                if camera.facing(V3::default(), camera.rotate(V3(0.0, 0.0, n))) > -0.02 && signed_area(&cap).abs() >= 1e-10 {
+                    expected += 1;
+                }
+            }
+            assert_eq!(got.len(), expected, "twist {twist}, view ({x}, {y})");
+        }
+    }
+}
+
+/// Inflate takes Twist, Taper and Cap like the other types: the back turned and scaled (its puff
+/// too), the sides following, and without a cap no back at all.
+#[test]
+fn inflate_twists_tapers_and_opens_its_back() {
+    let (p, b) = shape(&square(0.0, 0.0, 100.0));
+    let side = View { rotation_y: 90.0, ..front() };
+    let o = Inflate { depth: 60.0, volume: 0.0, ..Inflate::default() };
+    // From the side, a flat (0 % volume) cushion is the extrusion: front 100 high, the back 50
+    // at a 50 % taper.
+    let tapered = inflate(&p, b, Inflate { taper: 0.5, ..o }, side).unwrap();
+    let e = extent(&tapered);
+    assert!(close(e.width(), 60.0, 1e-6) && close(e.height(), 100.0, 1e-6), "{e:?}");
+    let back: Vec<Point> = tapered.iter().flat_map(|f| f.contours.iter().flatten().copied()).filter(|q| close(q.x, e.x0, 1e-6)).collect();
+    let (lo, hi) = back.iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), q| (lo.min(q.y), hi.max(q.y)));
+    assert!(close(hi - lo, 50.0, 1e-6), "back {}", hi - lo);
+    // From behind, a 45° twist shows the flat back as a diamond.
+    let behind = View { rotation_y: 180.0, ..front() };
+    let twisted = inflate(&p, b, Inflate { twist: 45.0, ..o }, behind).unwrap();
+    assert!(close(extent(&twisted).width(), 100.0 * 2f64.sqrt(), 1e-6), "{:?}", extent(&twisted));
+    // Hollow: no back; from behind the inside of the inflated front shows instead of a flat face.
+    let solid = inflate(&p, b, Inflate { volume: 50.0, ..o }, behind).unwrap();
+    assert_eq!(solid.len(), 1, "the flat back alone");
+    let hollow = inflate(&p, b, Inflate { volume: 50.0, cap: false, ..o }, behind).unwrap();
+    assert!(hollow.len() > 100 && hollow.iter().all(|f| f.contours.len() == 1 && f.contours[0].len() < 12));
+    // With both sides puffed, the back puff is scaled with the taper: lower and smaller.
+    let both = |taper: f64| extent(&inflate(&p, b, Inflate { both_sides: true, volume: 50.0, taper, depth: 0.0, ..o }, side).unwrap());
+    assert!(both(0.5).width() < both(1.0).width() && both(0.5).height() <= both(1.0).height() + 1e-6);
+    // Out of range values hold at the documented ends.
+    let at = |i: Inflate| inflate(&p, b, i, View { rotation_x: -20.0, rotation_y: 30.0, ..front() }).unwrap();
+    assert_eq!(at(Inflate { twist: -30.0, ..o }), at(o));
+    assert_eq!(at(Inflate { taper: 0.0, ..o }), at(Inflate { taper: 0.01, ..o }));
+}
+
+/// At 0 % volume an inflated shape is the extruded one: twisted and tapered, their outlines
+/// agree from every side (no wall goes missing in either).
+#[test]
+fn a_flat_twisted_inflate_matches_the_extrusion() {
+    let (p, b) = shape(&square(0.0, 0.0, 100.0));
+    for (x, y) in [(-20.0, 30.0), (0.0, 90.0), (30.0, -60.0), (-45.0, 150.0), (60.0, 200.0)] {
+        let v = View { rotation_x: x, rotation_y: y, ..front() };
+        let e = extent(&extrude(&p, b, Extrude { depth: 60.0, twist: 120.0, taper: 0.6, ..Extrude::default() }, v).unwrap());
+        let i = extent(&inflate(&p, b, Inflate { depth: 60.0, twist: 120.0, taper: 0.6, volume: 0.0, ..Inflate::default() }, v).unwrap());
+        for (a, c) in [(e.x0, i.x0), (e.y0, i.y0), (e.x1, i.x1), (e.y1, i.y1)] {
+            assert!(close(a, c, 1e-6), "view ({x}, {y}): extrusion {e:?}, inflate {i:?}");
+        }
+    }
 }

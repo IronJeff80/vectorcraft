@@ -247,6 +247,7 @@
 	Author Title:	Cargo del autor:
 	Author:	Autor:
 	Auto	Auto
+	Auto Color	Color automático
 	Automatic	Automático
 	Auto Size New Area Type	Ajustar automáticamente el tamaño del nuevo texto de área
 	Auto Spell Check	Revisión ortográfica automática
@@ -1144,6 +1145,8 @@
 	Graphic Style Library	Biblioteca de estilos gráficos
 	Graphic Style Options	Opciones de estilo gráfico
 	Graphic Style Options…	Opciones de estilo gráfico…
+	Symbol Options	Opciones de símbolo
+	Symbol Options…	Opciones de símbolo…
 	Graphic Styles	Estilos gráficos
 	Graphic Styles Options	Opciones de estilos gráficos
 	Graphics	Gráficos
@@ -1244,6 +1247,7 @@
 	Identify Objects By	Identificar objetos por
 	Ignore	Ignorar
 	Ignore Artboards (all the art as one page)	Ignorar mesas de trabajo (toda la ilustración como una página)
+	Ignore Color	Ignorar color
 	Ignore White	Ignorar blanco
 	Palette:	Paleta:
 	Limited	Limitada
@@ -3236,6 +3240,7 @@
 	{warning}: click to correct to the closest color ({hex})	{warning}: clic para corregir al color más cercano ({hex})
 	“{file}” is protected by a password.	“{file}” está protegido con contraseña.
 	● Recording	● Grabando
+imageTrace	Outline	Contorno
 @plural	{n} item|{n} items	{n} elemento|{n} elementos
 @plural	Color Table ({n} color)|Color Table ({n} colors)	Tabla de colores ({n} color)|Tabla de colores ({n} colores)
 @plural	Delete this {n} graphic style?|Delete these {n} graphic styles?	¿Eliminar {n} estilo gráfico?|¿Eliminar estos {n} estilos gráficos?
@@ -3435,6 +3440,7 @@ axis	Both	Ambos
 @msg	No saved selections (Select → Save Selection…)	No hay selecciones guardadas (Selección → Guardar selección…)
 @msg	No saved views (View → New View…)	No hay vistas guardadas (Ver → Nueva vista…)
 @msg	Offset Path: select paths	Desplazar trazado: selecciona trazados
+@msg	Offset Path: the offset leaves nothing of the selected paths (an inset larger than the shapes)	Desplazar trazado: el desplazamiento no deja nada de los trazados seleccionados (un desplazamiento hacia dentro mayor que las formas)
 @msg	Opened with {_1} note(s): {_2}	Se abrió con {_1} nota(s): {_2}
 @msg	Opened {url}	Se abrió {url}
 @msg	Outline Stroke: no stroked paths selected	Contornear trazo: no hay trazados con trazo seleccionados
@@ -4623,3 +4629,5 @@ mark-style	Japanese	Japonesas
 @msg	unknown parameter `{key}`; did you mean `{near}`?	parámetro desconocido `{key}`; ¿quiso decir `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	parámetro desconocido `{key}`; el comando no tiene parámetros
 @msg	unknown parameter `{key}`; the command takes: {keys}	parámetro desconocido `{key}`; el comando acepta: {keys}
+	Load EPS into Clipboard	Cargar EPS en el portapapeles
+@msg	an image of {w} × {h} pixels is too large to draw	una imagen de {w} × {h} píxeles es demasiado grande para dibujarse

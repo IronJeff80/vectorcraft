@@ -175,6 +175,8 @@ pub struct Metrics {
     pub anchor_ratio: f64,
     /// Share (%) of the outline length made of straight segments.
     pub lines: f64,
+    /// Share (%) of the outline length that is exactly level or upright.
+    pub upright: f64,
     /// Share (%) of the art's sharp corners that have a traced corner within 1.5 px.
     pub corners: f64,
     /// Anchors where the path turns by 10° or more away from any true corner.
@@ -185,6 +187,13 @@ pub struct Metrics {
     /// Area (px) no path covers, and area covered twice.
     pub gap: f64,
     pub overlap: f64,
+    /// Stroked centre lines: their mean distance (px) from the true line's centre line, the mean
+    /// error (px) of their widths, and anchors per stroked path.
+    pub centre_off: f64,
+    pub width_off: f64,
+    pub stroke_anchors: f64,
+    /// Share (%) of the art's plain shapes that came out as a shape lying within 0.6 px of it.
+    pub shapes: f64,
     /// Paths under 6 px of area.
     pub specks: f64,
     /// How far (px) the trace reaches outside the image: a stray curve.
@@ -224,7 +233,7 @@ pub fn measure(input: &Input, variant: Variant, size: u32, src: &Raster, params:
             let kept = true_corners.iter().filter(|c| turns.iter().any(|(p, t)| *t >= 20.0 && p.distance(**c) <= 1.5)).count();
             corners = 100.0 * kept as f64 / true_corners.len() as f64;
         }
-        if input.class != Class::Lines {
+        if !matches!(input.class, Class::Lines | Class::Askew | Class::Plain) {
             kinks = turns.iter().filter(|(p, t)| *t >= 10.0 && true_corners.iter().all(|c| p.distance(*c) > 2.0)).count() as f64;
         }
         if params.mode != Mode::BlackAndWhite {
@@ -234,7 +243,7 @@ pub fn measure(input: &Input, variant: Variant, size: u32, src: &Raster, params:
         }
     }
 
-    let (mut length, mut straight) = (0.0, 0.0);
+    let (mut length, mut straight, mut upright) = (0.0, 0.0, 0.0);
     for sp in art.iter().flat_map(|(tp, _)| &tp.path.subpaths) {
         for i in 0..sp.segment_count() {
             let len = sp.segment(i).arclen(0.05);
@@ -243,6 +252,9 @@ pub fn measure(input: &Input, variant: Variant, size: u32, src: &Raster, params:
             let c = sp.segment(i);
             if seg_dist(c.p1, c.p0, c.p3) < 0.02 && seg_dist(c.p2, c.p0, c.p3) < 0.02 {
                 straight += len;
+                if (c.p0.x - c.p3.x).abs() < 1e-9 || (c.p0.y - c.p3.y).abs() < 1e-9 {
+                    upright += len;
+                }
             }
         }
     }
@@ -265,7 +277,50 @@ pub fn measure(input: &Input, variant: Variant, size: u32, src: &Raster, params:
         }
     }
 
+    // Stroked paths against the lines they trace: each against the true line nearest its middle.
+    let (mut centre_off, mut width_off, mut stroke_anchors) = (nan, nan, nan);
+    let truth = input.scaled_strokes(size);
+    let stroked: Vec<&TracedPath> = res.paths.iter().filter(|tp| tp.stroke.is_some()).collect();
+    if !truth.is_empty() && !stroked.is_empty() {
+        let (mut off, mut samples, mut width) = (0.0, 0.0, 0.0);
+        for tp in &stroked {
+            let line = Outline::new([&tp.path.to_bezpath()], None);
+            let Some(middle) = line.segs.get(line.segs.len() / 2).map(|s| s.0.midpoint(s.1)) else { continue };
+            let Some((a, b, w)) = truth.iter().copied().min_by(|p, q| seg_dist(middle, p.0, p.1).total_cmp(&seg_dist(middle, q.0, q.1))) else {
+                continue;
+            };
+            for s in &line.segs {
+                // The distance to the line through the true ends: a centre line may be shorter or
+                // longer than the true one by how its caps are drawn.
+                let d = b - a;
+                off += (s.0.midpoint(s.1) - a).cross(d).abs() / d.hypot().max(1e-9);
+                samples += 1.0;
+            }
+            width += (tp.stroke.unwrap_or(0.0) - w).abs();
+        }
+        if samples > 0.0 {
+            (centre_off, width_off) = (off / samples, width / stroked.len() as f64);
+            stroke_anchors = stroked.iter().map(|tp| tp.path.anchor_count()).sum::<usize>() as f64 / stroked.len() as f64;
+        }
+    }
+
+    // Plain shapes: each is found when some path that is a shape lies on it.
+    let plain = input.scaled_plain(size);
+    let mut shapes_found = nan;
+    if !plain.is_empty() {
+        let made: Vec<Outline> = res.paths.iter().filter(|tp| tp.shape.is_some()).map(|tp| Outline::new([&tp.path.to_bezpath()], None)).collect();
+        let found = plain.iter().filter(|p| {
+            let truth = Outline::new([*p], None);
+            made.iter().any(|m| m.distance_to(&truth).1 <= 0.6 && truth.distance_to(m).1 <= 0.6)
+        });
+        shapes_found = 100.0 * found.count() as f64 / plain.len() as f64;
+    }
+
     Metrics {
+        shapes: shapes_found,
+        centre_off,
+        width_off,
+        stroke_anchors,
         delta: delta_mean,
         edge_delta,
         geo_mean,
@@ -275,6 +330,7 @@ pub fn measure(input: &Input, variant: Variant, size: u32, src: &Raster, params:
         anchors: anchors as f64,
         anchor_ratio: if input.anchors > 0 { anchors as f64 / input.anchors as f64 } else { nan },
         lines: if length > 0.0 { 100.0 * straight / length } else { nan },
+        upright: if length > 0.0 { 100.0 * upright / length } else { nan },
         corners,
         kinks,
         slivers,

@@ -287,7 +287,7 @@ objects' fills or strokes differ (`fillMixed` / `strokeMixed`, drawn as a "?" pr
 | `open_file` | `{path}` | Opens any readable file as a new active document: `.vectorcraft`/`.drawcraft`, `.vctemplate`, `.svg`/`.svgz`, `.pdf`/`.ai`, `.ait`, `.eps`, `.dxf`, `.emf`, `.wmf`, PNG, JPEG, GIF, WebP, TIFF, BMP, PSD/PSB (an image opens as a document of its pixel size; a Photoshop file as its merged image). Templates (`.vctemplate`, `.ait`) open as a new untitled document. PDF, `.ai` and SVG files saved with Preserve Editing reopen as the document they carry. The reply is `document.open`'s: its `warnings` say what didn't come in as it was (an EPS whose PostScript can't be read opens as its preview, and the warning names the PostScript error, the operator and the procedure). `run_command document.formats` lists the formats. |
 | `save_file` | `{path?}` | Runs `document.save`: the document's own file in its own format (native `.vectorcraft` unless it was opened from or saved as SVG, PDF or a restorable `.ai`; then `warnings` say what that format loses). A path's extension picks the format (`.vectorcraft`, `.vctemplate`, `.pdf`, `.svg`, `.svgz`, `.ai`: a PDF carrying the native document, which reopens editable). |
 | `export` | `{path?, format?, scale?, artboard?, range?, selection?, outlineText?, options?}` | `svg`, `svgz`, `pdf`, `eps`, `dxf`, `emf`, `wmf`, `png`, `jpg`, `webp`, `gif`, `png8` (an indexed `.png`), `tiff`, `bmp`, `tga`, `psd` (layered), `txt` (the document's text), `vectorcraft` or `template` (a native template). The tool's `format` enum and `document.formats` list them, generated from the engine's format table. When `format` is omitted, it comes from the path's extension. PDF writes one page per artboard: all of them, or `artboard` (0-based) / `range` (`"1-3, 5"`, 1-based); the other formats write one artboard. `options` carries more format options (e.g. `{"quality": 80}` for JPEG). `selection: true` exports the selected objects cropped to their bounds (the reply adds their `bounds`, and reports `format` and the encoder's `warnings` as a whole-document export does); `outlineText: true` writes SVG text as paths. Template layers are left out, live effects are kept, and exporting `vectorcraft` never changes the document's path. Without `path` the bytes come back as `dataBase64`. Both backends run the same `document.export` call. |
-| `add_text` | `{text, x?, y?, width?, height?, path?, mode?, pathEffect?, size?, font?, color?}` | Point type at (x, y); area type with `width`/`height`; or `path` + `mode` (`area`/`onPath`) to flow text in or along a path, with `pathEffect` (`rainbow`, `skew`, `3dRibbon`, `stairStep`, `gravity`). |
+| `add_text` | `{text, x?, y?, width?, height?, fit?, fitMinPercent?, path?, mode?, pathEffect?, size?, font?, color?}` | Point type at (x, y); area type with `width`/`height` (`fit`: `none`, `autoHeight`, `shrinkText`, as `text.areaOptions`); or `path` + `mode` (`area`/`onPath`) to flow text in or along a path, with `pathEffect` (`rainbow`, `skew`, `3dRibbon`, `stairStep`, `gravity`). Returns `{id}`, with `overflow: true` when the text doesn't fit its frame or path. |
 | `apply_effect` | `{effect?, params?, ids?}` | Appends a live effect. Without `effect`, returns the effect catalogue with parameters and defaults. |
 | `pathfinder` | `{operation, ids?}` | `unite`, `minusFront`, `intersect`, `exclude`, `divide`, `trim`, `merge`, `crop`, `outline`, `minusBack`. For a live version, apply the `pathfinder.*` effect to a group (`effect.apply` groups several loose selected objects first). |
 | `transform` | `{ids?, dx?, dy?, rotate?, scale?, scaleX?, scaleY?, reflect?, shear?, origin?, copy?}` | Runs move, rotate, scale, reflect, shear in that order. With `copy`, the first step duplicates. |
@@ -949,10 +949,11 @@ See [Revolve](revolve.md) for the scope and limitations.
 the other 3D types to a path or compound path, live like Revolve (the source stays editable; SVG/PDF exports and
 `effect.expandAppearance` use the same shaded faces). An object takes one 3D effect, Revolve included.
 
-`threeD.extrude`: `depth` (points, 0..2000, default 50), `twist` (degrees, -360..360, 0), `taper` (1..100%, 100),
+`threeD.extrude`: `depth` (points, 0..2000, default 50), `twist` (degrees, 0..360, 0), `taper` (1..100%, 100),
 `cap` (true solid, false hollow), `bevel` (`none`, `classic`, `rounded`, `cove`, `step`, `ogee`), `bevelWidth`
 and `bevelHeight` (points, default 4), `bevelRepeat` (1..32), `bevelSpace` (0..90%), `bevelInside`,
-`bevelBothSides`. `threeD.inflate`: `depth` (points, default 0), `volume` (0..100%, default 50), `bothSides`.
+`bevelBothSides`. `threeD.inflate`: `depth` (points, default 0), `twist` (degrees, 0..360, 0), `taper` (1..100%, 100), `cap` (true
+solid, false open behind), `volume` (0..100%, default 50), `bothSides`.
 All three take `rotationX/Y/Z` (degrees, -180..180, default the Off-Axis Front position -21.88/-23.4/9.06),
 `perspective` and the lighting parameters as Revolve. See [three-d.md](three-d.md) for the Position presets,
 the scope and what differs from the public documentation.
@@ -2114,7 +2115,8 @@ area). Each one has a query command:
 transparent around them).
 
 What other apps copied goes into the clipboard with `clipboard.importSvg`, `clipboard.importPdf {dataBase64, page?,
-password?}` (the page's objects), `clipboard.importImage {dataBase64, mime?}` (an embedded image at 100% of its
+password?}` (the page's objects), `clipboard.importEps {dataBase64}` (an EPS or other PostScript picture's objects,
+as `document.open` reads one), `clipboard.importImage {dataBase64, mime?}` (an embedded image at 100% of its
 physical size) or `clipboard.importText {text}` (point text in the default type style), each centred on `center`
 (default: the first artboard); then any `edit.paste*` command pastes it. The desktop app does this itself: Copy and
 Cut publish the formats to the system clipboard, and a Paste outside text editing first reads what another app
@@ -2191,7 +2193,8 @@ listed in `warnings`. Binary DXF and DWG files answer an error saying to save th
 
 `links.list {show?: all|missing|modified|embedded, sort?: name|kind|status}` lists every image in the layers, top
 first, as the Links panel does: `{id, name, linked, status: ok|modified|missing|embedded, format, pixelWidth,
-pixelHeight, path?, found?, page?, preview?}`. `links.info {id?}` is the Link Info: `image.info`'s fields plus
+pixelHeight, path?, found?, page?, preview?, note?}` (`note`: the image is too large to decode and isn't drawn;
+`document.open` and `file.place` say the same in their `warnings`). `links.info {id?}` is the Link Info: `image.info`'s fields plus
 `status`, `format`, the file's `ppi` and the `effectivePpi`, `scale` (% of 100%), `rotation` (degrees,
 counter-clockwise), `placement` and, for a linked file, `fileName`, `location`, `fileSize`, `created`, `modified`.
 `links.goTo {id}` selects an image; `links.embed {ids?}` keeps linked files' pixels in the document (an image whose
@@ -2768,6 +2771,12 @@ command also accepts that object form. The query (and every reply) of `text.area
 `document.inspect` (and `document.node {summary: true}`) reports `overflow` for area type and type on a path (text past
 the end of the path), and `fit` and `fitScale` for area type.
 
+Text that doesn't fit is drawn up to the last line that does, so a one-line headline in a frame lower than its line
+draws nothing. The commands that make type or change what it holds say so in their own reply: `text.create`,
+`text.createInPath`, `text.setText` and `text.setStyle` add `overflow: [id…]` (the area type and type on a path among
+the objects they made or changed whose text doesn't fit), and the `add_text` tool adds `overflow: true`. The key is
+left out when everything fits.
+
 ```json
 {"name":"run_command","arguments":{"command":"text.areaOptions","params":{"fit":"shrinkText","fitMinPercent":60}}}
 ```
@@ -2968,8 +2977,9 @@ included) the fonts in DirectWrite's system font collection, such as those Adobe
 `/Network/Library/Fonts`, `~/Library/Fonts` and downloaded system fonts, plus in the desktop app and `vectorcraft-cli`
 the fonts CoreText's font manager lists outside them, such as those apps and font managers register from their own
 folders; Linux and BSD: `/usr/share/fonts`,
-`/usr/local/share/fonts`, `~/.fonts` and the XDG data folders' `fonts`, `~/.local/share/fonts` among them, and in a
-Flatpak sandbox the host's fonts). Faces without outlines VectorCraft draws (no `glyf`, `CFF`, `CFF2` or `VARC` table, such
+`/usr/local/share/fonts`, `~/.fonts` and the XDG data folders' `fonts`, `~/.local/share/fonts` among them, in a
+Flatpak sandbox the host's fonts, and the folders fontconfig's configuration lists (`<dir>` in `/etc/fonts/fonts.conf`
+and the files it includes: where packages add theirs, such as TeX fonts under `/usr/share/texmf/fonts`)). Faces without outlines VectorCraft draws (no `glyf`, `CFF`, `CFF2` or `VARC` table, such
 as bitmap-only fonts) are left out. The scan also reads the folder the `fontsFolder` preference names (Preferences › Type ›
 Additional Fonts Folder) with its subfolders and, in the desktop app and `vectorcraft-cli`, VectorCraft's own `Fonts` folder
 next to the preferences: `~/Library/Application Support/VectorCraft/Fonts` on macOS, `%APPDATA%\VectorCraft\Fonts` on

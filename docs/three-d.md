@@ -24,7 +24,7 @@ object is where the art was.
 | Option | What it does |
 |---|---|
 | Depth | 0–2,000 pt. At 0 the object is flat (the art turned like Rotate). |
-| Twist | −360° to 360°: the back face turned against the front, the walls following in slices. |
+| Twist | 0° to 360°: the back face turned against the front, the walls following in slices. |
 | Taper | 1–100 %: the back face's size against the front's. |
 | Cap | **Solid** closes the front and back; **Hollow** leaves them open, showing the insides of the walls. |
 | Bevel Shape | **None**, **Classic** (a straight chamfer), **Rounded** (convex quarter round), **Cove** (concave), **Step** (two steps) or **Ogee** (an S curve). Our own cross-sections. |
@@ -44,6 +44,9 @@ middle.
 | Option | What it does |
 |---|---|
 | Depth | 0–2,000 pt of flat side between the front and the back. |
+| Twist | 0° to 360°: the back turned against the front (its puff too), the sides following in slices. |
+| Taper | 1–100 %: the back's size against the front's; a puffed back is lower in proportion. |
+| Cap | **Solid** closes the back; **Hollow** leaves it off, so the inflated front is a shell open behind, its inside showing. The public documentation lists Cap for every 3D type without saying what it means for Inflate; this is our reading. |
 | Volume | 0–100 %. The surface is a membrane under even pressure, held along the outline (and around holes): it rises vertically from the edge and rounds smoothly inside, without creases along the shape's middle. At 50 % a circle becomes a half sphere; 100 % puffs twice as high, 0 % is flat. |
 | Both sides | The back puffs out too; otherwise it is flat. |
 
@@ -88,5 +91,8 @@ out, perspective). No Adobe software, assets, presets or bevel shapes were used.
   front. Concave solids seen at steep angles can overlap wrongly; open (hollow) solids show both sides.
 - Shading is flat per facet: an inflated rim seen almost edge-on shows faint banding where the facets get finer.
 - Paths and compound paths only: convert type, images and groups to outlines first. One 3D effect per object.
+- Curves are followed within 1/2000 of the shape's size (at least 0.05 pt), so a small curve takes a few points
+  and a large one up to 32. Extrude & Bevel and Inflate take up to 2,048 outline points, Rotate (which only turns
+  the outline) 65,536.
 - **3D (Classic)** (the track cube, surface types, blend steps, map art), Turntable and 3D export are separate,
   unbuilt items.

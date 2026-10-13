@@ -360,6 +360,7 @@
 	Auto Spell Check	Automatikus helyesírás-ellenőrzés
 	Auto-Collapse Iconic Panels	Ikonpanelek automatikus becsukása
 	Auto-Rotate (turn the paper to each artboard)	Automatikus elforgatás (a papír igazodik minden rajztáblához)
+	Auto Color	Automatikus szín
 	Automatic	Automatikus
 	Automatic flatness	Automatikus simaság
 	Automatically	Automatikusan
@@ -1469,6 +1470,8 @@
 	Graphic Style Library	Grafikaistílus-könyvtár
 	Graphic Style Options	Grafikai stílus beállításai
 	Graphic Style Options…	Grafikai stílus beállításai…
+	Symbol Options	Szimbólum beállításai
+	Symbol Options…	Szimbólum beállításai…
 	Graphic Styles	Grafikai stílusok
 	Graphic Styles (4)	Grafikai stílusok (4)
 	Graphic Styles Options	Grafikai stílusok beállításai
@@ -1608,6 +1611,7 @@
 	Identify Objects By	Objektumok azonosítása
 	Ignore	Kihagy
 	Ignore Artboards (all the art as one page)	Rajztáblák figyelmen kívül hagyása (az összes grafika egy oldalon)
+	Ignore Color	Szín figyelmen kívül hagyása
 	Ignore White	Fehér figyelmen kívül hagyása
 	Image	Kép
 	Image Info	Kép adatai
@@ -3935,6 +3939,7 @@ lighting	Light	Fény
 theme	Appearance	Kinézet
 
 # Plurals: one|other
+imageTrace	Outline	Körvonal
 @plural	Color Table ({n} color)|Color Table ({n} colors)	Színtábla ({n} szín)
 @plural	Delete this {n} graphic style?|Delete these {n} graphic styles?	{n} grafikai stílus törlése?
 @plural	{n} area highlighted|{n} areas highlighted	Kiemelt terület: {n}
@@ -4029,7 +4034,7 @@ theme	Appearance	Kinézet
 @msg	already editing a pattern	már folyik egy mintázat szerkesztése
 @msg	an image VectorCraft can't read was left out	kimaradt egy kép, amelyet a VectorCraft nem tud olvasni
 @msg	an image whose data is cut short was left out	kimaradt egy csonka adatú kép
-@msg	linked pictures show the low-resolution preview saved in the file until their files are found: relink them in the Links panel	a csatolt képek a fájlban mentett kis felbontású előnézetet mutatják, amíg a fájljaik elő nem kerülnek: csatolja őket újra a Csatolások panelen
+@msg	linked pictures show the low-resolution preview saved in the file until their files are found: relink them in the Links panel	a csatolt képek a fájlban mentett kis felbontású előnézetet mutatják, amíg a fájljaik elő nem kerülnek: csatold őket újra a Csatolások panelen
 @msg	area type in frames too short for a line of the font it shows in got taller frames ({_1}): their type wouldn't show otherwise	a túl alacsony keretben lévő területszöveg, amelybe a megjelenítő betűtípus egy sora sem fér el, magasabb keretet kapott ({_1}): különben nem látszana
 @msg	an object can't be read	egy objektum nem olvasható
 @msg	an object in perspective would leave the edited grid	egy perspektivikus objektum kikerülne a szerkesztett rácsból
@@ -4333,6 +4338,7 @@ theme	Appearance	Kinézet
 @msg	object {id} is not a selected top-level object	az objektum nem kijelölt legfelső szintű objektum: {id}
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	a több kitöltésű vagy körvonalú, effektusos vagy ecsetes objektumok a megrajzolt kinézetükkel kerültek be ({_1}): a megjelenésük még nem szerkeszthető
 @msg	Offset Path: select paths	Útvonal eltolása: jelölj ki útvonalakat
+@msg	Offset Path: the offset leaves nothing of the selected paths (an inset larger than the shapes)	Útvonal eltolása: az eltolás után semmi sem marad a kijelölt útvonalakból (a befelé eltolás nagyobb az alakzatoknál)
 @msg	onto must name a floating panel	az onto egy lebegő panelt kell megnevezzen
 @msg	onto must name a panel floating in another group	az onto egy másik csoportban lebegő panelt kell megnevezzen
 @msg	Opened with {_1} note(s): {_2}	Megnyitva; megjegyzések: {_1}: {_2}
@@ -4649,3 +4655,5 @@ theme	Appearance	Kinézet
 @msg	unknown parameter `{key}`; did you mean `{near}`?	ismeretlen paraméter: `{key}`; erre gondolt: `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	ismeretlen paraméter: `{key}`; a parancsnak nincs paramétere
 @msg	unknown parameter `{key}`; the command takes: {keys}	ismeretlen paraméter: `{key}`; a parancs ezeket fogadja el: {keys}
+	Load EPS into Clipboard	EPS betöltése a vágólapra
+@msg	an image of {w} × {h} pixels is too large to draw	egy {w} × {h} pixeles kép túl nagy a kirajzoláshoz

@@ -4580,6 +4580,7 @@ dependencies = [
  "vectorcraft-testkit",
  "vectorcraft-text",
  "windows",
+ "winsafe",
 ]
 
 [[package]]
@@ -4915,7 +4916,6 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "vectorcraft-geom",
- "vectorcraft-pathops",
 ]
 
 [[package]]

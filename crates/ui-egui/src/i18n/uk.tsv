@@ -241,6 +241,7 @@
 	Author Title:	Посада автора:
 	Author:	Автор:
 	Auto	Авто
+	Auto Color	Автоколір
 	Automatic	Автоматично
 	Auto Size New Area Type	Автоматично підганяти розмір нового тексту в області
 	Auto Spell Check	Автоматична перевірка орфографії
@@ -1137,6 +1138,8 @@
 	Graphic Style Library	Бібліотека графічних стилів
 	Graphic Style Options	Параметри графічного стилю
 	Graphic Style Options…	Параметри графічного стилю…
+	Symbol Options	Параметри символу
+	Symbol Options…	Параметри символу…
 	Graphic Styles	Графічні стилі
 	Graphic Styles Options	Параметри графічних стилів
 	Graphics	Графіка
@@ -1237,6 +1240,7 @@
 	Identify Objects By	Визначати об’єкти по
 	Ignore	Ігнорувати
 	Ignore Artboards (all the art as one page)	Ігнорувати монтажні області (весь малюнок як одна сторінка)
+	Ignore Color	Ігнорувати колір
 	Ignore White	Ігнорувати білий
 	Palette:	Палітра:
 	Limited	Обмежена
@@ -3229,6 +3233,7 @@ effect	Points	Точки
 	{warning}: click to correct to the closest color ({hex})	{warning}: натисніть , щоб виправити найближчий колір ({hex})
 	“{file}” is protected by a password.	"{file}" захищений паролем.
 	● Recording	● Запис
+imageTrace	Outline	Контур
 @plural	{n} item|{n} items	{n} елемент|{n} елементи|{n} елементів
 @plural	Color Table ({n} color)|Color Table ({n} colors)	Таблиця кольорів ({n} колір)|Таблиця кольорів ({n} кольори)|Таблиця кольорів ({n} кольорів)
 @plural	Delete this {n} graphic style?|Delete these {n} graphic styles?	Видалити цей графічний стиль ({n})?|Видалити ці графічні стилі ({n})?|Видалити ці графічні стилі ({n})?
@@ -3419,6 +3424,7 @@ axis	Both	Обидві
 @msg	No saved selections (Select → Save Selection…)	Немає збережених виділень (Виділення → Зберегти виділення…)
 @msg	No saved views (View → New View…)	Немає збережених видів (Перегляд → Новий вид…)
 @msg	Offset Path: select paths	Зміщення контуру: виділіть контури
+@msg	Offset Path: the offset leaves nothing of the selected paths (an inset larger than the shapes)	Зміщення контуру: після зміщення від виділених контурів нічого не лишається (зміщення всередину більше за самі фігури)
 @msg	Opened with {_1} note(s): {_2}	Відкрито із примітками ({_1}) : {_2}
 @msg	Opened {url}	Відкрито {url}
 @msg	Outline Stroke: no stroked paths selected	Обведення контуру: не виділено контури з обведенням
@@ -4231,3 +4237,5 @@ lighting	Light	Світло
 @msg	unknown parameter `{key}`; did you mean `{near}`?	невідомий параметр `{key}`; можливо, ви мали на увазі `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	невідомий параметр `{key}`; команда не має параметрів
 @msg	unknown parameter `{key}`; the command takes: {keys}	невідомий параметр `{key}`; команда приймає: {keys}
+	Load EPS into Clipboard	Завантажити EPS у буфер обміну
+@msg	an image of {w} × {h} pixels is too large to draw	зображення розміром {w} × {h} пікселів завелике для відображення
