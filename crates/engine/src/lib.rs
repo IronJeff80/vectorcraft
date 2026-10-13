@@ -1317,7 +1317,7 @@ impl Session {
         // The crate's own tests are the audit of the params descriptions (#1442): a key a test
         // passes that its command's description doesn't name fails the test.
         #[cfg(test)]
-        cmd::params::check_params(id, params)?;
+        self.check_params(id, params)?;
         // Clear's menu needs a selection; an agent supplying explicit targets only needs a
         // document. The command validates those targets before making any edit.
         let enabled = if id == "edit.clear" && params.get("ids").is_some() {
@@ -1916,6 +1916,8 @@ mod tests_save;
 mod tests_saveoptions;
 #[cfg(test)]
 mod tests_scalestrokes;
+#[cfg(test)]
+mod tests_scripts;
 #[cfg(test)]
 mod tests_shaper;
 #[cfg(test)]
