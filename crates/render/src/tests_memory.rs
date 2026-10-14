@@ -182,6 +182,122 @@ fn swept_type_entries_give_back_their_bytes() {
     assert_eq!((r.texts.len(), r.texts.bytes()), (0, 0));
 }
 
+/// [`text_doc`] of three type objects reading `word`: one at 80% opacity, one in Multiply and one
+/// with a drop shadow.
+fn faded_text_doc(word: &str) -> Document {
+    let mut d = text_doc(3, word);
+    let ids: Vec<NodeId> = d.layers[0].children().unwrap().iter().map(|n| n.id).collect();
+    d.node_mut(ids[0]).unwrap().opacity = 0.8;
+    d.node_mut(ids[1]).unwrap().blend = vectorcraft_color::BlendMode::Multiply;
+    d.node_mut(ids[2]).unwrap().appearance.effects.push(drop_shadow());
+    d
+}
+
+/// The glyph geometry `r` keeps for each type object of `d`: under its node, or under the art
+/// drawn for it when it has effects.
+fn kept_glyphs(r: &mut Renderer, d: &Document) -> Vec<Option<Arc<TextGeom>>> {
+    let stamp = r.stamp;
+    text_keys(d)
+        .into_iter()
+        .map(|k| {
+            let k = r.fx_arts.get(&k, stamp).map_or(k, |e| Arc::as_ptr(&e.1) as usize);
+            r.texts.get(&k, stamp).map(|(_, g)| g.clone())
+        })
+        .collect()
+}
+
+/// `f`'s result from a run during which the fonts did not change: other tests add fonts, and the
+/// renderer lays all type out again when the fonts change.
+fn fonts_unchanged<T>(mut f: impl FnMut() -> T) -> T {
+    loop {
+        let fonts = vectorcraft_text::FontDb::global().generation();
+        let t = f();
+        if vectorcraft_text::FontDb::global().generation() == fonts {
+            return t;
+        }
+    }
+}
+
+/// Type at 80% opacity, in Multiply and with a drop shadow keeps its glyph geometry between
+/// frames, as opaque type does: the second frame draws the geometry the first laid out. Frames
+/// that snap type to pixels keep none, and neither does type art that the effect-art cache has no
+/// room for.
+#[test]
+fn translucent_blended_and_shadowed_type_keeps_its_glyph_geometry_between_frames() {
+    let d = faded_text_doc("Kept");
+    let opts = RenderOptions::default();
+    let (first, kept, entries, second, again) = fonts_unchanged(|| {
+        let mut r = Renderer::new();
+        let first = r.render(&d, 400, 400, Affine::IDENTITY, &opts).pixels;
+        let (kept, entries) = (kept_glyphs(&mut r, &d), r.texts.len());
+        let second = r.render(&d, 400, 400, Affine::IDENTITY, &opts).pixels;
+        (first, kept, entries, second, kept_glyphs(&mut r, &d))
+    });
+    assert!(kept.iter().all(Option::is_some) && entries == 3, "{entries} entries");
+    assert!(second == first);
+    let same = kept.iter().zip(&again).all(|pair| matches!(pair, (Some(a), Some(b)) if Arc::ptr_eq(a, b)));
+    assert!(same, "the second frame draws the geometry the first laid out");
+    // Type anti-aliasing snaps the glyphs to pixels.
+    let mut r = Renderer::new();
+    r.render(&d, 400, 400, Affine::IDENTITY, &RenderOptions { anti_alias: AntiAlias::Type, ..Default::default() });
+    assert!(r.texts.is_empty());
+    // With no room for effect art, the shadowed type's art is made in every frame.
+    let frames = fonts_unchanged(|| {
+        let mut r = Renderer::new();
+        r.fx_arts = FrameCache::new(0, 0);
+        (0..2).map(|_| (r.render(&d, 400, 400, Affine::IDENTITY, &opts).pixels == first, r.texts.len())).collect::<Vec<_>>()
+    });
+    assert_eq!(frames, [(true, 2), (true, 2)]);
+}
+
+/// Editing the text of type at 80% opacity, in Multiply or with a drop shadow lays it out again:
+/// the next frame draws what a new renderer draws.
+#[test]
+fn edited_translucent_blended_and_shadowed_type_draws_as_new() {
+    for i in 0..3 {
+        let mut d = faded_text_doc("Kept");
+        let id = d.layers[0].children().unwrap()[i].id;
+        let opts = RenderOptions::default();
+        draws_as_new(&mut d, &opts, &opts, |d| {
+            if let Some(NodeKind::Text(t)) = d.node_mut(id).map(|n| &mut n.kind) {
+                t.runs[0].text = "Edit".into();
+            }
+        });
+    }
+}
+
+/// Type showing an inline graphic, at 80% opacity, in Multiply, with a drop shadow and opaque:
+/// when the symbol's art changes size and the document's inline graphics are not resolved again,
+/// the next frame lays the type out with the new size, as a new renderer does.
+#[test]
+fn type_with_an_inline_graphic_draws_its_symbols_new_size() {
+    use vectorcraft_doc::text::{CharStyle, InlineArt, TextObject, TextRun};
+    for i in 0..4 {
+        let mut d = Document::new(200.0, 100.0);
+        let art = symbol_art(&mut d);
+        d.symbols.push(vectorcraft_doc::Symbol { name: "S".into(), art: Arc::new(art) });
+        let style = CharStyle { size: 24.0, ..Default::default() };
+        let mut t = TextObject::point(vectorcraft_geom::Point::new(10.0, 50.0), "A", style.clone());
+        t.runs.push(TextRun::inline(InlineArt::new("S"), style.clone()));
+        t.runs.push(TextRun::new("B", style));
+        let mut n = Node::new(d.alloc_id(), NodeKind::Text(Box::new(t)));
+        match i {
+            0 => n.opacity = 0.8,
+            1 => n.blend = vectorcraft_color::BlendMode::Multiply,
+            2 => n.appearance.effects.push(drop_shadow()),
+            _ => {}
+        }
+        let mut d = with_art(d, vec![n]);
+        d.resolve_inline_art();
+        // `S` becomes a wide red bar: the inline graphic grows, and the type after it moves.
+        edit_draws_as_new(d, |d| {
+            let bar = vectorcraft_geom::shapes::rectangle(Rect::new(-20.0, -4.0, 20.0, 4.0));
+            let red = vectorcraft_doc::Appearance::basic(Paint::solid(Color::rgb(1.0, 0.0, 0.0)), Paint::None, 0.0);
+            d.symbols[0].art = Arc::new(Node::path(d.alloc_id(), bar, red));
+        });
+    }
+}
+
 /// A symbol's art inside the 20 × 20 square around the origin: a group of a square filled blue
 /// with a 2 pt black stroke and a black line.
 fn symbol_art(d: &mut Document) -> Node {
@@ -470,6 +586,40 @@ fn editing_an_instance_or_a_symbol_places_only_its_art_again() {
     assert_eq!(img.pixel(140, 60), [255, 0, 0, 255], "the turned instance's square");
     let edited = placed_copies(&r, &[&unmoved, &d]);
     assert!(moved.is_subset(&edited) && edited.len() == moved.len() + 6, "{} copies, then {}", moved.len(), edited.len());
+}
+
+/// A symbol whose art, kept between frames, lies outside the 20 × 20 square around the origin:
+/// each frame culls the instance by the art the symbol holds then and draws what a new renderer
+/// draws. When the symbol holds earlier art again, the renderer draws the art it placed for it
+/// then.
+#[test]
+fn instances_of_art_outside_the_square_follow_their_symbols_art() {
+    let _fonts = fonts_steady();
+    /// A blue square in a group, 20 × 20 from (x, 0).
+    fn square_at(d: &mut Document, x: f64) -> Arc<Node> {
+        let blue = vectorcraft_doc::Appearance::basic(Paint::solid(Color::rgb(0.0, 0.0, 1.0)), Paint::None, 0.0);
+        let square = Node::path(d.alloc_id(), vectorcraft_geom::shapes::rectangle(Rect::new(x, 0.0, x + 20.0, 20.0)), blue);
+        Arc::new(Node::group(d.alloc_id(), vec![Arc::new(square)]))
+    }
+    let mut d = Document::new(200.0, 100.0);
+    // The instance moves the art by (-160, 40): the square from x 100 lies left of the view, and
+    // the one from x 200 lies from (40, 40) to (60, 60), in it. The 20 × 20 square around the
+    // origin lies from (-170, 30) to (-150, 50), left of the view.
+    let (off, on) = (square_at(&mut d, 100.0), square_at(&mut d, 200.0));
+    d.symbols.push(vectorcraft_doc::Symbol { name: "Far".into(), art: off.clone() });
+    let (l, id) = (d.layers[0].id, d.alloc_id());
+    d.insert(Some(l), 0, Node::new(id, NodeKind::SymbolInstance { symbol: "Far".into(), xf: Affine::translate((-160.0, 40.0)) })).unwrap();
+    let opts = RenderOptions::default();
+    let mut r = Renderer::new();
+    let mut placed = vec![];
+    for art in [&off, &on, &off, &on] {
+        d.symbols[0].art = art.clone();
+        let frame = r.render(&d, 200, 100, Affine::IDENTITY, &opts);
+        assert!(frame.pixels == Renderer::new().render(&d, 200, 100, Affine::IDENTITY, &opts).pixels);
+        assert_eq!(frame.pixel(50, 50) == [0, 0, 255, 255], Arc::ptr_eq(art, &on), "{:?}", frame.pixel(50, 50));
+        placed.push(placed_copies(&r, &[&d]));
+    }
+    assert!(!placed[1].is_empty() && placed[3] == placed[1], "the fourth frame draws the art placed in the second");
 }
 
 /// Draws `d` (200 × 100 points, on white), applies `edit` and draws it again with the same
