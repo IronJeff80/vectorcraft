@@ -130,10 +130,30 @@ pub(crate) fn paste_command(held: Modifiers) -> &'static str {
         .map_or("edit.paste", |(_, id, _)| id)
 }
 
+/// Give a copy or cut chord held with more modifiers its key back when it has a shortcut of its own:
+/// egui reports every Cmd+C and Cmd+X chord as Copy or Cut, Shift and Alt held too, so Cmd+Shift+C
+/// (Align center) copied instead (#1940).
+fn unclip_chords(i: &mut egui::InputState) {
+    if !i.events.iter().any(|e| matches!(e, egui::Event::Copy | egui::Event::Cut)) {
+        return;
+    }
+    let (held, shortcuts) = (i.modifiers, all_shortcuts());
+    for e in &mut i.events {
+        let (key, own) = match e {
+            egui::Event::Copy => (Key::C, "edit.copy"),
+            egui::Event::Cut => (Key::X, "edit.cut"),
+            _ => continue,
+        };
+        if shortcuts.iter().any(|(sc, id, _)| sc.logical_key == key && *id != own && held.matches_exact(sc.modifiers)) {
+            *e = egui::Event::Key { key, physical_key: None, pressed: true, repeat: false, modifiers: held };
+        }
+    }
+}
+
 /// Keyboard pastes of something other than text. egui swallows a paste chord's key press and
 /// sends a Paste event only when the clipboard holds text, so a paste key released without its
 /// press (or a Paste event) reported was a paste of a bitmap or a PDF.
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub(crate) struct PasteChord {
     /// Paste keys whose press was reported (typed, not pasting).
     pressed: Vec<Key>,
@@ -261,6 +281,9 @@ pub fn handle(app: &mut VectorcraftApp, ctx: &egui::Context) {
             if claimed || (k == Key::Enter && !busy) {
                 crate::canvas::apply_requests(app, r);
             }
+            if claimed {
+                ctx.input_mut(|i| i.consume_key(Modifiers::NONE, k));
+            }
             if k == Key::Escape && !busy && !claimed {
                 // Escape leaves Presentation Mode first: it hides the menus and panels.
                 if app.ui.screen_mode == 3 {
@@ -291,11 +314,34 @@ pub fn handle(app: &mut VectorcraftApp, ctx: &egui::Context) {
     if typing {
         return;
     }
+    ctx.input_mut(unclip_chords);
     // Tab is ours when no field has the keyboard (it shows and hides the panels, or goes to the
     // Type tool): left to egui, it would also move the focus on to a field, and every key after it
     // would count as typing.
     if ctx.input(|i| i.key_pressed(Key::Tab)) {
         ctx.memory_mut(|m| m.move_focus(egui::FocusDirection::None));
+    }
+    // In Presentation Mode, ← and → go to the previous and the next artboard. Every arrow key press
+    // is removed from the input here, so no arrow key moves the selection or is sent to the tool.
+    if app.ui.screen_mode == 3 {
+        let mut steps = vec![];
+        ctx.input_mut(|i| {
+            i.events.retain(|e| match e {
+                egui::Event::Key { key: Key::ArrowLeft, pressed: true, .. } => {
+                    steps.push(false);
+                    false
+                }
+                egui::Event::Key { key: Key::ArrowRight, pressed: true, .. } => {
+                    steps.push(true);
+                    false
+                }
+                egui::Event::Key { key: Key::ArrowUp | Key::ArrowDown, pressed: true, .. } => false,
+                _ => true,
+            })
+        });
+        for next in steps {
+            presentation_step(app, next);
+        }
     }
     // Type tool editing: text, IME composition and editing keys go to the tool.
     if app.session.tool_wants_text() {
@@ -513,6 +559,21 @@ pub fn handle(app: &mut VectorcraftApp, ctx: &egui::Context) {
         if let Some(t) = lookup(crate::shortcut_editor::tool_for_key) {
             app.select_tool(t);
         }
+    }
+}
+
+/// Go to the next artboard (`next`) or the previous one with `view.goToArtboard`, as the status bar
+/// navigator's Next and Previous buttons do, for the arrow keys and a click in Presentation Mode.
+/// On the last artboard a step forward leaves the view as it is, and so does a step back on the
+/// first.
+pub(crate) fn presentation_step(app: &mut VectorcraftApp, next: bool) {
+    let n = app.session.active().map_or(0, |d| d.doc.artboards.len());
+    let at = crate::panels::artboards::selected(app, n);
+    let to = if next { (at + 1 < n).then_some("next") } else { (at > 0).then_some("previous") };
+    if let Some(to) = to
+        && let Err(e) = app.run("view.goToArtboard", json!({ "index": to }))
+    {
+        app.status(e);
     }
 }
 

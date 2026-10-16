@@ -180,7 +180,6 @@
 	Art	图稿
 	Art using a deleted global swatch keeps its colour.	使用已删除全局色板的图稿会保留其颜色。
 	Artboard Options	画板选项
-	Artboard Options: edit with the Artboard tool	画板选项：使用画板工具编辑
 	Artboard Options…	画板选项…
 	Artboard Tool	画板工具
 	Artboard {number}	画板 {number}
@@ -1215,6 +1214,7 @@
 	Hide Print Tiling	隐藏打印分页
 	Hide Rulers	隐藏标尺
 	Hide Slices	隐藏切片
+	Hide Template	隐藏模板
 	Hide Text Threads	隐藏文本串接线
 	Hide Thumbnail	隐藏缩略图
 	Hide Thumbnails	隐藏缩略图
@@ -1316,6 +1316,8 @@
 	Internal CSS	内部 CSS
 	Internet Standard RGB (sRGB)	互联网标准 RGB (sRGB)
 	Intersect	交集
+	Intertwine	交织
+	Arrange Intertwine Area	排列交织区域
 	Inverse	反向
 	Invert	反相
 	Invert Colors	反相颜色
@@ -1937,6 +1939,7 @@
 	Pathfinder Options…	路径查找器选项…
 	Pathfinders:	路径查找器：
 	Paths	路径
+	Path Length	路径长度
 	Paths: {paths}    Anchors: {anchors}    Colors: {colors}	路径：{paths}    锚点：{anchors}    颜色：{colors}
 	Pattern	图案
 	Pattern Editing	图案编辑
@@ -2462,6 +2465,16 @@
 	Scripts	脚本
 	Search	搜索
 	Search All	搜索全部
+	Filter	筛选
+	Clear All	全部清除
+	By Object	按对象
+	By Layer	按图层
+	Images	图像
+	Groups	编组
+	Linked Files	链接文件
+	Locked	已锁定
+	Hidden	已隐藏
+	Filter Layers Panel Rows	筛选图层面板行
 	Search commands and tools	搜索命令和工具
 	Search commands and tools…	搜索命令和工具…
 	Search Commands…	搜索命令…
@@ -2594,6 +2607,7 @@
 	Show Modified	显示已修改
 	Show Note	显示注解
 	Show Options	显示选项
+	Color Panel Options	颜色面板选项
 	Show Package	显示打包
 	Show Panel	显示面板
 	Show Pattern Swatches	显示图案色板
@@ -2606,6 +2620,7 @@
 	Show Slices	显示切片
 	Show Swatch Bounds	显示色板边界
 	Show Swatch Kinds	显示色板种类
+	Show Template	显示模板
 	Show Text Threads	显示文本串接线
 	Show The Home Screen When No Documents Are Open	没有打开文档时显示主页
 	Show Thumbnail	显示缩略图
@@ -3752,6 +3767,10 @@ axis	Both	两者
 	Method	方法
 	Quality	质量
 	Radius	半径
+	Mode	模式
+	Blur Mode	模糊模式
+	Edge Only	仅边缘
+	Overlay Edge	叠加边缘
 	Spin	旋转
 	Draft	草稿
 	Good	良好
@@ -3832,6 +3851,9 @@ effect	Vertical	垂直
 	Blocks	块状
 	Frosted	磨砂
 	Tiny Lens	小镜头
+	Loaded Texture	已载入的纹理
+	Load Texture…	载入纹理…
+	Texture Image	纹理图像
 	Rename Data Set	重命名数据集
 	Rename Variable	重命名变量
 	Variable Options	变量选项
@@ -3980,6 +4002,7 @@ lighting	Light	光源
 	Softness	柔和度
 	Ambient Light	环境光
 	Light behind the object	光源位于对象后方
+	Registration:	对齐点:
 # Dimension tool (linked dimension annotations)
 	Create Dimension	创建尺寸标注
 	Dimension Tool	尺寸标注工具
@@ -3989,7 +4012,6 @@ lighting	Light	光源
 	Precision:	精度：
 	Update Dimensions	更新尺寸标注
 	Display	显示
-
 # Dimension tool and Object › Dimensions (dimension groups, their dialog and messages).
 	Dimension	尺寸
 	Drawing : real size — 1:10 labels 1 unit on the page as 10.	图纸 : 实际尺寸 — 1:10 会将页面上的 1 个单位标注为 10。
@@ -4009,3 +4031,18 @@ lighting	Light	光源
 # Revolve cap description
 	Close the circular ends of open profiles. Partial sweeps keep their cut sides open.	封闭开放轮廓的圆形端部。部分旋转的切割侧面保持开放。
 	Distance	距离
+	Make Image Dynamic	使图像动态化
+	Import Data Sets…	导入数据集…
+	Export Data Sets…	导出数据集…
+	Make Graph Dynamic	使图表动态化
+	Batch…	批处理…
+	Source Folder:	源文件夹：
+	Destination Folder:	目标文件夹：
+	Overrides	覆盖
+	Uses every data set of the open document.	使用打开文档的每个数据集。
+
+# User Interface › Accent Color
+	Accent Color	强调色
+	Amber	琥珀色
+	Coral	珊瑚色
+	Violet	紫罗兰色

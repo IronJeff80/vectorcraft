@@ -219,7 +219,8 @@ pub struct Interaction {
     /// The perspective transform the previews make (`perspective.transform` params): Transform
     /// Again repeats it once the drag is committed.
     pub perspective_again: Option<Value>,
-    /// A transform with `copy` keeps the copies it made of the snapshot here ([`PreviewCopies`]).
+    /// A transform or a perspective edit with `copy` keeps the copies it made of the snapshot here
+    /// ([`PreviewCopies`]).
     pub(crate) copies: Option<Arc<PreviewCopies>>,
 }
 
@@ -233,14 +234,15 @@ pub enum LastTransform {
     Each(Value),
 }
 
-/// This holds the copies that a transform with `copy` made of an interaction's snapshot
-/// ([`cmd::object::apply_transform`]). A later transform with `copy` of the same objects, while
-/// the document is still that snapshot, starts from `doc` and transforms only the copies.
+/// This holds the copies that a transform or a perspective edit with `copy` made of an
+/// interaction's snapshot ([`cmd::object::apply_transform`]; `persp_edit` and `plane_move` in
+/// `cmd::distortcmds`). A later transform or perspective edit with `copy` of the same objects,
+/// while the document is still that snapshot, starts from `doc` and transforms only the copies.
 #[derive(Debug)]
 pub(crate) struct PreviewCopies {
     /// The copies were made from this snapshot.
     pub(crate) from: Arc<Document>,
-    /// The transform copied these objects.
+    /// The transform or perspective edit copied these objects.
     pub(crate) roots: Vec<NodeId>,
     /// This is `from` with the copies added, untransformed.
     pub(crate) doc: Arc<Document>,
@@ -544,7 +546,7 @@ impl DocState {
 }
 
 /// Coordinates beyond this (points) are rejected: ~1,400 m, far past Illustrator's large canvas.
-pub const MAX_COORD: f64 = 4.0e6;
+pub use vectorcraft_doc::MAX_COORD;
 
 /// The commands that act on the active artboard (#693), which the app passes as their `artboard`:
 /// Paste in Place, in Front and in Back paste onto it, Align to Artboard aligns to it, Distribute
@@ -561,11 +563,16 @@ pub const ON_ACTIVE_ARTBOARD: [&str; 7] = [
     "select.allOnArtboard",
 ];
 
+/// The commands that resize the active artboard, which the app passes as their `index`: Fit to
+/// Artwork Bounds and Fit to Selected Art (Object › Artboards). A `command.batch` given `artboard`
+/// passes it on, as `index`, to each of their steps that names none.
+pub const FIT_ACTIVE_ARTBOARD: [&str; 2] = ["artboard.fitToArt", "artboard.fitToSelection"];
+
 /// `(command, param)` pairs the journal records only so a replay reproduces the original run
 /// (dates from the clock: `cmd::clock_date`; the active artboard the app passes to the
-/// [`ON_ACTIVE_ARTBOARD`] commands and to a batch); an action leaves them out
-/// ([`Session::journal_for_action`]).
-const REPLAY_ONLY: [(&str, &str); 11] = [
+/// [`ON_ACTIVE_ARTBOARD`] and [`FIT_ACTIVE_ARTBOARD`] commands and to a batch); an action leaves
+/// them out ([`Session::journal_for_action`]).
+const REPLAY_ONLY: [(&str, &str); 13] = [
     ("file.new", "created"),
     ("document.save", "modified"),
     ("file.saveAs", "modified"),
@@ -575,6 +582,8 @@ const REPLAY_ONLY: [(&str, &str); 11] = [
     ("object.align", "artboard"),
     ("object.distribute", "artboard"),
     ("object.distributeSpacing", "artboard"),
+    ("artboard.fitToArt", "index"),
+    ("artboard.fitToSelection", "index"),
     ("select.allOnArtboard", "artboard"),
     ("command.batch", "artboard"),
 ];
@@ -735,6 +744,8 @@ pub struct Prefs {
     pub scratch_secondary: String,
     // User Interface
     pub ui_brightness: String,
+    /// User Interface › Accent Color: the colour of what is on, chosen or focused.
+    pub ui_accent: String,
     pub canvas_color: String,
     pub auto_collapse_icon_panels: bool,
     /// User Interface › Show Tool Group Labels: the toolbar's group names (Select, Shapes, Draw…);
@@ -967,6 +978,7 @@ impl Default for Prefs {
             scratch_primary: s("Startup"),
             scratch_secondary: s("None"),
             ui_brightness: s("mediumDark"),
+            ui_accent: s("coral"),
             canvas_color: s("matchUi"),
             auto_collapse_icon_panels: false,
             tool_group_labels: false,
@@ -1376,7 +1388,15 @@ impl Session {
             self.note_depth = 1;
             self.batch_stash = None;
         }
-        let r = if self.depth == 0 { self.run_guarded(id, |s| (spec.run)(s, params)) } else { self.run_nested(|s| (spec.run)(s, params)) };
+        // A selection-only command given `ids` selects them first, in the same undo step (#2130).
+        let select_first = SELECTS_GIVEN_IDS.contains(&id).then(|| params.get("ids")).flatten();
+        let run = |s: &mut Session| {
+            if let Some(ids) = select_first {
+                s.execute("select.set", &serde_json::json!({ "ids": ids }))?;
+            }
+            (spec.run)(s, params)
+        };
+        let r = if self.depth == 0 { self.run_guarded(id, run) } else { self.run_nested(run) };
         let r = r?;
         if self.depth == 0 {
             self.inherit_new_art();
@@ -1877,6 +1897,8 @@ mod tests_gradient;
 #[cfg(test)]
 mod tests_gradpanel;
 #[cfg(test)]
+mod tests_gradspan;
+#[cfg(test)]
 mod tests_halftone;
 #[cfg(test)]
 mod tests_history_mem;
@@ -1884,6 +1906,8 @@ mod tests_history_mem;
 mod tests_ids_without_selection;
 #[cfg(test)]
 mod tests_inline;
+#[cfg(test)]
+mod tests_intertwine;
 #[cfg(test)]
 mod tests_journal;
 #[cfg(test)]
@@ -2013,6 +2037,8 @@ mod tests_scalestrokes;
 #[cfg(test)]
 mod tests_scripts;
 #[cfg(test)]
+mod tests_select_ids_first;
+#[cfg(test)]
 mod tests_shaper;
 #[cfg(test)]
 mod tests_shortcutset;
@@ -2076,6 +2102,41 @@ mod tests_widthprofiles;
 mod tests_widthtool;
 #[cfg(test)]
 mod tests_xform;
+
+/// Commands that act on the selection and take `ids` by selecting them first (`select.set`, with
+/// its checks), then running as on the selection: the result and the selection afterwards are the
+/// menu command's (#2130).
+pub(crate) const SELECTS_GIVEN_IDS: &[&str] = &[
+    "edit.duplicate",
+    "object.arrange.bringForward",
+    "object.arrange.bringToFront",
+    "object.arrange.sendBackward",
+    "object.arrange.sendToBack",
+    "object.arrange.sendToCurrentLayer",
+    "object.clippingMask.make",
+    "object.clippingMask.release",
+    "object.compoundPath.make",
+    "object.compoundPath.release",
+    "object.group",
+    "object.hide",
+    "object.lock",
+    "object.move",
+    "object.pathfinder.crop",
+    "object.pathfinder.divide",
+    "object.pathfinder.exclude",
+    "object.pathfinder.intersect",
+    "object.pathfinder.merge",
+    "object.pathfinder.minusBack",
+    "object.pathfinder.minusFront",
+    "object.pathfinder.outline",
+    "object.pathfinder.trim",
+    "object.pathfinder.unite",
+    "object.reflect",
+    "object.rotate",
+    "object.scale",
+    "object.shear",
+    "object.ungroup",
+];
 
 /// The non-empty `ids` given to a command whose params description names `ids` as a key (the
 /// key callers outside the app may pass it, [`cmd::params::takes_key`]).

@@ -58,6 +58,10 @@
 	Draft	Brouillon
 	Good	Bonne
 	Best	Optimale
+	Mode	Mode
+	Blur Mode	Mode de flou
+	Edge Only	Bords uniquement
+	Overlay Edge	Bords en incrustation
 
 # Status and error messages too (`@msg` rows at the end, `COMPLETE_MESSAGES` in the tests).
 # A native speaker's review is welcome: keep the placeholders ({name}), the trailing "…" and the
@@ -223,7 +227,6 @@
 	Art	Illustration
 	Art using a deleted global swatch keeps its colour.	L’illustration qui utilise une nuance globale supprimée conserve sa couleur.
 	Artboard Options	Options du plan de travail
-	Artboard Options: edit with the Artboard tool	Options du plan de travail : modifier avec l’outil Plan de travail
 	Artboard Options…	Options du plan de travail…
 	Artboard Tool	Outil Plan de travail
 	Artboard {number}	Plan de travail {number}
@@ -1266,6 +1269,7 @@
 	Hide Print Tiling	Masquer les limites d’impression
 	Hide Rulers	Masquer les règles
 	Hide Slices	Masquer les tranches
+	Hide Template	Masquer le modèle
 	Hide Text Threads	Masquer les liens de texte
 	Hide Thumbnail	Masquer la vignette
 	Hide Thumbnails	Masquer les vignettes
@@ -1370,6 +1374,8 @@
 	Internal CSS	CSS interne
 	Internet Standard RGB (sRGB)	RVB standard Internet (sRGB)
 	Intersect	Intersection
+	Intertwine	Entrelacer
+	Arrange Intertwine Area	Disposer la zone entrelacée
 	Inverse	Inverser la sélection
 	Invert	Inverser
 	Invert Colors	Inverser les couleurs
@@ -2045,6 +2051,7 @@
 	Pathfinder Options…	Options Pathfinder…
 	Pathfinders:	Pathfinders :
 	Paths	Tracés
+	Path Length	Longueur des tracés
 	Paths: {paths}    Anchors: {anchors}    Colors: {colors}	Tracés : {paths}    Points d’ancrage : {anchors}    Couleurs : {colors}
 	Pattern	Motif
 	Pattern Editing	Modification du motif
@@ -2603,6 +2610,17 @@
 	Scripts	Scripts
 	Search	Rechercher
 	Search All	Rechercher partout
+	Filter	Filtre
+	Clear All	Tout effacer
+	By Object	Par objet
+	By Layer	Par calque
+	Images	Images
+	Groups	Groupes
+	Linked Files	Fichiers liés
+	Locked	Verrouillés
+	Hidden	Masqués
+	Filter Layers Panel Rows	Filtrer les lignes du panneau Calques
+@msg	`{key}` must be an array of these names: {_1}	`{key}` doit être un tableau de noms parmi {_1}
 	Search commands and tools	Chercher commandes et outils
 	Search commands and tools…	Chercher commandes et outils…
 	Search Commands…	Rechercher des commandes…
@@ -2740,6 +2758,7 @@
 	Show Modified	Afficher les éléments modifiés
 	Show Note	Afficher la note
 	Show Options	Afficher les options
+	Color Panel Options	Options du panneau Couleur
 	Show Package	Afficher le dossier d’assemblage
 	Show Panel	Afficher le panneau
 	Show Pattern Swatches	Afficher les nuances de motif
@@ -2752,6 +2771,7 @@
 	Show Slices	Afficher les tranches
 	Show Swatch Bounds	Afficher les limites de la nuance
 	Show Swatch Kinds	Afficher les types de nuance
+	Show Template	Afficher le modèle
 	Show Text Threads	Afficher les liens de texte
 	Show The Home Screen When No Documents Are Open	Afficher l’écran d’accueil lorsqu’aucun document n’est ouvert
 	Show Thumbnail	Afficher la vignette
@@ -3611,6 +3631,7 @@ axis	Both	Les deux
 @msg	`{key}` must be between {min} and {max} (got {x})	`{key}` doit être compris entre {min} et {max} (reçu : {x})
 @msg	`{key}` must be one of {_1}	`{key}` doit valoir l’une de ces valeurs : {_1}
 @msg	`{key}` must be true or false	`{key}` doit valoir true ou false
+@msg	`mode` must be grayscale, rgb, hsb, cmyk or websafe	`mode` doit valoir grayscale, rgb, hsb, cmyk ou websafe
 @msg	`{k}` must be [x, y]	`{k}` doit être [x, y]
 @msg	`{name}` has no options	`{name}` n’a pas d’options
 @msg	`{name}` is a built-in workspace; choose another name	`{name}` est un espace de travail intégré ; choisissez un autre nom
@@ -3880,6 +3901,7 @@ axis	Both	Les deux
 @msg	select a gradient mesh	sélectionnez un filet de dégradé
 @msg	select a linked image: an embedded one has no file	sélectionnez une image liée : une image incorporée n’a pas de fichier
 @msg	select a repeat	sélectionnez une répétition
+@msg	select an Intertwine group	sélectionnez un groupe entrelacé
 @msg	select a stroke with a variable width	sélectionnez un contour de largeur variable
 @msg	select a symbol instance	sélectionnez une instance de symbole
 @msg	select an Image Trace object	sélectionnez un objet de vectorisation de l’image
@@ -3970,7 +3992,7 @@ axis	Both	Les deux
 @msg	this file's PostScript couldn't be read ({why}): {what}	impossible de lire le PostScript de ce fichier ({why}) : {what}
 @msg	this format holds one artboard: export several as PDF or with document.exportForScreens	ce format ne contient qu’un plan de travail : exportez-en plusieurs au format PDF ou avec document.exportForScreens
 @msg	this is a DWG drawing, which can't be read: save it from the CAD app as an ASCII DXF and open that	c’est un dessin DWG, qui ne peut pas être lu : enregistrez-le depuis l’application de CAO au format DXF ASCII et ouvrez ce fichier
-@msg	this is a PostScript file (an .ai saved in an older format or without PDF compatibility, or an EPS file), which can't be opened yet: save it as PDF, PDF-compatible .ai or SVG	c’est un fichier PostScript (un .ai enregistré dans un ancien format ou sans compatibilité PDF, ou un fichier EPS), qui ne peut pas encore être ouvert : enregistrez-le au format PDF, .ai compatible PDF ou SVG
+@msg	this is a PostScript file (an .ai saved in an older format or without PDF compatibility, or an EPS file), not a PDF: File › Open and File › Place read it as EPS	c’est un fichier PostScript (un .ai enregistré dans un ancien format ou sans compatibilité PDF, ou un fichier EPS), pas un PDF : Fichier › Ouvrir et Fichier › Importer le lisent comme un EPS
 @msg	this is not a PostScript file	ce n’est pas un fichier PostScript
 @msg	tool shortcuts must be a single key (optionally with Shift)	les raccourcis d’outils doivent être une seule touche (éventuellement avec Maj)
 @msg	truncated	tronqué
@@ -4047,6 +4069,8 @@ axis	Both	Les deux
 @msg	{_1} files	Fichiers {_1}
 @msg	The graphics were lost and have been restarted	Le contexte graphique a été perdu puis redémarré
 @msg	The graphics processor tried first couldn't show the window, so VectorCraft started again on {summary}	Le processeur graphique essayé en premier n’a pas pu afficher la fenêtre : VectorCraft a redémarré sur {summary}
+@msg	The last start of VectorCraft ended on {name} before its window appeared, so it started on {summary}. To try that graphics processor again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	Le dernier démarrage de VectorCraft s’est arrêté sur {name} avant l’affichage de la fenêtre, donc VectorCraft a démarré sur {summary}. Pour réessayer ce processeur graphique, modifiez Préférences › Performances › Processeur graphique ou démarrez avec la variable WGPU_BACKEND définie
+@msg	The last start of VectorCraft ended while it listed the graphics processors, so it started on {summary} with OpenGL alone. To try the other graphics backends again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	Le dernier démarrage de VectorCraft s’est arrêté pendant l’énumération des processeurs graphiques, donc VectorCraft a démarré sur {summary} avec OpenGL seul. Pour réessayer les autres interfaces graphiques, modifiez Préférences › Performances › Processeur graphique ou démarrez avec la variable WGPU_BACKEND définie
 @msg	Loading VectorCraft…	Chargement de VectorCraft…
 @msg	VectorCraft failed to start: {e}	Le démarrage de VectorCraft a échoué : {e}
 @msg	A browser with WebGPU or WebGL2 is required.	Un navigateur prenant en charge WebGPU ou WebGL2 est nécessaire.
@@ -4240,6 +4264,9 @@ effect	Soft	Doux
 	Blocks	Blocs
 	Frosted	Dépoli
 	Tiny Lens	Petites lentilles
+	Loaded Texture	Texture chargée
+	Load Texture…	Charger une texture…
+	Texture Image	Image de texture
 	Rename Data Set	Renommer le jeu de données
 	Rename Variable	Renommer la variable
 	Variable Options	Options de variable
@@ -4815,6 +4842,7 @@ mark-style	Japanese	Japonais
 theme	Appearance	Apparence
 	Load EPS into Clipboard	Charger un EPS dans le presse-papiers
 @msg	an image of {w} × {h} pixels is too large to draw	une image de {w} × {h} pixels est trop grande pour être dessinée
+@msg	the image can't be read as a texture	l'image ne peut pas être lue comme texture
 	Fill and Stroke Controls	Commandes de fond et de contour
 	Coloring Controls	Commandes de couleur
 	Draw Mode Controls	Commandes de mode de dessin
@@ -4836,7 +4864,7 @@ theme	Appearance	Apparence
 	Softness	Douceur
 	Ambient Light	Lumière ambiante
 	Light behind the object	Lumière derrière l'objet
-
+	Registration:	Repère d'alignement :
 # Dimension tool and Object › Dimensions (dimension groups, their dialog and messages).
 	Dimension	Cote
 	Drawing : real size — 1:10 labels 1 unit on the page as 10.	Dessin : taille réelle — 1:10 étiquette 1 unité de la page comme 10.
@@ -4883,3 +4911,29 @@ theme	Appearance	Apparence
 @msg	Unknown unit	Unité inconnue
 # Revolve cap description
 	Close the circular ends of open profiles. Partial sweeps keep their cut sides open.	Ferme les extrémités circulaires des profils ouverts. Les rotations partielles conservent leurs faces de coupe ouvertes.
+@msg	span must be "object" or "selection", got {v}	span doit être "object" ou "selection", pas {v}
+@msg	span: "selection" places a `gradient`, not a swatch	span: "selection" place un `gradient`, pas une nuance
+@msg	span: "selection" places a gradient: give `gradient`	span: "selection" place un dégradé : indiquez `gradient`
+@msg	span: "selection" places a linear or radial gradient, not a freeform one	span: "selection" place un dégradé linéaire ou radial, pas un dégradé de forme libre
+@msg	span: "selection" places the gradient itself: leave out `start` and `end` (they already place it in document coordinates)	span: "selection" place le dégradé lui-même : omettez `start` et `end` (ils le placent déjà en coordonnées du document)
+	Make Image Dynamic	Rendre l'image dynamique
+	Import Data Sets…	Importer des jeux de données…
+	Export Data Sets…	Exporter des jeux de données…
+	Make Graph Dynamic	Rendre le graphe dynamique
+	Batch…	Traitement par lots…
+	Source Folder:	Dossier source :
+	Destination Folder:	Dossier de destination :
+	Overrides	Remplacements
+	Uses every data set of the open document.	Utilise chaque jeu de données du document ouvert.
+@msg	Batch: {count} processed	Traitement par lots : {count} traités
+@msg	Batch: {count} processed, {failed} failed	Traitement par lots : {count} traités, {failed} en échec
+@msg	choose a destination folder	choisissez un dossier de destination
+@msg	choose a source folder	choisissez un dossier source
+@msg	open a document with data sets	ouvrez un document avec des jeux de données
+@msg	the action has no steps	l'action n'a aucune étape
+
+# User Interface › Accent Color
+	Accent Color	Couleur d’accent
+	Amber	Ambre
+	Coral	Corail
+	Violet	Violet
