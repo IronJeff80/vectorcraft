@@ -170,6 +170,8 @@ pub(crate) fn effects_scale(doc: &Document) -> f64 {
 /// fills' and strokes' raster effects included). With `knockout`, the coverage of that art is knocked out
 /// of the image, which then only holds what the effects add around it (a shadow to go under the
 /// vector object). The document's raster effects settings add room around it and finish its pixels.
+/// `None` when it paints nothing, when the area it covers overflows `f64` or the scale is not
+/// positive, or when its PNG can't be encoded.
 pub(crate) fn effect_image(out: &mut Document, whole: &Node, knockout: Option<&Node>, scale: f64) -> Option<Node> {
     // What it paints (its members' effects included), and how far its fills' and strokes' raster
     // effects reach beyond that.
@@ -177,8 +179,16 @@ pub(crate) fn effect_image(out: &mut Document, whole: &Node, knockout: Option<&N
     let look = out.raster_effects.clone();
     let reach = whole.appearance.items.iter().map(|i| effects::outset(i.effects(), b)).fold(0.0, f64::max) + 2.0 + look.add_around;
     let b = b.inflate(reach, reach);
+    // An area too large for f64 gives a zero scale and an image transform that is not finite.
+    let area = b.width() * b.height();
+    if !area.is_finite() {
+        return None;
+    }
     // Whole pixels, and no larger than 64 Mpx.
-    let scale = scale.min((64.0e6 / (b.width() * b.height()).max(1.0)).sqrt());
+    let scale = scale.min((64.0e6 / area.max(1.0)).sqrt());
+    if !(scale.is_finite() && scale > 0.0) {
+        return None;
+    }
     let region = Rect::new(b.x0, b.y0, b.x0 + (b.width() * scale).ceil().max(1.0) / scale, b.y0 + (b.height() * scale).ceil().max(1.0) / scale);
     // Anti-alias off: hard edges (the effects themselves stay smooth).
     let anti_alias = if look.anti_alias { AntiAlias::Art } else { AntiAlias::None };
@@ -430,6 +440,10 @@ fn walk_mask(out: &mut Document, n: &mut Node, report: &mut FlattenReport) {
 /// has none. An object whose effects all paint below it keeps its vector art over an image of
 /// them; one whose effects change it (blur, feather, inner glow) becomes the image.
 fn walk(out: &mut Document, n: &Node, report: &mut FlattenReport) -> Option<Node> {
+    // A cancelled export leaves the rest of the document as it is: the caller drops the result.
+    if vectorcraft_doc::cancel::is_cancelled() {
+        return None;
+    }
     let checkpoint = report.checkpoint();
     let result = walk_inner(out, n, report);
     report.attribute_since(checkpoint, n);
@@ -548,6 +562,8 @@ pub fn export_pdf_with_report(
 ) -> std::result::Result<vectorcraft_pdf::ExportReport, vectorcraft_pdf::PdfError> {
     let mut report = FlattenReport::new(Which::All, doc);
     let flat = flatten(doc, &mut report);
+    // Flattening stops early when cancelled, leaving a half-flattened copy that must not be written.
+    vectorcraft_doc::cancel::check().map_err(|_| vectorcraft_pdf::PdfError::Cancelled)?;
     let mut exported = vectorcraft_pdf::export_with_report(flat.as_ref().unwrap_or(doc), opts)?;
     exported.warnings.extend(report.warnings());
     Ok(exported)

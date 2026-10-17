@@ -192,6 +192,7 @@ pub type PickOpen = Box<dyn FnMut(&FilePick) -> Option<String>>;
 pub type PickSave = Box<dyn FnMut(&FilePick) -> Option<String>>;
 pub type ReadFn = Box<dyn Fn(&str) -> Result<Vec<u8>, String>>;
 pub type WriteFn = Box<dyn FnMut(&str, &[u8]) -> Result<(), String>>;
+pub type ExistsFn = Box<dyn Fn(&str) -> bool>;
 pub type Inbox = Arc<Mutex<Vec<(String, Vec<u8>)>>>;
 /// Starts a browser download of the bytes under a file name; an error when it couldn't be started
 /// (the save or export then fails as a refused write does: #1693).
@@ -212,6 +213,10 @@ pub struct Services {
     pub pick_save: Option<PickSave>,
     pub read: Option<ReadFn>,
     pub write: Option<WriteFn>,
+    /// Is there a file or folder at a path (desktop)? The app asks before replacing a file that a
+    /// save panel's name names once the app gives it an extension ([`picks::ask_to_replace`]).
+    /// Without it, no file counts as there.
+    pub exists: Option<ExistsFn>,
     /// Files that arrived asynchronously (web open / drops): (name, bytes).
     pub inbox: Option<Inbox>,
     /// Web: trigger a browser download instead of writing a path.
@@ -275,6 +280,10 @@ pub struct Services {
     /// The window is on Wayland: the tool cursors are painted into it instead of handed to the
     /// compositor as bitmaps ([`cursors::os_cursors`]).
     pub wayland: bool,
+    /// On Wayland, no cursor theme can be loaded, so winit sets no pointer and the compositor's
+    /// default one would never come back once the canvas hid it: the canvas keeps the system
+    /// pointer visible next to the tool glyph ([`cursors::hide_system_pointer`], #2450).
+    pub no_cursor_theme: bool,
 }
 
 /// Cached canvas raster.
@@ -332,6 +341,8 @@ pub struct CacheKey {
     pub rot: f64,
     /// General › Anti-aliased Artwork.
     pub anti_alias: bool,
+    /// Type › Highlight Alternate Glyphs (#394).
+    pub highlight_alternate_glyphs: bool,
     /// [`vectorcraft_render::placed_document::generation`]: placed documents' bitmaps made since.
     pub placed: u64,
     /// View › Pixel Preview: the document pixels rendered (x0, y0, x1, y1), one per point, shown
@@ -1347,6 +1358,7 @@ impl VectorcraftApp {
             return;
         }
         let t0 = now_ms();
+        widgets::set_dialog_open(&ctx, self.ui.dialog.is_some());
         scrub::begin_frame(self, &ctx);
         font_menu::end_stale_preview(self, &ctx);
         floating::track(self, &ctx);

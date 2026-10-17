@@ -8,6 +8,7 @@
 pub mod appearance;
 pub mod assets;
 pub mod blend;
+pub mod cancel;
 pub mod clipnest;
 pub mod cmyk;
 pub mod corners;
@@ -28,6 +29,7 @@ pub use symbol_export_type::{SYMBOL_EXPORT_TYPE, SymbolExportType};
 pub use symbol_registration::{SYMBOL_REGISTRATION, SymbolRegistration};
 pub mod links;
 pub mod live;
+pub mod live_paint;
 pub mod marks;
 mod mem;
 pub mod metadata;
@@ -89,17 +91,18 @@ pub use assets::ExportAsset;
 pub use corners::LiveCorners;
 pub use depth::MAX_DEPTH;
 pub use graph::{
-    GraphDesign, GraphKind, GraphSpec, LabelStyles, MAX_GRAPH_CATEGORIES, MAX_GRAPH_SERIES, PiePosition, PieSort, SeriesPaint, TickLength,
-    ValueAxisSide,
+    ColumnDesign, ColumnType, Fractions, GraphDesign, GraphKind, GraphSpec, LabelStyles, MAX_GRAPH_CATEGORIES, MAX_GRAPH_SERIES, PiePosition,
+    PieSort, SeriesPaint, TickLength, ValueAxisSide,
 };
 pub use hit::{Hit, HitKind};
 pub use links::{LinkInfo, PlacementOptions};
 pub use live::{BlendOrientation, BlendSpacing, BlendSpec, EnvelopeKind, GradientMesh, MeshPoint};
+pub use live_paint::{GapOptions, GapSize};
 pub use metadata::{CopyrightStatus, DocMetadata};
 pub use node::Knockout;
 pub use node::Scaling;
 pub use node::{Extras, ExtrasMut, ImageObject, LAYER_COLORS, LayerColor, LiveShape, Node, NodeExtras, NodeId, NodeKind, OpacityMask};
-pub use node::{ImageMap, ObjectAttributes};
+pub use node::{ImageMap, MAX_SVG_SCRIPTS, ObjectAttributes, SVG_EVENTS};
 pub use orient::OrientedBox;
 pub use pattern::{Overlap, PatternDef, PatternEdit, RepeatKind, RepeatSpec, TileType};
 pub use perspective::PerspectiveAttachment;
@@ -694,6 +697,10 @@ pub struct Document {
     /// save time only, so changing the view never marks the document modified.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_view: Option<SavedView>,
+    /// View → Show Transparency Grid when the document was saved. Written at save time only,
+    /// like [`Document::last_view`]; older files open with the grid hidden.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub transparency_grid: bool,
     /// The layers, sublayers and groups open in the Layers panel when the document was saved; they
     /// reopen that way. `None`: the default, only the top-level layers open. Written at save time
     /// only, like [`Document::last_view`].
@@ -726,6 +733,10 @@ pub struct Document {
     /// export settings are Export for Screens' ([`Document::export_settings`]).
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub assets: Vec<ExportAsset>,
+    /// Window › SVG Interactivity › Link JavaScript Files: the JavaScript files (paths or URLs, as
+    /// given) SVG export links with `<script>` elements, in order.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub svg_scripts: Vec<String>,
     /// Puppet Warp pins on the selected artwork while the tool edits it ([`PuppetPins`]): editing
     /// state, never saved.
     #[serde(skip)]
@@ -812,6 +823,7 @@ impl Document {
             metadata: DocMetadata::default(),
             raster_effects: RasterEffectsSettings::default(),
             last_view: None,
+            transparency_grid: false,
             layers_open: None,
             color_profiles: ColorProfiles::default(),
             export_settings: Default::default(),
@@ -820,6 +832,7 @@ impl Document {
             slices_clip_to_artboard: true,
             print_setup: None,
             assets: vec![],
+            svg_scripts: vec![],
             puppet: None,
             dimensions: false,
             index: Default::default(),

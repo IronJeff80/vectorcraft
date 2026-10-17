@@ -8,7 +8,7 @@ fn tags_map_to_languages() {
     assert_eq!(lang_from_tag("en_US.UTF-8"), Some(Lang::EN));
     assert_eq!(lang_from_tag("C"), Some(Lang::EN));
     assert_eq!(lang_from_tag("POSIX"), Some(Lang::EN));
-    assert_eq!(lang_from_tag("nl_NL"), None);
+    assert_eq!(lang_from_tag("qaa-QM"), None, "the private-use tag names no language");
     // German: Germany, Austria, Switzerland and the rest share the one catalog.
     for tag in ["de", "de_DE.UTF-8", "de-AT", "de_CH", "de-LU", "de_DE.UTF-8@euro"] {
         assert_eq!(lang_from_tag(tag), Some(de()), "{tag}");
@@ -67,7 +67,7 @@ fn candidates_walk_from_specific_to_general() {
 #[test]
 fn os_language_lists_are_parsed() {
     assert_eq!(first_supported("(\n    \"zh-Hant-TW\",\n    \"en-US\"\n)\n"), Some(ZH()));
-    assert_eq!(first_supported("(\n    \"nl-NL\",\n    \"en-US\"\n)\n"), Some(Lang::EN));
+    assert_eq!(first_supported("(\n    \"qaa-QM\",\n    \"en-US\"\n)\n"), Some(Lang::EN), "the private-use tag falls through to the next entry");
     assert_eq!(first_supported("(\n    \"de-DE\",\n    \"en-US\"\n)\n"), Some(de()));
     assert_eq!(first_supported("(\n    \"fr-FR\",\n    \"en-US\"\n)\n"), Lang::from_code("fr"));
     assert_eq!(first_supported("("), None);
@@ -96,6 +96,15 @@ fn current_language_is_a_frame_setting() {
     assert_eq!(current(), ZH());
     assert_eq!(t("Layers"), "圖層");
     set_current(Lang::EN);
+    assert_eq!(current(), Lang::EN);
+    assert_eq!(t("Layers"), "Layers");
+}
+
+/// Unit tests run on parallel threads, and each one draws in its own language: a language set on
+/// another thread (by a test running beside this one) leaves this thread's text in English.
+#[test]
+fn a_language_set_by_another_test_leaves_this_one_in_english() {
+    std::thread::spawn(|| set_current(ZH())).join().unwrap();
     assert_eq!(current(), Lang::EN);
     assert_eq!(t("Layers"), "Layers");
 }
@@ -197,8 +206,7 @@ fn partial_catalogs_only_translate_strings_the_ui_shows() {
 }
 
 /// The engine learns the language the UI is drawn in each frame: new type takes the Japanese
-/// defaults while it is Japanese (#432). The frames stay in English: the drawing language is
-/// process-wide, and a Japanese frame would translate the tests running beside this one.
+/// defaults while it is Japanese (#432). The frames stay in English.
 #[test]
 fn the_engine_follows_the_interface_language() {
     let mut app = crate::VectorcraftApp::new(vectorcraft_engine::Session::new(), crate::Services::default());
@@ -1228,6 +1236,73 @@ fn align_reflect_and_shear_param_errors_are_translated() {
     }
 }
 
+/// The parameter errors of the blend spine commands (Move Spine Point, Reshape Spine Segment, Add
+/// Spine Point and Delete Spine Point, which Direct Selection, the Pen and the Anchor Point tool
+/// send), whose text the scan above doesn't read, are translated whole in each language of
+/// [`COMPLETE_MESSAGES`] and in Bulgarian.
+#[test]
+fn blend_spine_param_errors_are_translated() {
+    use serde_json::json;
+    use vectorcraft_engine::{EngineError, Session};
+    let mut s = Session::new();
+    s.execute("file.new", &json!({})).unwrap();
+    let rectangle =
+        |s: &mut Session, x: u64, y: u64| s.execute("shape.rectangle", &json!({"x": x, "y": y, "width": 10, "height": 10})).unwrap()["id"].clone();
+    let blend = |s: &mut Session, y: u64| {
+        let keys = [0, 100].map(|x| rectangle(s, x, y));
+        s.execute("object.blend.make", &json!({"ids": keys, "steps": 1})).unwrap()["id"].clone()
+    };
+    // `replaced` gives a new blend a new spine. `ring`'s spine is a closed path of two points with
+    // both keys on the first, and `dot`'s spine is a single point.
+    let replaced = |s: &mut Session, y: u64, anchors: serde_json::Value, closed: bool| {
+        let b = blend(s, y);
+        let path = s.execute("path.create", &json!({"anchors": anchors, "closed": closed})).unwrap()["id"].clone();
+        s.execute("select.set", &json!({"ids": [b, path]})).unwrap();
+        s.execute("object.blend.replaceSpine", &json!({})).unwrap();
+        b
+    };
+    let ring = replaced(&mut s, 200, json!([{"x": 0, "y": 205}, {"x": 100, "y": 205}]), true);
+    let dot = replaced(&mut s, 400, json!([{"x": 0, "y": 405}]), false);
+    let other = rectangle(&mut s, 0, 600);
+    let b = blend(&mut s, 0);
+    s.execute("select.set", &json!({"ids": [b]})).unwrap();
+    let mut errors = Vec::new();
+    for (cmd, p, want) in [
+        ("object.blend.spine.moveAnchor", json!({}), "missing number `anchor`"),
+        ("object.blend.spine.moveAnchor", json!({"anchor": -1, "x": 0, "y": 0}), "index must be ≥ 0"),
+        ("object.blend.spine.moveAnchor", json!({"anchor": 0, "x": 1e12, "y": 0}), "x and y must be finite"),
+        ("object.blend.spine.moveAnchor", json!({"anchor": 0, "x": 0, "y": 0, "handle": "up"}), "handle must be in or out"),
+        ("object.blend.spine.moveAnchor", json!({"anchor": 5, "x": 0, "y": 0}), "no such spine point"),
+        ("object.blend.spine.moveAnchor", json!({"id": other, "anchor": 0, "x": 0, "y": 0}), "not a blend"),
+        ("object.blend.spine.reshapeSegment", json!({"segment": 0, "dx": 1e12}), "t, dx and dy must be finite"),
+        ("object.blend.spine.reshapeSegment", json!({"segment": 5, "dy": 10}), "no such spine segment"),
+        ("object.blend.spine.removeAnchor", json!({"anchor": 0}), "a key object sits on that point"),
+        ("object.blend.spine.removeAnchor", json!({"id": ring, "anchor": 1}), "a spine keeps at least two points"),
+        ("object.blend.spine.addAnchor", json!({"id": dot, "x": 0, "y": 0}), "the blend has no spine"),
+    ] {
+        let e = s.execute(cmd, &p).unwrap_err();
+        assert!(matches!(&e, EngineError::BadParams { msg, .. } if msg == want), "{cmd} {p}: {e}");
+        errors.push(e);
+    }
+    s.execute("select.none", &json!({})).unwrap();
+    let e = s.execute("object.blend.spine.moveAnchor", &json!({"anchor": 0, "x": 0, "y": 0})).unwrap_err();
+    assert!(matches!(&e, EngineError::BadParams { msg, .. } if msg == "select a blend or give `id`"), "{e}");
+    errors.push(e);
+    // No command leaves a blend with a pinned spine of one point, so this one is built here.
+    errors.push(EngineError::BadParams { cmd: "object.blend.spine.addAnchor".into(), msg: "the spine has no segments".into() });
+    let mut untranslated = Vec::new();
+    for e in &errors {
+        let EngineError::BadParams { msg, .. } = e else { panic!("{e}") };
+        for code in COMPLETE_MESSAGES.iter().chain(&["bg"]) {
+            let shown = message(Lang::from_code(code).unwrap(), &e.to_string());
+            if shown.contains(msg.as_str()) {
+                untranslated.push(format!("{code}: {shown}"));
+            }
+        }
+    }
+    assert!(untranslated.is_empty(), "untranslated spine errors:\n{}", untranslated.join("\n"));
+}
+
 /// The errors for a parameter key a command doesn't take (#1442), whose text the scan above
 /// doesn't read, are translated whole in each language of [`COMPLETE_MESSAGES`].
 #[test]
@@ -1240,6 +1315,20 @@ fn unknown_parameter_errors_are_translated() {
             let shown = message(Lang::from_code(code).unwrap(), &e.to_string());
             assert!(!shown.contains("unknown parameter") && shown.contains(cmd), "{code}: {shown} ({msg})");
         }
+    }
+}
+
+/// The error for an effect `color` the effect can't draw, whose text the scan above doesn't read,
+/// is translated whole in each language of [`COMPLETE_MESSAGES`] and in Bulgarian.
+#[test]
+fn effect_color_param_error_is_translated() {
+    use serde_json::json;
+    let p = json!({"effect": "stylize.dropShadow", "params": {"color": "not-a-color"}});
+    let e = vectorcraft_engine::check_params("effect.apply", &p).unwrap_err();
+    let vectorcraft_engine::EngineError::BadParams { msg, .. } = &e else { panic!("{e}") };
+    for code in COMPLETE_MESSAGES.iter().chain(&["bg"]) {
+        let shown = message(Lang::from_code(code).unwrap(), &e.to_string());
+        assert!(!shown.contains(msg.as_str()) && shown.contains("`color`") && shown.contains("effect.apply"), "{code}: {shown}");
     }
 }
 
@@ -1282,7 +1371,7 @@ fn select_key_param_error_is_translated() {
 }
 
 /// Languages whose catalogs cover every status and error message.
-const COMPLETE_MESSAGES: &[&str] = &["cs", "de", "el", "es", "fr", "hu", "it", "ja", "ko", "pl", "pt-br", "ru", "sv", "uk", "vi", "fi"];
+const COMPLETE_MESSAGES: &[&str] = &["cs", "de", "el", "es", "fr", "hu", "it", "ja", "ko", "pl", "pt-br", "ru", "sv", "uk", "vi", "zh-hans", "fi"];
 
 /// Crates whose error and status messages reach the status bar.
 const MESSAGE_CRATES: &[&str] = &["ui-egui", "engine", "doc", "format", "svg", "pdf", "eps", "text", "plugins", "metafile", "cad", "trace"];
@@ -1416,6 +1505,50 @@ fn czech_render_site_follow_up() {
         assert_eq!(trn(cs(), n, "{n} PR", "{n} PRs"), format!("{n} PR"));
     }
 }
+
+/// The labels in [`RENDER_SITE_ROWS`], which the UI looks up through a variable or a context that
+/// the literal scans above don't read, have a row in every complete catalog.
+#[test]
+fn complete_catalogs_translate_render_site_labels() {
+    for l in LANGUAGES.iter().filter(|l| l.complete_menus) {
+        let (entries, _) = parse_entries(l.source);
+        let rows: std::collections::HashSet<(&str, &str)> = entries.iter().map(|(ctx, src, _)| (ctx.as_str(), src.as_str())).collect();
+        let missing: Vec<_> = RENDER_SITE_ROWS.iter().filter(|row| !rows.contains(row)).collect();
+        assert!(missing.is_empty(), "{}: {} missing rows: {missing:#?}", l.code, missing.len());
+    }
+    // German's plain "Light" row is Hell (bright), and its plain "Regular" row stays in English.
+    assert_eq!(tr_ctx(de(), "lighting", "Light"), "Licht");
+    assert_eq!(tr_ctx(de(), "effect", "Regular"), "Regelmäßig");
+    assert_eq!(tr_ctx(Lang::from_code("ja").unwrap(), "mark-style", "Japanese"), "日本式");
+}
+
+/// (context, English source) of the labels [`complete_catalogs_translate_render_site_labels`]
+/// requires: the file dialogs' filter names, the status bar's timings, New Document's preset
+/// name, the contributor tooltips, the gradient kind in a swatch's description, the printer mark
+/// styles and the label of the 3D gizmo's light.
+const RENDER_SITE_ROWS: &[(&str, &str)] = &[
+    ("file-filter", "All readable files"),
+    ("file-filter", "All placeable files"),
+    ("file-filter", "Swatch libraries"),
+    ("file-filter", "Flattener presets"),
+    ("file-filter", "PDF presets"),
+    ("file-filter", "Print presets"),
+    ("file-filter", "SVG Compressed"),
+    ("file-filter", "PDF-compatible .ai"),
+    ("file-filter", "VectorCraft Template"),
+    ("file-filter", "Templates"),
+    ("diagnostics", "render"),
+    ("diagnostics", "ui"),
+    ("", "Preset {number}"),
+    ("", "PRs"),
+    ("", "@{login}: {prs}, {commits}, +{added} / −{deleted} lines (Δ {delta}), +{binary_added} / −{binary_deleted} binary assets, {first} – {last}"),
+    ("@plural", "{n} PR|{n} PRs"),
+    ("@plural", "{n} commit|{n} commits"),
+    ("gradient-kind", "Radial"),
+    ("mark-style", "Japanese"),
+    ("", "Roman"),
+    ("lighting", "Light"),
+];
 
 fn pl() -> Lang {
     Lang::from_code("pl").expect("pl registered")

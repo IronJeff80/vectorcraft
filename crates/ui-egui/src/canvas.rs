@@ -82,9 +82,12 @@ enum Drag {
         held: f32,
         moved: bool,
     },
+    /// A Rotate View tool drag, or a Space+Shift drag with any tool. With `snaps` (the Rotate
+    /// View tool), Shift rounds the angle to 15°.
     RotateView {
         start_angle: f64,
         start_rot: f64,
+        snaps: bool,
     },
     /// A Selection tool move dragged off the canvas: the panels get the art
     /// ([`widgets::PanelDrag::Art`]).
@@ -236,7 +239,10 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
     let xf = Xf::new(rect, &v);
     let origin_preview = if app.ui.view.rulers && app.ui.screen_mode < 3 { ruler_input(app, ui, full, rect, &xf) } else { None };
     panel_drop(app, ui, &resp, &xf);
-    context_menu(app, &resp, &xf);
+    // In Presentation Mode a right click or a long touch opens no context menu.
+    if app.ui.screen_mode < 3 {
+        context_menu(app, &resp, &xf);
+    }
     let painter = ui.painter_at(rect);
     let Some(st) = app.session.active() else { return };
     let doc = st.doc.clone();
@@ -302,6 +308,7 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
         hidden: vec![],
         rot: v.rotation,
         anti_alias: app.session.prefs.anti_aliased_artwork,
+        highlight_alternate_glyphs: app.session.prefs.highlight_alternate_glyphs,
         placed: vectorcraft_render::placed_document::generation(),
         pixel,
         smooth_images,
@@ -354,6 +361,8 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
             guide: key.guide,
             mask_view,
             highlight_substitutions: true,
+            // Type › Highlight Alternate Glyphs (#394): pink behind OpenType substitutions.
+            highlight_alternate_glyphs: app.session.prefs.highlight_alternate_glyphs,
             // General › Anti-aliased Artwork: off, edges are hard on screen (raster effects and
             // pattern tiles stay smooth), as in Illustrator.
             anti_alias: if app.session.prefs.anti_aliased_artwork { vectorcraft_render::AntiAlias::Art } else { vectorcraft_render::AntiAlias::None },
@@ -478,11 +487,13 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
     let revolve_edit = app.ui.dialog.as_ref().is_some_and(crate::dialogs::revolve_gizmo::active);
     let view_info = app.view_info();
     // View → Hide Gradient Annotator hides the Gradient tool's annotator.
-    let overlays = if !revolve_edit && (app.session.tool_id() != "gradient" || app.ui.view.gradient_annotator) {
+    let mut overlays = if !revolve_edit && (app.session.tool_id() != "gradient" || app.ui.view.gradient_annotator) {
         app.session.overlays(view_info)
     } else {
         vec![]
     };
+    // Gap Options' Preview shows the gaps it finds.
+    overlays.extend(crate::dialogs::live_paint_gaps::overlays(app));
     if app.ui.view.edges && !revolve_edit {
         hover_highlight(app, &painter, &xf);
         selection_overlay(app, &painter, &xf, overlays.iter().any(|o| matches!(o, Overlay::CurvePoint { .. })));
@@ -520,12 +531,18 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
     if resp.hovered() {
         let m = ui.input(|i| i.modifiers);
         let space = ui.input(|i| i.key_down(egui::Key::Space));
-        let panning = matches!(ui.data(|d| d.get_temp::<Drag>(drag_id())), Some(Drag::Pan { .. }));
+        let drag = ui.data(|d| d.get_temp::<Drag>(drag_id()));
+        let panning = matches!(drag, Some(Drag::Pan { .. }));
         let zooming = if space { m.command } else { app.session.tool_id() == "zoom" };
+        // A rotating drag keeps its cursor when Shift is let go.
+        let rotating =
+            matches!(drag, Some(Drag::RotateView { .. })) || if space { m.shift && !m.command } else { app.session.tool_id() == "rotateView" };
         // The hand and the magnifier are drawn like the tool cursors below: Windows has no
         // system cursor for them (winit shows the four-headed move cursor for Grab).
         let view_cursor = if panning {
             Some(Cursor::HandGrab)
+        } else if rotating {
+            Some(Cursor::Rotate)
         } else if zooming {
             Some(if m.alt { Cursor::ZoomOut } else { Cursor::ZoomIn })
         } else if space || app.session.tool_id() == "hand" {
@@ -533,7 +550,10 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
         } else {
             None
         };
-        let cur = if let Some(c) = view_cursor.or_else(|| app.hover_doc.map(|p| app.session.cursor(p, mods(m, space), view_info))) {
+        // In Presentation Mode the pointer is the default one, with no tool cursor.
+        let tool_cursor =
+            (app.ui.screen_mode < 3).then(|| view_cursor.or_else(|| app.hover_doc.map(|p| app.session.cursor(p, mods(m, space), view_info))));
+        let cur = if let Some(c) = tool_cursor.flatten() {
             let painter = ui.ctx().layer_painter(egui::LayerId::new(egui::Order::Tooltip, egui::Id::new("tool-cursor")));
             // The loaded place cursor carries the file's thumbnail.
             if app.session.tool_id() == "place"
@@ -562,7 +582,8 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
                         && crate::cursors::paint_glyphs(crate::cursors::HIDES_ONLY_WHEN_KEY, ui.input(|i| i.focused))
                         && crate::cursors::paint(&painter, c, hp, 1.0 / ui_scale) =>
                 {
-                    egui::CursorIcon::None
+                    // No cursor theme (Wayland): the glyph is painted, the system pointer stays (#2450).
+                    if crate::cursors::hide_system_pointer(app.services.no_cursor_theme) { egui::CursorIcon::None } else { cursor_icon(c) }
                 }
                 _ => cursor_icon(c),
             }
@@ -576,11 +597,20 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
 fn cursor_icon(c: Cursor) -> egui::CursorIcon {
     use egui::CursorIcon as C;
     match c {
-        Cursor::Arrow | Cursor::ArrowHollow | Cursor::CornerRadius | Cursor::PathBracket | Cursor::TypeWidget => C::Default,
+        Cursor::Arrow
+        | Cursor::ArrowHollow
+        | Cursor::DirectAnchor
+        | Cursor::DirectAnchorSelected
+        | Cursor::ReshapeSegment
+        | Cursor::GroupSelection
+        | Cursor::CornerRadius
+        | Cursor::PathBracket
+        | Cursor::TypeWidget => C::Default,
+        Cursor::SelectionCopy => C::Copy,
         Cursor::Move => C::Move,
         Cursor::Crosshair => C::Crosshair,
-        Cursor::ResizeH => C::ResizeHorizontal,
-        Cursor::ResizeV => C::ResizeVertical,
+        Cursor::ResizeH | Cursor::ShearH => C::ResizeHorizontal,
+        Cursor::ResizeV | Cursor::ShearV => C::ResizeVertical,
         Cursor::ResizeNwSe => C::ResizeNwSe,
         Cursor::ResizeNeSw => C::ResizeNeSw,
         Cursor::Rotate | Cursor::RotateToward(_) => C::Alias,
@@ -591,7 +621,9 @@ fn cursor_icon(c: Cursor) -> egui::CursorIcon {
         | Cursor::PenClose
         | Cursor::PenContinue
         | Cursor::PenJoin
-        | Cursor::PenConvert => C::Crosshair,
+        | Cursor::PenConvert
+        | Cursor::AnchorPoint
+        | Cursor::Curvature => C::Crosshair,
         Cursor::Text => C::Text,
         Cursor::Hand => C::Grab,
         Cursor::HandGrab => C::Grabbing,
@@ -606,6 +638,34 @@ fn cursor_icon(c: Cursor) -> egui::CursorIcon {
         Cursor::Width | Cursor::WidthAdd => C::Crosshair,
         Cursor::WidthPoint => C::Move,
         Cursor::Blend | Cursor::BlendObject | Cursor::BlendAnchor | Cursor::ShapeBuilder | Cursor::ShapeBuilderErase => C::Crosshair,
+        Cursor::TypeVertical => C::VerticalText,
+        // Not drawn yet: the cursor each borrows.
+        Cursor::Lasso
+        | Cursor::MagicWand
+        | Cursor::Pencil
+        | Cursor::Paintbrush
+        | Cursor::BlobBrush
+        | Cursor::Eraser
+        | Cursor::Smooth
+        | Cursor::PathEraser
+        | Cursor::Join
+        | Cursor::Knife
+        | Cursor::Shaper
+        | Cursor::LivePaintBucket
+        | Cursor::Measure
+        | Cursor::PrintTiling
+        | Cursor::SymbolSprayer
+        | Cursor::SymbolShifter
+        | Cursor::SymbolScruncher
+        | Cursor::SymbolSizer
+        | Cursor::SymbolSpinner
+        | Cursor::SymbolStainer
+        | Cursor::SymbolScreener
+        | Cursor::SymbolStyler
+        | Cursor::Scissors
+        | Cursor::ScissorsNotAllowed
+        | Cursor::MeshAdd
+        | Cursor::PuppetPin => cursor_icon(c.stand_in().unwrap_or(Cursor::Crosshair)),
     }
 }
 
@@ -686,10 +746,11 @@ fn handle_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Response, rect: 
     }
 
     let tool = app.session.tool_id();
-    // Held, Space is the Hand tool for the moment, and Cmd+Space the Zoom tool (with Alt, zooming
-    // out), whatever the tool.
+    // Held, Space is the Hand tool for the moment, Space+Shift is the Rotate View tool and
+    // Cmd+Space is the Zoom tool (with Alt, zooming out), whatever the tool.
     let zoom_mode = if space { m.command } else { tool == "zoom" };
-    let pan_mode = if space { !m.command } else { tool == "hand" };
+    let rotate_mode = if space { m.shift && !m.command } else { tool == "rotateView" };
+    let pan_mode = if space { !m.command && !m.shift } else { tool == "hand" };
     let middle_pan = matches!(drag, Some(Drag::Pan { middle: true, .. }));
     // egui counts a press a few pixels outside the canvas as on it (its interaction radius): only a
     // press on the canvas itself reaches the tools, else it would land at the canvas's centre.
@@ -712,9 +773,9 @@ fn handle_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Response, rect: 
                 if animated_zoom(&app.session.prefs) { Drag::ZoomScrub { start: p, held: 0.0, moved: false } } else { Drag::ZoomBox { start: p } }
             } else if pan_mode {
                 Drag::Pan { start: p, center: v.center, middle: false }
-            } else if tool == "rotateView" {
+            } else if rotate_mode {
                 let c = rect.center();
-                Drag::RotateView { start_angle: (p.y - c.y).atan2(p.x - c.x) as f64, start_rot: v.rotation }
+                Drag::RotateView { start_angle: (p.y - c.y).atan2(p.x - c.x) as f64, start_rot: v.rotation, snaps: !space }
             } else {
                 // Cmd with another tool drags with the selection tool used last (the session lends it).
                 let ev = PointerEvent { kind: PointerKind::Down, pos: xf.to_doc(p), mods: mods(m, space), pressure: pen_pressure(ui, true) };
@@ -746,11 +807,11 @@ fn handle_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Response, rect: 
                         vm.center = center - d;
                     }
                 }
-                Drag::RotateView { start_angle, start_rot } => {
+                Drag::RotateView { start_angle, start_rot, snaps } => {
                     let c = rect.center();
                     let a = (p.y - c.y).atan2(p.x - c.x) as f64;
                     let mut deg = start_rot + (a - start_angle).to_degrees();
-                    if m.shift {
+                    if snaps && m.shift {
                         deg = (deg / 15.0).round() * 15.0;
                     }
                     if let Some(vm) = app.view_mut() {
@@ -1167,7 +1228,10 @@ fn touch_gestures(app: &mut VectorcraftApp, ui: &Ui, rect: egui::Rect, view: vec
         }
     }
     ui.data_mut(|d| d.insert_temp(key, taps));
-    if let Some(cmd) = tap {
+    // In Presentation Mode a tap of two or three fingers undoes or redoes nothing.
+    if let Some(cmd) = tap
+        && app.ui.screen_mode < 3
+    {
         crate::menus::invoke(app, cmd, serde_json::json!({}));
     }
 }
@@ -2660,17 +2724,28 @@ pub(crate) fn has_colors(doc: &vectorcraft_doc::Document, ids: &[vectorcraft_doc
     })
 }
 
+/// The bounds of the artboards the Artboard tool has selected ([`crate::panels::artboards::picked`]).
+fn picked_artboards_bounds(app: &VectorcraftApp) -> Option<Rect> {
+    let st = app.session.active()?;
+    let picked = crate::panels::artboards::picked(app, st.doc.artboards.len());
+    picked.iter().filter_map(|i| st.doc.artboards.get(*i)).map(|a| a.rect).reduce(|a, b| a.union(b))
+}
+
 /// The Contextual Task Bar: a floating pill under the selection with the most likely next actions.
+/// With the Artboard tool it sits under the selected artboards and offers Resize (Artboard
+/// Options), Duplicate, Rearrange All (with two or more artboards) and Export (Export for Screens).
 /// Its handle drags it anywhere on the canvas; unpinned it keeps that offset as it follows the
 /// selection, pinned it stays put ([`crate::state::TaskBarPlace`]).
 fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
     let t = Tokens::get(ui.ctx());
-    if app.session.active().is_none_or(|st| st.selection.is_empty())
-        || !matches!(app.session.tool_id(), "selection" | "directSelection" | "groupSelection")
+    let on_artboards = app.session.tool_id() == "artboard";
+    if !on_artboards
+        && (app.session.active().is_none_or(|st| st.selection.is_empty())
+            || !matches!(app.session.tool_id(), "selection" | "directSelection" | "groupSelection"))
     {
         return;
     }
-    let Some(b) = app.selection_bounds() else { return };
+    let Some(b) = (if on_artboards { picked_artboards_bounds(app) } else { app.selection_bounds() }) else { return };
     let Some(st) = app.session.active() else { return };
     let n = st.selection.len();
     let first = st.selection.objects.first().and_then(|id| st.doc.node(*id)).cloned();
@@ -2683,35 +2758,47 @@ fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
             f.name.as_deref() == Some("Image Trace") && f.children().is_some_and(|c| c.first().is_some_and(|i| matches!(i.kind, NodeKind::Image(_))))
         });
     let mut items: Vec<(&str, &str, &str)> = vec![]; // (label, icon, command)
-    // As in the reference app, an image offers Image Trace and Crop Image, and traced art offers
-    // Expand (<https://community.adobe.com/announcements-651/contextual-task-bar-in-illustrator-2025-quick-actions-when-you-need-them-1546580>).
-    if n == 1 && is_image {
-        items.push((tl!("Image Trace"), "image", TASK_BAR_IMAGE_TRACE));
-        items.push((tl!("Crop Image"), "dc-pf-crop", "ui.cropImage"));
+    if on_artboards {
+        // As in the reference app, the Artboard tool offers to resize, duplicate and export the
+        // artboards (<https://community.adobe.com/questions-652/contextual-task-bar-in-illustrator-2025-quick-actions-when-you-need-them-1546580>),
+        // and to rearrange them (<https://creativepro.com/managing-artboards-in-illustrator/>).
+        items.push((tl!("Resize"), "move-diagonal-2", TASK_BAR_ARTBOARD_OPTIONS));
+        items.push((tl!("Duplicate"), "copy", TASK_BAR_DUPLICATE_ARTBOARDS));
+        if st.doc.artboards.len() > 1 {
+            items.push((tl!("Rearrange All"), "dc-rearrange", TASK_BAR_REARRANGE_ARTBOARDS));
+        }
+        items.push((tl!("Export"), "share-2", "file.exportForScreens"));
+    } else {
+        // As in the reference app, an image offers Image Trace and Crop Image, and traced art offers
+        // Expand (<https://community.adobe.com/announcements-651/contextual-task-bar-in-illustrator-2025-quick-actions-when-you-need-them-1546580>).
+        if n == 1 && is_image {
+            items.push((tl!("Image Trace"), "image", TASK_BAR_IMAGE_TRACE));
+            items.push((tl!("Crop Image"), "dc-pf-crop", "ui.cropImage"));
+        }
+        // Direct-selected anchors take the place of a path's Offset Path and Simplify.
+        let anchors = !st.selection.anchors.is_empty();
+        if anchors {
+            items.push((tl!("Remove Anchor Points"), "pen-tool-delete", "path.removeAnchors"));
+            items.push((tl!("Cut Path"), "scissors", "path.cutAtAnchors"));
+        }
+        if n > 1 {
+            items.push((tl!("Group"), "group", "object.group"));
+            items.push((tl!("Unite"), "squares-unite", "object.pathfinder.unite"));
+        } else if is_trace {
+            items.push((tl!("Expand"), "maximize-2", "imageTrace.expand"));
+        } else if is_group {
+            items.push((tl!("Ungroup"), "ungroup", "object.ungroup"));
+            items.push((tl!("Isolate"), "square-dashed", "object.isolate"));
+        } else if is_text {
+            items.push((tl!("Create Outlines"), "type", "type.createOutlines"));
+        } else if is_image {
+            // Offset Path and Simplify don't apply to an image.
+        } else if !anchors {
+            items.push((tl!("Offset Path"), "square-dashed", "object.path.offsetPath"));
+            items.push((tl!("Simplify"), "spline", "object.path.simplify"));
+        }
+        items.push((tl!("Duplicate"), "copy", "edit.duplicate"));
     }
-    // Direct-selected anchors take the place of a path's Offset Path and Simplify.
-    let anchors = !st.selection.anchors.is_empty();
-    if anchors {
-        items.push((tl!("Remove Anchor Points"), "pen-tool-delete", "path.removeAnchors"));
-        items.push((tl!("Cut Path"), "scissors", "path.cutAtAnchors"));
-    }
-    if n > 1 {
-        items.push((tl!("Group"), "group", "object.group"));
-        items.push((tl!("Unite"), "squares-unite", "object.pathfinder.unite"));
-    } else if is_trace {
-        items.push((tl!("Expand"), "maximize-2", "imageTrace.expand"));
-    } else if is_group {
-        items.push((tl!("Ungroup"), "ungroup", "object.ungroup"));
-        items.push((tl!("Isolate"), "square-dashed", "object.isolate"));
-    } else if is_text {
-        items.push((tl!("Create Outlines"), "type", "type.createOutlines"));
-    } else if is_image {
-        // Offset Path and Simplify don't apply to an image.
-    } else if !anchors {
-        items.push((tl!("Offset Path"), "square-dashed", "object.path.offsetPath"));
-        items.push((tl!("Simplify"), "spline", "object.path.simplify"));
-    }
-    items.push((tl!("Duplicate"), "copy", "edit.duplicate"));
     let fill = first.as_ref().map(|f| f.appearance.fill_paint()).unwrap_or_default();
     let colored = has_colors(&st.doc, &st.selection.objects);
     let doc = st.uid;
@@ -2778,24 +2865,27 @@ fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
                             run = Some((*cmd, json!({})));
                         }
                     }
-                    let (r, resp) = ui.allocate_exact_size(vec2(26.0, 30.0), Sense::click());
-                    widgets::paint_chip(ui, egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0)), &fill);
-                    ui.painter().rect_stroke(
-                        egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0)),
-                        0.0,
-                        Stroke::new(1.0, t.button_border),
-                        StrokeKind::Outside,
-                    );
-                    if resp.on_hover_text(tl!("Fill")).clicked() {
-                        app.session.fill_active = true;
-                        app.ui.open_panel = Some("swatches".into());
-                    }
-                    // Recolor Artwork, when the selection has colours to recolour.
-                    if colored && widgets::icon_button(ui, "palette", tl!("Recolor Artwork"), false, 30.0).clicked() {
-                        run = Some(("ui.recolorDialog", json!({})));
-                    }
-                    if widgets::icon_button(ui, "lock", tl!("Lock (⌘2)"), false, 30.0).clicked() {
-                        run = Some(("object.lock", json!({})));
+                    // The selected objects' Fill, Recolor Artwork and Lock, left out with the Artboard tool.
+                    if !on_artboards {
+                        let (r, resp) = ui.allocate_exact_size(vec2(26.0, 30.0), Sense::click());
+                        widgets::paint_chip(ui, egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0)), &fill);
+                        ui.painter().rect_stroke(
+                            egui::Rect::from_center_size(r.center(), vec2(16.0, 16.0)),
+                            0.0,
+                            Stroke::new(1.0, t.button_border),
+                            StrokeKind::Outside,
+                        );
+                        if resp.on_hover_text(tl!("Fill")).clicked() {
+                            app.session.fill_active = true;
+                            app.ui.open_panel = Some("swatches".into());
+                        }
+                        // Recolor Artwork, when the selection has colours to recolour.
+                        if colored && widgets::icon_button(ui, "palette", tl!("Recolor Artwork"), false, 30.0).clicked() {
+                            run = Some(("ui.recolorDialog", json!({})));
+                        }
+                        if widgets::icon_button(ui, "lock", tl!("Lock (⌘2)"), false, 30.0).clicked() {
+                            run = Some(("object.lock", json!({})));
+                        }
                     }
                     let more = widgets::icon_button(ui, "ellipsis", tl!("More Options"), false, 30.0);
                     egui::Popup::menu(&more).show(|ui| {
@@ -2832,6 +2922,11 @@ fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
         // Image Trace traces the image at once with the Default preset. As a quick trace from
         // Properties or the Control bar, it leaves the Image Trace panel as it was.
         Some((TASK_BAR_IMAGE_TRACE, _)) => crate::menus::invoke(app, "imageTrace.make", json!({"preset": "Default"})),
+        // The Artboard tool's buttons: Artboard Options for the active artboard, as Properties'
+        // icon opens it; Duplicate for every selected artboard; Rearrange All Artboards.
+        Some((TASK_BAR_ARTBOARD_OPTIONS, _)) => crate::menus::invoke(app, "tool.options", json!({"tool": "artboard"})),
+        Some((TASK_BAR_DUPLICATE_ARTBOARDS, _)) => crate::panels::artboards::duplicate_picked(app),
+        Some((TASK_BAR_REARRANGE_ARTBOARDS, _)) => crate::panels::artboards::open_rearrange(app),
         Some((c, p)) => crate::menus::invoke(app, c, p),
         None => {}
     }
@@ -2839,6 +2934,12 @@ fn task_bar(app: &mut VectorcraftApp, ui: &mut Ui, xf: &Xf) {
 
 /// The Contextual Task Bar's Image Trace button: a trace with the Default preset.
 const TASK_BAR_IMAGE_TRACE: &str = "taskBar.imageTrace";
+/// The Contextual Task Bar's Resize button with the Artboard tool: Artboard Options.
+const TASK_BAR_ARTBOARD_OPTIONS: &str = "taskBar.artboardOptions";
+/// The Contextual Task Bar's Duplicate button with the Artboard tool.
+const TASK_BAR_DUPLICATE_ARTBOARDS: &str = "taskBar.duplicateArtboards";
+/// The Contextual Task Bar's Rearrange All button with the Artboard tool.
+const TASK_BAR_REARRANGE_ARTBOARDS: &str = "taskBar.rearrangeArtboards";
 
 #[cfg(test)]
 mod tests {
@@ -5066,6 +5167,88 @@ mod tests {
     }
 
     #[test]
+    fn space_shift_drag_rotates_the_view_whatever_the_tool() {
+        use egui::{Event, Modifiers};
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+        app.select_tool("rectangle");
+        let ctx = egui::Context::default();
+        frame(&mut app, &ctx, vec![]);
+        let c = app.canvas_rect.unwrap().center();
+        let space = |pressed, modifiers| Event::Key { key: egui::Key::Space, physical_key: None, pressed, repeat: false, modifiers };
+        let button = |pos, pressed, modifiers| Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers };
+        // `drag` drags from `from` to `to` with `held` down, and with Space as well when `with_space`.
+        let drag = |app: &mut VectorcraftApp, held: Modifiers, with_space: bool, from: Pos2, to: Pos2| {
+            let keys = |pressed| if with_space { vec![space(pressed, held)] } else { vec![] };
+            frame(app, &ctx, [vec![Event::ModifiersChanged(held)], keys(true), vec![Event::PointerMoved(from)]].concat());
+            frame(app, &ctx, vec![button(from, true, held)]);
+            frame(app, &ctx, vec![Event::PointerMoved(to)]);
+            frame(app, &ctx, vec![button(to, false, held)]);
+            frame(app, &ctx, [keys(false), vec![Event::ModifiersChanged(Modifiers::NONE)]].concat());
+        };
+        // `at(deg)` is the point 100 points from the canvas center, `deg` degrees clockwise from the right.
+        let at = |deg: f32| c + 100.0 * vec2(deg.to_radians().cos(), deg.to_radians().sin());
+        let before = *app.view().unwrap();
+        drag(&mut app, Modifiers::SHIFT, true, at(0.0), at(90.0));
+        let after = *app.view().unwrap();
+        assert!((after.rotation - 90.0).abs() < 1e-3, "{after:?}");
+        assert_eq!((after.center, after.zoom), (before.center, before.zoom), "the view turns about its center");
+        assert_eq!(app.session.active().unwrap().doc.art_bounds(), None, "the Rectangle tool drew nothing");
+        // Shift does not round the angle: 90° and 20° more make 110°, not 105°.
+        drag(&mut app, Modifiers::SHIFT, true, at(0.0), at(20.0));
+        assert!((app.view().unwrap().rotation - 110.0).abs() < 1e-3, "{:?}", app.view());
+        // Space alone still pans, and Cmd+Shift+Space still zooms.
+        let v = *app.view().unwrap();
+        drag(&mut app, Modifiers::NONE, true, c, c + vec2(30.0, 0.0));
+        let panned = *app.view().unwrap();
+        assert_eq!((panned.rotation, panned.zoom), (v.rotation, v.zoom));
+        assert_ne!(panned.center, v.center, "Space pans");
+        drag(&mut app, Modifiers::COMMAND | Modifiers::SHIFT, true, c, c);
+        assert_eq!(app.view().unwrap().zoom, crate::state::next_zoom(v.zoom, true), "Cmd+Shift+Space click zooms in");
+        assert_eq!(app.view().unwrap().rotation, v.rotation);
+        // The Rotate View tool's Shift still rounds to 15°.
+        app.select_tool("rotateView");
+        app.view_mut().unwrap().rotation = 0.0;
+        drag(&mut app, Modifiers::SHIFT, false, at(0.0), at(20.0));
+        assert_eq!(app.view().unwrap().rotation, 15.0);
+        drag(&mut app, Modifiers::NONE, false, at(0.0), at(20.0));
+        assert!((app.view().unwrap().rotation - 35.0).abs() < 1e-3, "{:?}", app.view());
+    }
+
+    #[test]
+    fn the_rotate_cursor_shows_for_space_shift_and_the_rotate_view_tool() {
+        use egui::{CursorIcon, Event, Modifiers};
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+        app.select_tool("rectangle");
+        let ctx = egui::Context::default();
+        frame(&mut app, &ctx, vec![]);
+        let c = app.canvas_rect.unwrap().center();
+        // `shown` returns the system cursor the canvas sets over a window without the focus. On macOS
+        // the window paints the glyph only with the focus, and on the other desktop builds (not
+        // Wayland, which the tests do not set) the window sets the system cursor next to the bitmap.
+        let shown = |app: &mut VectorcraftApp, events: Vec<Event>| {
+            let screen_rect = Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(800.0, 600.0)));
+            let mut out = ctx.run_ui(egui::RawInput { screen_rect, focused: false, events, ..Default::default() }, |ui| show(app, ui));
+            out.textures_delta.clear();
+            out.platform_output.cursor_icon
+        };
+        let space = |pressed, modifiers| Event::Key { key: egui::Key::Space, physical_key: None, pressed, repeat: false, modifiers };
+        let button = |pos, pressed| Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers: Modifiers::SHIFT };
+        assert_ne!(shown(&mut app, vec![Event::PointerMoved(c)]), CursorIcon::Alias);
+        assert_eq!(shown(&mut app, vec![Event::ModifiersChanged(Modifiers::SHIFT), space(true, Modifiers::SHIFT)]), CursorIcon::Alias);
+        // Shift let go during the drag keeps the rotate cursor; after it, Space shows the hand.
+        shown(&mut app, vec![button(c, true)]);
+        assert_eq!(shown(&mut app, vec![Event::ModifiersChanged(Modifiers::NONE), Event::PointerMoved(c + vec2(20.0, 30.0))]), CursorIcon::Alias);
+        assert_eq!(shown(&mut app, vec![button(c + vec2(20.0, 30.0), false)]), CursorIcon::Grab);
+        // Cmd+Shift+Space zooms.
+        assert_eq!(shown(&mut app, vec![Event::ModifiersChanged(Modifiers::COMMAND | Modifiers::SHIFT)]), CursorIcon::ZoomIn);
+        assert_ne!(shown(&mut app, vec![space(false, Modifiers::NONE), Event::ModifiersChanged(Modifiers::NONE)]), CursorIcon::Alias);
+        app.select_tool("rotateView");
+        assert_eq!(shown(&mut app, vec![Event::PointerMoved(c)]), CursorIcon::Alias, "the Rotate View tool");
+    }
+
+    #[test]
     fn space_pressed_mid_drag_moves_what_the_tool_draws() {
         use egui::{Event, Modifiers};
         let mut app = VectorcraftApp::new(Session::new(), Default::default());
@@ -5146,6 +5329,106 @@ mod tests {
         app.session.tool_text("X", app.view_info()).unwrap();
         let t = text(&app);
         assert_eq!((t.len(), t.find('X')), (12, Some(caret as usize)), "{t}");
+    }
+
+    /// #2119: type copied with an Alt-drag, double-clicked, all of its text selected and typed over
+    /// keeps its font, size and colour: through an IME (the marked text cleared, then committed by
+    /// Return, as Windows sends them) and with Backspace then typing. Whole app frames, one input
+    /// event per frame.
+    fn retype_all_of_a_copied_type(ime: bool) {
+        use egui::{Event, Key, Modifiers};
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+        let original = app
+            .session
+            .execute("text.create", &json!({"x": 60, "y": 100, "text": "Chair 123", "size": 36, "font": "Georgia", "color": "#808080"}))
+            .unwrap()["id"]
+            .as_u64()
+            .unwrap();
+        app.session.execute("select.none", &json!({})).unwrap();
+        app.select_tool("selection");
+        let ctx = egui::Context::default();
+        let time = std::cell::Cell::new(0.0);
+        let frame = |app: &mut VectorcraftApp, events: Vec<Event>| {
+            time.set(time.get() + 0.03);
+            let screen = egui::Rect::from_min_size(Pos2::ZERO, vec2(1600.0, 850.0));
+            let mut out = ctx.run_ui(egui::RawInput { screen_rect: Some(screen), time: Some(time.get()), events, ..Default::default() }, |ui| {
+                app.logic(ui.ctx());
+                app.ui(ui);
+            });
+            out.textures_delta.clear();
+        };
+        for _ in 0..3 {
+            frame(&mut app, vec![]);
+        }
+        let xf = Xf::new(app.canvas_rect.unwrap(), app.view().unwrap());
+        let node = |app: &VectorcraftApp, id: u64| app.session.active().unwrap().doc.node(vectorcraft_doc::NodeId(id)).unwrap().clone();
+        let styles = |app: &VectorcraftApp, id: u64| match &node(app, id).kind {
+            NodeKind::Text(t) => {
+                t.runs.iter().map(|r| (r.text.clone(), r.style.font_family.clone(), r.style.size, r.style.fill.clone())).collect::<Vec<_>>()
+            }
+            _ => panic!("not text"),
+        };
+        let button = |pos, pressed, modifiers| Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers };
+        let key = |key, pressed, modifiers| Event::Key { key, physical_key: None, pressed, repeat: false, modifiers };
+        // 1. Alt-drag the type: a copy, selected.
+        let from = xf.to_screen(node(&app, original).geometric_bounds().unwrap().center());
+        let to = from + vec2(0.0, 120.0 * xf.zoom as f32);
+        frame(&mut app, vec![Event::PointerMoved(from), Event::ModifiersChanged(Modifiers::ALT)]);
+        frame(&mut app, vec![button(from, true, Modifiers::ALT)]);
+        for k in 1..=6 {
+            frame(&mut app, vec![Event::PointerMoved(from + (to - from) * (k as f32 / 6.0))]);
+        }
+        frame(&mut app, vec![button(to, false, Modifiers::ALT)]);
+        frame(&mut app, vec![Event::ModifiersChanged(Modifiers::NONE)]);
+        let copy = app.session.active().unwrap().selection.objects[0].0;
+        assert_ne!(copy, original);
+        let style = styles(&app, original)[0].clone();
+        // 2. Double-click it at once: the Type tool edits it.
+        let at = xf.to_screen(node(&app, copy).geometric_bounds().unwrap().center());
+        frame(&mut app, vec![Event::PointerMoved(at)]);
+        for pressed in [true, false, true, false] {
+            frame(&mut app, vec![button(at, pressed, Modifiers::NONE)]);
+        }
+        frame(&mut app, vec![]);
+        assert_eq!(app.session.tool_options()["editing"], json!(copy));
+        // 3. Select all of its text and type over it.
+        frame(&mut app, vec![key(Key::A, true, Modifiers::COMMAND)]);
+        frame(&mut app, vec![key(Key::A, false, Modifiers::COMMAND)]);
+        if ime {
+            frame(&mut app, vec![preedit("t", 1)]);
+            frame(&mut app, vec![preedit("table", 5)]);
+            let marked = styles(&app, copy);
+            assert_eq!(marked.iter().map(|r| (&r.1, r.2, &r.3)).collect::<Vec<_>>(), vec![(&style.1, style.2, &style.3)], "composing: {marked:?}");
+            // Return commits the composition.
+            frame(&mut app, vec![preedit("", 0), Event::Ime(egui::ImeEvent::Commit("table".into()))]);
+        } else {
+            frame(&mut app, vec![key(Key::Backspace, true, Modifiers::NONE)]);
+            frame(&mut app, vec![key(Key::Backspace, false, Modifiers::NONE)]);
+            frame(&mut app, vec![Event::Text("table".into())]);
+            frame(&mut app, vec![key(Key::Enter, true, Modifiers::NONE)]);
+            frame(&mut app, vec![key(Key::Enter, false, Modifiers::NONE)]);
+        }
+        frame(&mut app, vec![]);
+        let after = styles(&app, copy);
+        assert!(after.iter().any(|r| r.0.starts_with("table")), "ime={ime}: typed over: {after:?}");
+        assert!(
+            after.iter().all(|r| (&r.1, r.2, &r.3) == (&style.1, style.2, &style.3)),
+            "ime={ime}: the copy keeps {:?} {} {:?}, got {after:?}",
+            style.1,
+            style.2,
+            style.3
+        );
+    }
+
+    #[test]
+    fn retyping_all_of_a_copied_type_through_an_ime_keeps_its_style() {
+        retype_all_of_a_copied_type(true);
+    }
+
+    #[test]
+    fn retyping_all_of_a_copied_type_after_backspace_keeps_its_style() {
+        retype_all_of_a_copied_type(false);
     }
 
     #[test]
@@ -5787,6 +6070,104 @@ mod tests {
         let mut images = 0;
         expanded.walk(&mut |n| images += usize::from(matches!(n.kind, NodeKind::Image(_))));
         assert_eq!(images, 0, "only the traced paths are kept");
+    }
+
+    /// The labels the Contextual Task Bar draws in a headless frame (after one to lay it out), with
+    /// their rects; none while it isn't shown. Icons, which draw as ⚠ without an image loader, are
+    /// left out.
+    fn task_bar_labels(app: &mut VectorcraftApp, ctx: &egui::Context) -> Vec<(String, egui::Rect)> {
+        frame(app, ctx, vec![]);
+        let raw = egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(800.0, 600.0))), ..Default::default() };
+        let mut out = ctx.run_ui(raw, |ui| show(app, ui));
+        out.textures_delta.clear();
+        let Some(bar) = task_bar_rect(ctx) else { return vec![] };
+        out.shapes
+            .iter()
+            .filter_map(|c| match &c.shape {
+                egui::Shape::Text(t) if bar.contains(t.visual_bounding_rect().center()) && t.galley.text() != "⚠" => {
+                    Some((t.galley.text().to_string(), t.visual_bounding_rect()))
+                }
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// With the Artboard tool, the Contextual Task Bar sits under the selected artboards and offers
+    /// Resize, Duplicate, Rearrange All (with two or more artboards) and Export instead of the
+    /// selected objects' actions. With the Selection tool it offers the objects' actions again, and
+    /// with nothing selected it doesn't show.
+    #[test]
+    fn the_task_bar_offers_the_artboard_tools_actions() {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 200, "height": 100, "artboards": 3})).unwrap();
+        app.select_tool("selection");
+        let ctx = egui::Context::default();
+        let names = |app: &mut VectorcraftApp| task_bar_labels(app, &ctx).into_iter().map(|(t, _)| t).collect::<Vec<_>>();
+        assert!(names(&mut app).is_empty() && task_bar_rect(&ctx).is_none(), "nothing selected: no bar");
+
+        app.select_tool("artboard");
+        crate::panels::artboards::select(&mut app, 1);
+        // Artboard 2 in the middle of the window, at 100%.
+        let b = app.session.active().unwrap().doc.artboards[1].rect;
+        let view = app.view_mut().unwrap();
+        (view.center, view.zoom) = (b.center(), 1.0);
+        assert_eq!(names(&mut app), ["Resize", "Duplicate", "Rearrange All", "Export"]);
+        // Under artboard 2.
+        let xf = Xf::new(app.canvas_rect.unwrap(), app.view().unwrap());
+        let bar = task_bar_rect(&ctx).unwrap();
+        let center = xf.to_screen(b.center());
+        assert!(bar.top() > xf.to_screen(Point::new(b.x0, b.y1)).y && bar.x_range().contains(center.x), "{bar:?} under {b:?}");
+
+        // A selected object with the Selection tool: its own actions, none of the artboards'.
+        app.select_tool("selection");
+        app.session.execute("shape.rectangle", &json!({"x": 20, "y": 20, "width": 40, "height": 40})).unwrap();
+        assert_eq!(names(&mut app), ["Offset Path", "Simplify", "Duplicate"]);
+
+        // One artboard: nothing to rearrange.
+        app.session.execute("file.new", &json!({"width": 200, "height": 100})).unwrap();
+        app.select_tool("artboard");
+        assert_eq!(names(&mut app), ["Resize", "Duplicate", "Export"]);
+    }
+
+    /// The Artboard tool's Contextual Task Bar buttons act on its selected artboards: Resize opens
+    /// Artboard Options for the active one, Rearrange All opens Rearrange All Artboards, Export opens
+    /// Export for Screens with the selected artboards checked, and Duplicate copies each selected
+    /// artboard in one undo step and selects the copies.
+    #[test]
+    fn the_artboard_tools_task_bar_buttons_act_on_the_selected_artboards() {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 200, "height": 100, "artboards": 3})).unwrap();
+        app.select_tool("artboard");
+        crate::panels::artboards::select(&mut app, 2);
+        app.session.set_tool_option("selected", &json!([2, 0]));
+        let ctx = egui::Context::default();
+        let press = |app: &mut VectorcraftApp, label: &str| {
+            let labels = task_bar_labels(app, &ctx);
+            let at = labels.iter().find(|(t, _)| t == label).unwrap_or_else(|| panic!("{label} in {labels:?}")).1.center();
+            let button =
+                |pressed| egui::Event::PointerButton { pos: at, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+            frame(app, &ctx, vec![egui::Event::PointerMoved(at)]);
+            frame(app, &ctx, vec![button(true)]);
+            frame(app, &ctx, vec![button(false)]);
+            app.ui.dialog.take()
+        };
+        let d = press(&mut app, "Resize").expect("Artboard Options");
+        assert_eq!((d.kind.as_str(), d.f64("index", 9.0)), ("artboardOptions", 2.0));
+        let d = press(&mut app, "Rearrange All").expect("Rearrange All Artboards");
+        assert_eq!(d.kind, crate::dialogs::rearrange_artboards::KIND);
+        let d = press(&mut app, "Export").expect("Export for Screens");
+        assert_eq!((d.kind.as_str(), &d.fields["boards"]), (crate::dialogs::EXPORT_FOR_SCREENS, &json!([true, false, true])));
+
+        let boards =
+            |app: &VectorcraftApp| app.session.active().unwrap().doc.artboards.iter().map(|a| (a.name.clone(), a.rect.size())).collect::<Vec<_>>();
+        let before = boards(&app);
+        assert!(press(&mut app, "Duplicate").is_none());
+        let after = boards(&app);
+        assert_eq!(after[..3], before[..]);
+        assert_eq!(after[3..], [("Artboard 1 copy".to_string(), before[0].1), ("Artboard 3 copy".to_string(), before[2].1)]);
+        assert_eq!(app.session.tool_options()["selected"], json!([4, 3]), "the copies are selected, artboard 3's copy active");
+        app.run("edit.undo", json!({})).unwrap();
+        assert_eq!(boards(&app), before, "one undo step");
     }
 
     /// The Contextual Task Bar's handle drags it: unpinned it keeps that offset as it follows the

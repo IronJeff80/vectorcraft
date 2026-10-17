@@ -69,7 +69,7 @@ pub use live::{expand_live, expand_live_deep, expanded_live_group, text_outliner
 pub use marks::{CROP_MARKS, crop_marks_art, has_crop_marks};
 pub use pixel::{PIXEL_EFFECTS, PixelFx, PixelSpace};
 pub use raster::{RasterFx, outset, raster_effects};
-pub use reshape::{expand_outlined, has_item_geometry, needs_outline, outline_art, outline_text, reshape};
+pub use reshape::{expand_outlined, has_gradient_copies, has_item_geometry, needs_outline, outline_art, outline_text, reshape};
 pub use revolve::{REVOLVE, has_revolve, revolve_art, revolve_options, validate_revolve};
 pub use solids::{
     EXTRUDE, INFLATE, ROTATE, ROTATION_PRESETS, SOLIDS, extrude_options, has_solid, inflate_options, is_three_d, solid_art, validate_solid,
@@ -354,7 +354,7 @@ pub fn effect_catalog() -> Vec<EffectInfo> {
             "blur.smart",
             "Smart Blur…",
             BLUR,
-            "{radius: pt 0.1..100 (3), threshold: levels 0.1..100 (25; only colours closer than this blur together, so edges stay sharp), quality: \"low\"|\"medium\"|\"high\" (\"medium\"; 5, 7 or 9 samples across), blurMode: \"normal\"|\"edgeOnly\"|\"overlayEdge\" (\"normal\"; edgeOnly: the edges in white on black, overlayEdge: the edges in white over the blur)}. A pixel is on an edge when one of its four nearest pixels differs from it by more than the threshold in a channel and its channels (alpha included) add up to at least that pixel's; the white and the black keep each pixel's coverage, and the radius changes only the blur",
+            "{radius: pt 0.1..100 (3), threshold: levels 0.1..100 (25; only colours closer than this blur together, so edges stay sharp), quality: \"low\"|\"medium\"|\"high\" (\"medium\"; 5, 7 or 9 samples across), blurMode: \"normal\"|\"edgeOnly\"|\"overlayEdge\" (\"normal\"; edgeOnly: the edges in white on black, overlayEdge: the edges in white over the blur)}. A pixel is on an edge when one of the pixels the search reads within the radius (all of them for a small radius, a grid of samples for a wide one) or one of its four nearest pixels differs from it by more than the threshold in a channel and its channels (alpha included) add up to at least that pixel's, so a step gives a line about as wide as the radius, and at least one pixel wide, on the side with the larger sum; the white and the black keep each pixel's coverage",
             json!({"radius": 3.0, "threshold": 25.0, "quality": "medium", "blurMode": "normal"}),
         ),
         r(
