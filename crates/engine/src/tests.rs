@@ -1952,13 +1952,14 @@ fn isolated_ring(s: &mut Session) -> (NodeId, NodeId, NodeId) {
     (c, outer, hole)
 }
 
-/// Isolating a compound path makes its paths objects of their own: the hole of a ring, selected
-/// alone, moves without the ring around it. Outside isolation it still moves its compound path.
+/// A path of a compound path selected alone is an object of its own for the transforms: the hole
+/// of a ring moves without the ring around it, in the isolated compound path and outside it, where
+/// Group Selection selects it (#2441). Selecting the compound path moves the whole ring.
 #[test]
 fn an_isolated_compound_paths_member_moves_alone() {
     let x0 = |s: &Session, id: NodeId| s.doc().unwrap().doc.node(id).unwrap().geometric_bounds().unwrap().x0;
     let mut s = session();
-    let (_, outer, hole) = isolated_ring(&mut s);
+    let (c, outer, hole) = isolated_ring(&mut s);
     s.execute("object.transform", &json!({"matrix": [1, 0, 0, 1, 30, 0]})).unwrap();
     assert_eq!((x0(&s, outer), x0(&s, hole)), (0.0, 40.0), "only the hole moved");
     s.execute("object.move", &json!({"dx": 5, "dy": 0})).unwrap();
@@ -1966,7 +1967,10 @@ fn an_isolated_compound_paths_member_moves_alone() {
     s.execute("object.exitIsolation", &json!({})).unwrap();
     s.execute("select.set", &json!({"ids": [hole.0]})).unwrap();
     s.execute("object.transform", &json!({"matrix": [1, 0, 0, 1, 5, 0]})).unwrap();
-    assert_eq!((x0(&s, outer), x0(&s, hole)), (5.0, 50.0), "not isolated: the whole compound path moved");
+    assert_eq!((x0(&s, outer), x0(&s, hole)), (0.0, 50.0), "not isolated: still only the hole");
+    s.execute("select.set", &json!({"ids": [c.0]})).unwrap();
+    s.execute("object.move", &json!({"dx": 5, "dy": 0})).unwrap();
+    assert_eq!((x0(&s, outer), x0(&s, hole)), (5.0, 55.0), "the compound path selected: the whole ring");
 }
 
 /// `depth` and `childLimit` slice a summary read; a level that shows fewer children
@@ -2306,6 +2310,29 @@ fn object_mosaic_tiles_follow_the_image_colours() {
     // 4 pt spacing: each 50 pt tile shrinks to 46 pt; the image is gone.
     assert!((tiles[0].geometric_bounds().unwrap().width() - 46.0).abs() < 1e-6);
     assert!(!st.doc.layers[0].children().unwrap().iter().any(|n| matches!(n.kind, vectorcraft_doc::NodeKind::Image(_))));
+}
+
+/// Columns and rows that are not whole numbers (a fraction, a negative number, a string or another value) are an
+/// error naming the key, and no mosaic is made; 2.0 columns are two columns.
+#[test]
+fn object_mosaic_refuses_columns_and_rows_that_are_not_whole_numbers() {
+    let mut s = session();
+    rect(&mut s, 0.0, 0.0, 100.0, 50.0);
+    s.execute("object.rasterize", &json!({"ppi": 72})).unwrap();
+    let undo = |s: &Session| s.doc().unwrap().history.undo.len();
+    let before = undo(&s);
+    for (p, msg) in [
+        (json!({"columns": 2.5}), "`columns` must be a whole number"),
+        (json!({"rows": -1}), "`rows` must be a whole number"),
+        (json!({"columns": "4"}), "`columns` must be a number, not \"4\""),
+        (json!({"rows": true}), "`rows` must be a number, not true"),
+    ] {
+        let r = s.execute("object.createObjectMosaic", &p);
+        assert!(matches!(&r, Err(EngineError::BadParams { msg: m, .. }) if m == msg), "{p}: {r:?}");
+        assert_eq!(undo(&s), before, "{p}");
+    }
+    let r = s.execute("object.createObjectMosaic", &json!({"columns": 2.0, "rows": 1.0})).unwrap();
+    assert_eq!(r["tiles"], json!(2));
 }
 
 #[test]

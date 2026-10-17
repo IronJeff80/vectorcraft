@@ -425,6 +425,7 @@
 	Change Panel Layout	Thay đổi bố cục bảng
 	Change Screen Mode (F)	Thay đổi chế độ màn hình (F)
 	Change to Global Rulers	Chuyển sang thước toàn cục
+	Change to Artboard Rulers	Chuyển sang thước bảng vẽ
 	Change to Left-to-Right Layout	Đổi sang bố cục trái sang phải
 	Change to Right-to-Left Layout	Chuyển sang bố cục phải sang trái
 	Changed since the last Refresh.	Đã thay đổi kể từ lần làm mới cuối.
@@ -636,6 +637,7 @@
 	Condition identifier:	Mã định danh điều kiện:
 	Conflict {n} of {count}	Xung đột {n} trong {count}
 	Connect Selected End Points	Nối các điểm cuối đã chọn
+	Connect	Nối
 	Consolidate All Windows	Hợp nhất tất cả cửa sổ
 	Constrain	Giữ tỷ lệ
 	Constrain Angle	Ràng buộc góc
@@ -919,6 +921,7 @@
 	Document open password	Mật khẩu mở tài liệu
 	Document profile	Hồ sơ tài liệu
 	Document Raster Effects Settings	Cài đặt hiệu ứng raster tài liệu
+	Use Document Raster Effects Resolution	Dùng độ phân giải trong cài đặt hiệu ứng raster tài liệu
 	Document Raster Effects Settings Dialog	Hộp thoại cài đặt hiệu ứng raster tài liệu
 	Document Raster Effects Settings…	Cài đặt hiệu ứng raster tài liệu…
 	Document Setup	Thiết lập tài liệu
@@ -1248,6 +1251,20 @@
 	Fill: click for swatches, Shift-click for the color mixer	Tô: bấm để xem mẫu màu, Shift-bấm để trộn màu
 	Fills	Vùng tô
 	Film Grain…	Hạt phim…
+	Cutout…	Cắt dán…
+	Cutout	Cắt dán
+	Neon Glow…	Ánh neon…
+	Neon Glow	Ánh neon
+	Poster Edges…	Viền áp phích…
+	Poster Edges	Viền áp phích
+	Levels	Số mức
+	Edge Simplicity	Độ đơn giản của cạnh
+	Edge Fidelity	Độ trung thực của cạnh
+	Glow Size	Kích thước ánh sáng
+	Glow Brightness	Độ sáng của ánh sáng
+	Edge Thickness	Độ dày cạnh
+	Edge Intensity	Cường độ cạnh
+	Posterization	Áp phích hóa
 	Find	Tìm
 	Find and Replace…	Tìm và thay thế…
 	Find Font	Tìm phông
@@ -1330,6 +1347,7 @@ file-filter	Templates	Mẫu
 	Font List	Danh sách phông
 	Font Preview Size	Cỡ xem trước phông
 	Font Size	Cỡ chữ
+	Variable Font	Phông chữ biến thiên
 	Font:	Phông:
 	Fonts	Phông chữ
 	Fonts in Document	Phông trong tài liệu
@@ -1531,6 +1549,90 @@ file-filter	Templates	Mẫu
 	History	Lịch sử
 	History Options…	Tùy chọn lịch sử…
 	History States	Trạng thái lịch sử
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Áp dụng tập dữ liệu
+	Area Type	Chữ vùng
+	Bloat	Phình
+	Cancel Pattern Editing	Hủy chỉnh sửa họa tiết
+	Copy Appearance	Sao chép diện mạo
+	Copy Guide	Sao chép đường căn
+	Copy in Perspective	Sao chép theo phối cảnh
+	Create Slice from Selection	Tạo lát cắt từ vùng chọn
+	Create Slices from Guides	Tạo lát cắt từ đường căn
+	Delete All Slices	Xóa tất cả lát cắt
+	Delete Data Sets	Xóa tập dữ liệu
+	Delete Graphic Styles	Xóa kiểu đồ họa
+	Delete Guide	Xóa đường căn
+	Delete Guides	Xóa các đường căn
+	Delete Slice	Xóa lát cắt
+	Delete Style	Xóa kiểu
+	Delete Variables	Xóa biến số
+	Delete View	Xóa chế độ xem
+	Done Editing Pattern	Hoàn tất chỉnh sửa họa tiết
+	Duplicate Rows	Nhân bản hàng
+	Edit Perspective Grid	Chỉnh sửa lưới phối cảnh
+	Expand Blend	Mở rộng hòa trộn
+	Expand Envelope	Mở rộng Envelope
+	Expand Image Trace	Mở rộng vector hóa ảnh
+	Expand Live Paint	Mở rộng tô trực tiếp
+	Grid Repeat	Lặp lại dạng lưới
+	Image Trace (Make and Expand)	Vector hóa ảnh (tạo và mở rộng)
+	Live Shape	Hình dạng trực tiếp
+	Make Blend	Tạo hòa trộn
+	Make Dynamic	Tạo động
+	Make Intertwine	Tạo đan xen
+	Make Live Paint	Tạo tô trực tiếp
+	Make Pattern	Tạo họa tiết
+	Make Slice	Tạo lát cắt
+	Make Text Wrap	Tạo bao văn bản
+	Merge Live Paint	Hợp nhất tô trực tiếp
+	Mesh Point Color	Màu điểm lưới
+	Mirror Repeat	Lặp lại đối xứng
+	Move Envelope Point	Di chuyển điểm Envelope
+	Move Plane and Copy Objects	Di chuyển mặt phẳng và sao chép đối tượng
+	Move Plane and Objects	Di chuyển mặt phẳng và đối tượng
+	Move Slice	Di chuyển lát cắt
+	Move Type on a Path	Di chuyển chữ trên đường dẫn
+	New Guide	Đường căn mới
+	Pen	Bút
+	Place from Library	Đặt từ thư viện
+	Pucker	Nhíu
+	Radial Repeat	Lặp lại hướng tâm
+	Rearrange Artboards	Sắp xếp lại bảng vẽ
+	Release Blend	Giải phóng hòa trộn
+	Release Envelope	Giải phóng Envelope
+	Release Image Trace	Giải phóng vector hóa ảnh
+	Release Intertwine	Giải phóng đan xen
+	Release Live Paint	Giải phóng tô trực tiếp
+	Release Repeat	Giải phóng lặp lại
+	Release Slice	Giải phóng lát cắt
+	Release Text Wrap	Giải phóng bao văn bản
+	Release Threaded Text	Giải phóng văn bản chuỗi
+	Rename Design	Đổi tên thiết kế
+	Rename Style	Đổi tên kiểu
+	Rename View	Đổi tên chế độ xem
+	Reorder Appearance	Sắp xếp lại diện mạo
+	Reorder Artboards	Đổi thứ tự bảng vẽ
+	Reshape Spine	Định hình lại trục
+	Resize Artboard	Đổi kích thước bảng vẽ
+	Resize Slice	Đổi kích thước lát cắt
+	Resize Type Area	Đổi kích thước vùng chữ
+	Scale in Perspective	Tỷ lệ theo phối cảnh
+	Scallop	Vỏ sò
+	Shape Builder Delete	Tạo hình dạng (xóa)
+	Sort Swatches	Sắp xếp mẫu màu
+	Symbol Screener	Lọc ký hiệu
+	Symbol Scruncher	Thu gọn ký hiệu
+	Symbol Shifter	Dịch chuyển ký hiệu
+	Symbol Sizer	Kích thước ký hiệu
+	Symbol Spinner	Xoay ký hiệu
+	Symbol Stainer	Tô màu ký hiệu
+	Symbol Styler	Tạo kiểu ký hiệu
+	Text Orientation	Hướng chữ
+	Thread Text	Xâu chuỗi văn bản
+	Twirl	Xoáy
+	Typing	Nhập chữ
+	Wrinkle	Nhăn
 	Hold	Giữ
 	Hollow	Rỗng
 	Home	Trang chủ
@@ -1888,6 +1990,7 @@ file-filter	Templates	Mẫu
 	Lock Others	Khóa các mục khác
 	Lock Slices	Khóa lát cắt
 	Lock Station Point	Khóa điểm trạm
+	Lock Variables	Khóa biến số
 	Long Lines	Nét dài
 	Long Strokes	Nét vẽ dài
 	Longest:	Dài nhất:
@@ -2819,6 +2922,7 @@ mark-style	Japanese	Kiểu Nhật
 	Rotate 90° CW	Xoay 90° theo chiều kim đồng hồ
 	Rotate Tool	Công cụ Xoay
 	Rotate View Tool	Công cụ Xoay chế độ xem
+	Trackpad Gesture to Rotate View	Xoay chế độ xem bằng cử chỉ trên bàn di chuột
 	Rotate…	Xoay…
 	Rotation	Góc xoay
 	Rotation relative to:	Xoay tương đối với:
@@ -3618,6 +3722,7 @@ mark-style	Japanese	Kiểu Nhật
 	Unlock All Layers	Mở khóa tất cả lớp
 	Unlock Grid	Mở khóa lưới
 	Unlock Guides	Mở khóa đường căn
+	Unlock Variables	Mở khóa biến số
 	Unnamed Objects	Đối tượng chưa đặt tên
 	Unprintable margin:	Lề không in được:
 	Unsharp Mask	Tăng độ sắc nét
@@ -4469,6 +4574,7 @@ theme	Appearance	Giao diện
 @msg	unsupported: {0}	không được hỗ trợ: {0}
 @msg	Updated {_1} image(s)	Đã cập nhật {_1} ảnh
 @msg	Updated {_1} linked file(s) changed on disk	Đã cập nhật {_1} tệp liên kết đã thay đổi trên đĩa
+@msg	variables are locked	biến số bị khóa
 @msg	VectorCraft doesn't search other apps' or the system's folders: {path}	VectorCraft không tìm kiếm trong thư mục của ứng dụng khác hoặc hệ thống: {path}
 @msg	VectorCraft doesn't search the Shared or Public folder in Users: {path}	VectorCraft không tìm kiếm thư mục Shared hoặc Public trong Users: {path}
 @msg	VectorCraft failed to start: {e}	VectorCraft khởi động thất bại: {e}
@@ -4632,6 +4738,18 @@ theme	Appearance	Giao diện
 	Movie Clip	Clip phim
 @msg	name is empty	tên trống
 @msg	no symbol named `{n}`	không có biểu tượng nào tên `{n}`
+	Enable Guides for 9-Slice Scaling	Bật đường dẫn cho co giãn 9-slice
 @msg	a mask has more than one art block	mặt nạ có nhiều hơn một khối đồ họa
 @msg	mask art ends outside a mask dictionary	đồ họa mặt nạ kết thúc bên ngoài từ điển mặt nạ
 @msg	cancelled; nothing was changed	đã hủy; không có gì thay đổi
+@msg	a linked image can't become a gradient mesh: embed it first	không thể biến ảnh liên kết thành lưới chuyển sắc: hãy nhúng ảnh trước
+@msg	the image has no usable size or position	ảnh không có kích thước hoặc vị trí dùng được
+@msg	the image's pixels can't be read	không đọc được các điểm ảnh của ảnh
+	Persistent	Lưu giữ
+	Library Panel Options	Tùy chọn bảng thư viện
+@msg	Persistent libraries not found: {files}	Không tìm thấy thư viện lưu giữ: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` không phải là bảng thư viện (xem window.swatchLibrary)
+@msg	library panel `{given}` isn't open	bảng thư viện `{given}` chưa được mở
+@msg	too many library panels were opened in this session	đã mở quá nhiều bảng thư viện trong phiên này
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	Ảnh có kích thước {_1} × {_2} điểm ảnh, hơn {LARGE_TRACE_SIDE} ở một cạnh: ảnh vẫn được dò, nhưng chậm hơn. Một thiết lập sẵn có độ trung thực thấp hơn hoặc một bản sao nhỏ hơn của ảnh sẽ dò nhanh hơn.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	Ảnh đã được dò ở {_1} × {_2} điểm ảnh, thu nhỏ từ {_3} × {_4} (tối đa {_5} megapixel).

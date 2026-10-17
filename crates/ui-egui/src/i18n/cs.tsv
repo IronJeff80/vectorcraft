@@ -395,6 +395,7 @@
 	Font Family & Style	Rodina a řez písma
 	Font Family, Style & Size	Rodina, řez a velikost písma
 	Font Size	Velikost písma
+	Variable Font	Variabilní písmo
 	Text Fill Color	Barva výplně textu
 	Text Stroke Color	Barva tahu textu
 	All on Same Layers	Vše ve stejných vrstvách
@@ -524,6 +525,7 @@
 	Show Rulers	Zobrazit pravítka
 	Hide Rulers	Skrýt pravítka
 	Change to Global Rulers	Přepnout na globální pravítka
+	Change to Artboard Rulers	Přepnout na pravítka pracovní plochy
 	Show Video Rulers	Zobrazit video pravítka
 	Hide Bounding Box	Skrýt ohraničovací rámeček
 	Show Bounding Box	Zobrazit ohraničovací rámeček
@@ -652,6 +654,8 @@
 	New Variable…	Nová proměnná…
 	Unbind Variable	Zrušit přiřazení proměnné
 	Delete Variable	Odstranit proměnnou
+	Lock Variables	Zamknout proměnné
+	Unlock Variables	Odemknout proměnné
 	New Data Set…	Nová sada dat…
 	Edit Data Set…	Upravit sadu dat…
 	Delete Data Set	Odstranit sadu dat
@@ -1068,6 +1072,7 @@ lighting	Light	Světlo
 	Click or drag	Kliknutí nebo tažení
 	Click the first point	Kliknutí na první bod
 	Connect Selected End Points	Spojit vybrané koncové body
+	Connect	Spojit
 	Convert Selected Anchor Points to Corner	Převést vybrané kotevní body na rohové
 	Convert Selected Anchor Points to Smooth	Převést vybrané kotevní body na hladké
 	Convert:	Převést:
@@ -1226,6 +1231,7 @@ lighting	Light	Světlo
 	Reshape Tool	Nástroj Přetvarování
 	Rotate Tool	Nástroj Otočení
 	Rotate View Tool	Nástroj Otočení zobrazení
+	Trackpad Gesture to Rotate View	Otáčet zobrazení gestem na trackpadu
 	Rotate View	Otočení zobrazení
 	Rounded Rectangle Tool	Nástroj Zaoblený obdélník
 	Scale Tool	Nástroj Změna velikosti
@@ -1508,6 +1514,76 @@ lighting	Light	Světlo
 	{percent}% opacity	krytí {percent} %
 	History Options…	Možnosti historie…
 	Open a document to see its history.	Otevřete dokument, abyste viděli jeho historii.
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Použít sadu dat
+	Cancel Pattern Editing	Zrušit úpravy vzorku
+	Copy Appearance	Kopírovat vzhled
+	Copy Guide	Kopírovat vodítko
+	Copy in Perspective	Kopírovat v perspektivě
+	Create Slice from Selection	Vytvořit řez z výběru
+	Create Slices from Guides	Vytvořit řezy z vodítek
+	Delete All Slices	Odstranit všechny řezy
+	Delete Data Sets	Odstranit sady dat
+	Delete Graphic Styles	Odstranit grafické styly
+	Delete Guide	Odstranit vodítko
+	Delete Guides	Odstranit vodítka
+	Delete Slice	Odstranit řez
+	Delete Style	Odstranit styl
+	Delete Variables	Odstranit proměnné
+	Delete View	Odstranit zobrazení
+	Done Editing Pattern	Dokončit úpravy vzorku
+	Duplicate Rows	Duplikovat řádky
+	Edit Perspective Grid	Upravit perspektivní mřížku
+	Expand Blend	Rozložit prolnutí
+	Expand Envelope	Rozložit obálku
+	Expand Image Trace	Rozložit vektorizaci obrazu
+	Expand Live Paint	Rozložit živou malbu
+	Live Shape	Živý tvar
+	Make Blend	Vytvořit prolnutí
+	Make Dynamic	Nastavit jako dynamické
+	Make Intertwine	Vytvořit propletení
+	Make Live Paint	Vytvořit živou malbu
+	Make Pattern	Vytvořit vzorek
+	Make Slice	Vytvořit řez
+	Merge Live Paint	Sloučit živou malbu
+	Mesh Point Color	Barva bodu sítě
+	Move Envelope Point	Přesunout bod obálky
+	Move Plane and Copy Objects	Posunout rovinu a kopírovat objekty
+	Move Plane and Objects	Posunout rovinu a objekty
+	Move Slice	Přesunout řez
+	Move Type on a Path	Přesunout text na cestě
+	New Guide	Nové vodítko
+	Place from Library	Umístit z knihovny
+	Rearrange Artboards	Přeuspořádat pracovní plochy
+	Release Blend	Uvolnit prolnutí
+	Release Envelope	Uvolnit obálku
+	Release Intertwine	Uvolnit propletení
+	Release Live Paint	Uvolnit živou malbu
+	Release Repeat	Uvolnit opakování
+	Release Slice	Uvolnit řez
+	Release Threaded Text	Uvolnit zřetězený text
+	Rename Design	Přejmenovat návrh
+	Rename Style	Přejmenovat styl
+	Rename View	Přejmenovat zobrazení
+	Reorder Appearance	Změnit pořadí vzhledu
+	Reorder Artboards	Změnit pořadí pracovních ploch
+	Reshape Spine	Přetvarovat páteř
+	Resize Artboard	Změnit velikost pracovní plochy
+	Resize Slice	Změnit velikost řezu
+	Resize Type Area	Změnit velikost oblasti textu
+	Scale in Perspective	Změnit měřítko v perspektivě
+	Shape Builder Delete	Tvorba tvarů (odstranění)
+	Sort Swatches	Seřadit vzorník
+	Symbol Screener	Průhlednost symbolů
+	Symbol Scruncher	Zhuštění symbolů
+	Symbol Shifter	Posun symbolů
+	Symbol Sizer	Velikost symbolů
+	Symbol Spinner	Otáčení symbolů
+	Symbol Stainer	Obarvení symbolů
+	Symbol Styler	Stylování symbolů
+	Text Orientation	Orientace textu
+	Thread Text	Zřetězit text
+	Typing	Psaní
 	Abutting	Sousedící
 	Black and White	Černobílé
 	Corners	Rohy
@@ -3393,6 +3469,7 @@ theme	Appearance	Motiv
 	Save Print Preset	Uložit přednastavení tisku
 	Print Tiling Pages	Stránky dlaždic tisku
 	Document Raster Effects Settings	Nastavení rastrových efektů dokumentu
+	Use Document Raster Effects Resolution	Použít rozlišení z nastavení rastrových efektů dokumentu
 	Artwork Colors	Barvy kresby
 	Randomize Colors	Náhodné barvy
 	Recolor Artwork	Přebarvit kresbu
@@ -4418,6 +4495,7 @@ imageTrace	Outline	Obrys
 @msg	unknown tool or command `{key}`	neznámý nástroj nebo příkaz `{key}`
 @msg	unknown workspace (one of {_1})	neznámý pracovní prostor (jeden z {_1})
 @msg	unsupported: {0}	nepodporováno: {0}
+@msg	variables are locked	proměnné jsou zamčené
 @msg	version {0} files can't be compressed: only version {COMPRESSED_SINCE} and later open compressed files	soubory verze {0} nelze komprimovat: komprimované soubory otevírá až verze {COMPRESSED_SINCE} a novější
 @msg	width and height are at least 1 pixel	šířka i výška jsou alespoň 1 obrazový bod
 @msg	workspace name can't be empty	název pracovního prostoru nesmí být prázdný
@@ -4864,6 +4942,20 @@ imageTrace	Outline	Obrys
 	DWG (use DXF)	DWG (použijte DXF)
 	Artistic	Umělecké
 	Film Grain…	Filmové zrno…
+	Cutout…	Výřez…
+	Cutout	Výřez
+	Neon Glow…	Neonová záře…
+	Neon Glow	Neonová záře
+	Poster Edges…	Plakátové okraje…
+	Poster Edges	Plakátové okraje
+	Levels	Úrovně
+	Edge Simplicity	Jednoduchost okrajů
+	Edge Fidelity	Věrnost okrajů
+	Glow Size	Velikost záře
+	Glow Brightness	Jas záře
+	Edge Thickness	Tloušťka okrajů
+	Edge Intensity	Intenzita okrajů
+	Posterization	Posterizace
 	Highlight Area	Oblast světel
 
 # Czech render-site follow-up (AI drafts; native review requested).
@@ -5053,6 +5145,18 @@ mark-style	Japanese	Japonské
 	Movie Clip	Filmový klip
 @msg	name is empty	název je prázdný
 @msg	no symbol named `{n}`	žádný symbol s názvem `{n}`
+	Enable Guides for 9-Slice Scaling	Povolit vodítka pro 9-slice škálování
 @msg	a mask has more than one art block	maska má více než jeden blok kresby
 @msg	mask art ends outside a mask dictionary	kresba masky končí mimo slovník masky
 @msg	cancelled; nothing was changed	zrušeno; nic nebylo změněno
+@msg	a linked image can't become a gradient mesh: embed it first	propojený obraz nelze převést na síť přechodu: nejprve jej vložte
+@msg	the image has no usable size or position	obraz nemá použitelnou velikost ani polohu
+@msg	the image's pixels can't be read	pixely obrazu nelze přečíst
+	Persistent	Trvalé
+	Library Panel Options	Možnosti panelu knihovny
+@msg	Persistent libraries not found: {files}	Trvalé knihovny nebyly nalezeny: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` není panel knihovny (viz window.swatchLibrary)
+@msg	library panel `{given}` isn't open	panel knihovny `{given}` není otevřený
+@msg	too many library panels were opened in this session	v této relaci bylo otevřeno příliš mnoho panelů knihoven
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	Obraz má {_1} × {_2} pixelů, na jedné straně více než {LARGE_TRACE_SIDE}: vektorizuje se, ale pomaleji. Rychleji se vektorizuje s předvolbou nižší věrnosti nebo menší kopie obrazu.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	Obraz byl vektorizován v rozlišení {_1} × {_2} pixelů, zmenšený z {_3} × {_4} (nejvýše {_5} megapixelů).

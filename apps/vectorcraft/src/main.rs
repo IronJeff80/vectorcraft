@@ -858,6 +858,7 @@ fn main() -> std::process::ExitCode {
                 let mut session = Session::new();
                 // The profiles loaded before come back before the preferences name any of them.
                 prefs_dir::attach_profile_store(&mut session);
+                prefs_dir::attach_plugin_store(&mut session);
                 let mut app = VectorcraftApp::new(session, services(cc.winit_window().cloned(), cc.egui_ctx.clone()));
                 load_prefs(&mut app, saved);
                 // The saved PDF presets live in their own folder (also read by vectorcraft-cli),
@@ -874,6 +875,8 @@ fn main() -> std::process::ExitCode {
                 app.session.swatch_libraries.set_user_dir(swatches);
                 let styles = prefs_path().and_then(|p| Some(p.parent()?.join("Graphic Styles").to_string_lossy().to_string()));
                 app.session.style_libraries.set_user_dir(styles);
+                // With the User Defined libraries listed, the persistent library panels reopen.
+                vectorcraft_ui_egui::panels::library_panel::restore(&mut app);
                 // So do the Libraries panel's libraries; runs without preferences (agents' test
                 // runs) keep theirs for the session only, never touching the user's.
                 if prefs_enabled() {

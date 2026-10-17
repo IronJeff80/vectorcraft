@@ -284,12 +284,9 @@ pub(super) fn param_fields(
                 continue;
             }
             if let Some(options) = choices(&k) {
-                // In the "effect" context: some languages read the plain Soft, Horizontal and
-                // Vertical (Grain's types) as type settings.
-                let shown = |label: &'static str| crate::i18n::tr_ctx(crate::i18n::current(), "effect", label);
                 let cur = v.as_str().unwrap_or_default();
-                let label = options.iter().find(|(_, value)| *value == cur).map_or(cur, |(l, _)| shown(l));
-                let labels: Vec<&str> = options.iter().map(|(l, _)| shown(l)).collect();
+                let label = options.iter().find(|(_, value)| *value == cur).map_or(cur, |(l, _)| choice_label(l));
+                let labels: Vec<&str> = options.iter().map(|(l, _)| choice_label(l)).collect();
                 if let Some((_, value)) = crate::widgets::dropdown_names(ui, ("fx-choice", &k), label, &labels, 140.0).and_then(|i| options.get(i)) {
                     d.fields.insert(k, json!(value));
                     changed = true;
@@ -341,6 +338,12 @@ pub(super) fn param_fields(
         }
     });
     changed
+}
+
+/// The label of one of [`param_fields`]' choices in the UI language, in the "effect" context: some
+/// languages read the plain Soft, Horizontal and Vertical (Grain's types) as type settings.
+pub(super) fn choice_label(label: &'static str) -> &'static str {
+    crate::i18n::tr_ctx(crate::i18n::current(), "effect", label)
 }
 
 /// A number typed in a command's dialog as JSON: a whole number as an integer, as counts are read
@@ -404,7 +407,7 @@ pub(super) fn schema_fields(ui: &mut egui::Ui, d: &mut Dialog, specs: &[(String,
 }
 
 /// A field label from its camelCase key (`miterLimit` → "Miter Limit:").
-pub(super) fn humanize(k: &str) -> String {
+pub(crate) fn humanize(k: &str) -> String {
     let mut s = String::new();
     for (i, c) in k.chars().enumerate() {
         if i == 0 {
@@ -582,11 +585,20 @@ pub(super) fn preview_result(
 }
 
 /// OK of a dialog using [`preview`]: keep the previewed `cmd` as one undo step (or run it when no
-/// preview runs) and close. On an error the dialog stays open.
+/// preview runs) and close; the command's warning shows in the status bar either way. On an error
+/// the dialog stays open.
 pub(super) fn commit_preview(app: &mut crate::VectorcraftApp, cmd: &str, params: Value) -> Result<Value, String> {
     let r = if app.session.in_interaction() {
         match app.session.preview(cmd, &params) {
-            Ok(_) => app.session.commit_interaction().map(|_| Value::Null).map_err(|e| e.to_string()),
+            Ok(v) => {
+                let r = app.session.commit_interaction().map(|_| Value::Null).map_err(|e| e.to_string());
+                if r.is_ok()
+                    && let Some(w) = v.get("warning").and_then(Value::as_str)
+                {
+                    app.status(w.to_string());
+                }
+                r
+            }
             Err(e) => Err(e.to_string()),
         }
     } else {

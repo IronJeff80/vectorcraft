@@ -495,13 +495,19 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
         "window.swatchLibrary",
         "Swatch Library",
         "",
-        "{library: id or name (see swatch.library.list) | null (close)} open the read-only library panel on a swatch library (UI state `library_panel`); clicking a swatch there runs swatch.library.add with apply → {open, name, count}",
+        "{library: id or name (see swatch.library.list) | null (close every swatch library panel)} open the swatch library in a read-only panel of its own, floating (panel id `library:swatches:<id>`, which window.panel.* moves, docks and closes), or bring its panel forward when it is open; clicking a swatch there runs swatch.library.add with apply. ui.libraryPanel sets its view, find field and Persistent (ui.inspect: ui.library_panels) → {open: id, panel, name, count}",
     ),
     (
         "window.swatchLibrary.other",
         "Other Library…",
         "",
-        "{path?} (default: pick a file) load a .vcswatches, .gpl, .ase or .acb (color book) library, or another document's swatches (engine: swatch.library.load), and open it in the library panel",
+        "{path?} (default: pick a file) load a .vcswatches, .gpl, .ase or .acb (color book) library, or another document's swatches (engine: swatch.library.load), and open it in its library panel",
+    ),
+    (
+        "ui.libraryPanel",
+        "Library Panel Options",
+        "",
+        "{panel: a library panel's id (`library:swatches:pastels`, as window.swatchLibrary answers), library?: id or name of another library of its kind to show in the panel (Previous / Next Library; one open in a panel of its own is brought forward instead), view?: smallThumb|mediumThumb|largeThumb|smallList|largeList, showFind?: bool, persistent?: bool (reopen the panel when the app starts)} set an open library panel, or a closed persistent one's view, Show Find Field and Persistent; kept with the preferences (ui.inspect: ui.library_panels) → {panel, kind, library, view, showFind, persistent, open}",
     ),
     (
         "ui.saveSwatchLibrary",
@@ -589,13 +595,13 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
         "window.graphicStyleLibrary",
         "Graphic Style Library",
         "",
-        "{library: id or name (see graphicStyle.libraries) | null (close)} open the read-only library panel on a graphic style library (UI state `library_panel`, kind graphicStyles); clicking a style there runs graphicStyle.addFromLibrary with apply (Alt: add) → {open, name, count}",
+        "{library: id or name (see graphicStyle.libraries) | null (close every graphic style library panel)} open the graphic style library in a read-only panel of its own, floating (panel id `library:graphicStyles:<id>`), or bring its panel forward when it is open; clicking a style there runs graphicStyle.addFromLibrary with apply (Alt: add). ui.libraryPanel sets its view, find field and Persistent → {open: id, panel, name, count}",
     ),
     (
         "window.graphicStyleLibrary.other",
         "Other Library…",
         "",
-        "{path?} (default: pick a file) load a .vcstyles library, or another document's graphic styles (engine: graphicStyle.loadLibrary), and open it in the library panel",
+        "{path?} (default: pick a file) load a .vcstyles library, or another document's graphic styles (engine: graphicStyle.loadLibrary), and open it in its library panel",
     ),
     (
         "ui.saveGraphicStyleLibrary",
@@ -992,10 +998,14 @@ pub const UI_COMMANDS: &[(&str, &str, &str, &str)] = &[
 ];
 
 /// Canonical panel id for `window.panel`: a dock tab's or an icon panel's id or display label,
-/// matched case-insensitively (`"Layers"`, `"swatches"`, `"Color Guide"`).
+/// matched case-insensitively (`"Layers"`, `"swatches"`, `"Color Guide"`), or a library panel's id
+/// as it is (`library:swatches:pastels`).
 pub(crate) fn normalize_panel(input: &str) -> Option<&'static str> {
     let name = input.trim();
-    crate::state::all_panels().find(|(id, label)| name.eq_ignore_ascii_case(id) || name.eq_ignore_ascii_case(label)).map(|(id, _)| id)
+    crate::state::all_panels()
+        .find(|(id, label)| name.eq_ignore_ascii_case(id) || name.eq_ignore_ascii_case(label))
+        .map(|(id, _)| id)
+        .or_else(|| crate::panels::library_panel::intern(input))
 }
 
 /// An optional `{key?: bool}` param: none when it is omitted or null (the commands then toggle).
@@ -1405,6 +1415,8 @@ pub fn run_ui_command(app: &mut VectorcraftApp, id: &str, p: &Value) -> Option<R
                     app.ui.dock_tab = tab;
                     Ok(Value::Null)
                 }
+                // A library panel isn't in the icon column: it floats.
+                (Some(p), None) if crate::panels::library_panel::parse(p).is_some() => crate::panels::library_panel::float(app, p),
                 (Some(p), None) => {
                     app.ui.open_panel = if app.ui.open_panel.as_deref() == Some(p) { None } else { Some(p.to_string()) };
                     app.ui.dock = true;
@@ -1538,6 +1550,7 @@ pub fn run_ui_command(app: &mut VectorcraftApp, id: &str, p: &Value) -> Option<R
         }
         "ui.flattenerPreview" => crate::panels::flattener_preview::command(app, p),
         "window.graphicStyleLibrary" => crate::panels::graphic_styles::open_library(app, p),
+        "ui.libraryPanel" => crate::panels::library_panel::command(app, p),
         "window.graphicStyleLibrary.other" => crate::panels::graphic_styles::other_library(app, s("path")),
         "ui.saveGraphicStyleLibrary" => {
             let names = p.get("names").and_then(Value::as_array).map(|a| a.iter().filter_map(Value::as_str).map(str::to_string).collect());
@@ -1816,6 +1829,12 @@ pub fn dynamic_label(app: &VectorcraftApp, id: &str, label: &str) -> String {
         id if saved_selection_slot(id).is_some() => saved_selection_name(app, id).unwrap_or_else(|| "—".into()),
         "view.artboards" => if v.artboards { "Hide Artboards" } else { "Show Artboards" }.into(),
         "view.rulers" => if v.rulers { "Hide Rulers" } else { "Show Rulers" }.into(),
+        "view.globalRulers" => if app.session.active().is_some_and(|d| d.doc.rulers == vectorcraft_doc::RulerMode::Global) {
+            "Change to Artboard Rulers"
+        } else {
+            "Change to Global Rulers"
+        }
+        .into(),
         "view.boundingBox" => if v.bounding_box { "Hide Bounding Box" } else { "Show Bounding Box" }.into(),
         "view.transparencyGrid" => {
             if app.session.active().is_some_and(|d| d.transparency_grid) { "Hide Transparency Grid" } else { "Show Transparency Grid" }.into()
@@ -2803,7 +2822,7 @@ pub fn menu_tree_named(english_names: bool) -> Vec<(&'static str, Vec<Item>)> {
                 c("Lock Slices", "view.slices.lock"),
                 c("Hide Template", "view.template"),
                 Sep,
-                sub("Rulers", vec![c("Show Rulers", "view.rulers"), todos("Change to Global Rulers", "Cmd+Alt+R"), todo("Show Video Rulers")]),
+                sub("Rulers", vec![c("Show Rulers", "view.rulers"), c("Change to Global Rulers", "view.globalRulers"), todo("Show Video Rulers")]),
                 c("Hide Bounding Box", "view.boundingBox"),
                 c("Show Transparency Grid", "view.transparencyGrid"),
                 c("Hide Text Threads", "view.textThreads"),
@@ -3757,7 +3776,7 @@ fn effect_menu() -> Vec<Item> {
         Sep,
         Item::Header("Vector Effects"),
     ];
-    // Submenus (and Crop Marks, an item of its own) in the reference app's order.
+    // Submenus (and Crop Marks and Rasterize…, items of their own) in the reference app's order.
     let order = [
         "3D and Materials",
         "Color Adjustments",
@@ -3766,6 +3785,7 @@ fn effect_menu() -> Vec<Item> {
         "Distort & Transform",
         "Path",
         "Pathfinder",
+        "Rasterize…",
         "Stylize",
         "SVG Filters",
         "Warp",
@@ -3776,21 +3796,18 @@ fn effect_menu() -> Vec<Item> {
     // Glowing Edges).
     let in_vector_menu =
         |e: &vectorcraft_effects::EffectInfo| order.iter().any(|s| e.menu == ["Effect", *s]) && !vectorcraft_effects::PIXEL_EFFECTS.contains(&e.id);
+    let item = |e: &vectorcraft_effects::EffectInfo| match e.defaults.as_object().is_some_and(|o| o.is_empty()) {
+        // No options (Effect → Pathfinder, Crop Marks): apply directly, like Illustrator.
+        true => Item::Cmd(e.label, "effect.apply", json!({ "effect": e.id })),
+        false => Item::Cmd(e.label, "effect.dialog", json!({ "effect": e.id })),
+    };
     // The effects whose catalogue menu path is `path`.
     // `vector` picks the ones for the vector submenu or the ones for the raster submenu.
-    let items_at = |path: &[&str], vector: bool| -> Vec<Item> {
-        cat.iter()
-            .filter(|e| e.menu == path && in_vector_menu(e) == vector)
-            .map(|e| match e.defaults.as_object().is_some_and(|o| o.is_empty()) {
-                // No options (Effect → Pathfinder): apply directly, like Illustrator.
-                true => Item::Cmd(e.label, "effect.apply", json!({ "effect": e.id })),
-                false => Item::Cmd(e.label, "effect.dialog", json!({ "effect": e.id })),
-            })
-            .collect()
-    };
+    let items_at =
+        |path: &[&str], vector: bool| -> Vec<Item> { cat.iter().filter(|e| e.menu == path && in_vector_menu(e) == vector).map(item).collect() };
     for sub_name in order {
         if let Some(e) = cat.iter().find(|e| top_level(e) && e.label == sub_name) {
-            out.push(Item::Cmd(e.label, "effect.apply", json!({ "effect": e.id })));
+            out.push(item(e));
             continue;
         }
         let items = items_at(&["Effect", sub_name], true);
@@ -3879,6 +3896,8 @@ pub const DYNAMIC_LABELS: &[&str] = &[
     "Show Artboards",
     "Hide Rulers",
     "Show Rulers",
+    "Change to Global Rulers",
+    "Change to Artboard Rulers",
     "Hide Bounding Box",
     "Show Bounding Box",
     "Hide Transparency Grid",

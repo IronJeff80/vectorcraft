@@ -426,7 +426,9 @@ The Swatches panel menu's commands: `swatch.addUsedColors {selection?, global?}`
 names Select All Unused selects), `swatch.merge {names}` (the first is kept), `swatch.ungroup {name}` and
 `swatch.sortByKind`.
 Document colour mode: `file.new {colorMode: "cmyk"}` starts a CMYK document with CMYK default swatches, and RGB
-colours applied to it (`paint.setFill`/`setStroke` colours and gradient stops, `swatch.new`) are stored as CMYK;
+colours applied to it (`paint.setFill`/`setStroke` colours and gradient stops, `paint.sampleColor`,
+`swatch.new {color}`) are stored as CMYK, converted through the color settings (`edit.colorSettings`: the CMYK
+working space and intent, as Document Color Mode converts them);
 Gray stays Gray, and `keepModel: true` keeps a colour as given. RGB documents keep colours as given. Harmonies, Edit
 Colors blends, inversions and Recolor Artwork keep each colour's model (a blend between models takes the document's).
 `swatch.new {colors: [...]}` saves several colours as swatches in one undo step. `color.harmony {color, rule, steps?, variation?, amount?}` answers what the Color
@@ -842,6 +844,12 @@ of the format they write (one object can carry several formats' options). A comm
 (`document.setup`, `text.areaOptions`) says so the same way. The app's own journal isn't checked: an action or
 journal recorded by an older version replays as it did, except for an effect `color` that the effect can't read.
 
+`object.createObjectMosaic` (`columns`, `rows`), `object.transformEach` (`reference`, `seed`) and `artboard.rearrange`
+(`columns`) take whole numbers, written `4` or `4.0`. A fraction or a negative number is refused with
+`` `columns` must be a whole number ``. A string or another value that is not a number is refused with
+`` `columns` must be a number, not "4" ``. Each message names the key that was given, and the command then changes
+nothing.
+
 A step can use an earlier step's result, in `run` as in the `command_batch` tool. A parameter string that is exactly
 `$N` or `$N.path` takes that value from the result of step `N` (counting from 0, in the order they ran; `run --in`'s
 open isn't a step), and `$last…` from the step before. A path goes into objects by key and arrays by index:
@@ -958,6 +966,17 @@ mask is edited; called again it shows the artwork, still editing. It is view sta
 like the mask view: the grid shows behind the artboards of the documents that turn it on, on the canvas and in
 `ui.screenshot`, never in exports. It returns `{on}`, isn't undoable and doesn't mark the document changed.
 
+`view.globalRulers {global?}` (View → Rulers → Change to Global / Artboard Rulers, Cmd+Alt+R; default: toggle) is
+saved with the document and undoable. With artboard rulers (a new document's) the rulers count from the active
+artboard's top-left corner, or the zero point set for it; with global rulers, from one document zero point. Command
+coordinates stay absolute either way. `document.rulerOrigin {artboard?}` returns the zero point the rulers use with that
+artboard active; `document.setRulerOrigin {x, y, artboard?}` and `document.resetRulerOrigin {artboard?}` set or reset
+the document's (global rulers) or that artboard's (artboard rulers, kept relative to it so it follows the artboard).
+
+```json
+{"name":"run_command","arguments":{"command":"view.globalRulers","params":{"global":true}}}
+```
+
 ## Clipping masks
 
 `object.clippingMask.make` clips the selected objects by the topmost one, which may be a path, a compound path or a
@@ -1059,7 +1078,9 @@ removes them) → `{selected}`. `guide.move {index, pos}` puts one guide somewhe
 moves the selected ones (vertical guides by `dx`, horizontal ones by `dy`; `copy` leaves them and selects the
 moved copies), and `guide.remove {index?}` deletes one guide or the selected ones → `{count}`; each is one undo
 step. With guides selected, `edit.clear` (Delete) deletes them and `object.nudge` (the arrow keys) nudges them.
-View › Guides › Lock Guides (`view.guides.lock`) deselects them and refuses these commands until unlocked.
+View › Guides › Lock Guides (`view.guides.lock`) deselects them and the paths made into guides, in every open
+document, and refuses these commands until unlocked. While it is on, a command that selects art, such as `edit.undo`,
+`edit.redo`, `object.exitIsolation`, `object.unlockAll`, `object.showAll` or `edit.paste`, leaves the guides out.
 
 `view.guides.release {index?, ids?}` (View › Guides › Release Guides) turns guides into paths → `{count}`. With
 `index` it releases that ruler guide, and with `ids` it releases those guide paths (and the guide paths inside them).
@@ -1094,7 +1115,10 @@ These families are in the live catalog (`command_list` / `vectorcraft://commands
 already walks Image Trace. Short agent entry points:
 
 - Symbols: `symbol.list` (each row includes `registration` 0..8 and `exportType`: `movieClip`|`graphic`),
-  `symbol.new {name?, registration?, exportType?, ids?}`, `symbol.options {name?, newName?, registration?, exportType?}`,
+  `symbol.new {name?, registration?, exportType?, nineSlice?, nineSliceGuides?, ids?}`,
+  `symbol.options {name?, newName?, registration?, exportType?, nineSlice?, nineSliceGuides?}` (`nineSlice` bool turns
+  9-slice guides on or off; `nineSliceGuides` is `[left, top, right, bottom]`, fractions 0..1 of the symbol size; rows
+  of `symbol.list` carry `nineSlice`: the guides or `null`),
   `symbol.place {name?, x?, y?}`, `symbol.breakLink {ids?}`, `symbol.replace`, `symbol.edit`, `symbol.duplicate`,
   `symbol.selectInstances {name}`.
 - Brushes: `brush.list`, `brush.get {name}`, `brush.apply {name, ids?}`, `brush.new {type, name?, params?, ids?}`,
@@ -1103,7 +1127,11 @@ already walks Image Trace. Short agent entry points:
 - Variables: `variable.list`, `variable.define {name, kind: text|visibility|image|graph}`, `variable.bind {variable, ids?}`,
   `variable.makeTextDynamic`, `variable.makeVisibilityDynamic`, `variable.makeImageDynamic`, `variable.makeGraphDynamic`,
   `variable.unbind`, `variable.rename`, `variable.delete`, `variable.highlight` (image values are file paths, graph
-  values CSV as `graph.setData`).
+  values CSV as `graph.setData`). `variable.lock {locked?}` (Lock Variables) locks or unlocks the variables;
+  without `locked` it toggles, and the lock is saved with the document. While the variables are locked,
+  `variable.define`, `variable.delete`, `variable.rename` and the four `variable.make…Dynamic` commands fail with
+  "variables are locked"; `variable.bind`, `variable.unbind` and the `dataset.*` commands still run, and
+  `variable.list` reports `locked`.
 - Data sets: `dataset.list`, `dataset.new {name, values?}`, `dataset.set {name, values?}`, `dataset.rename`,
   `dataset.delete`, `dataset.capture`, `dataset.update`, `dataset.select {name}`, `dataset.next` /
   `dataset.prev` (each `dataset.select` / next / prev is one undo step over every bound object), `dataset.import {path|data|dataBase64|csv}` /
@@ -1128,11 +1156,11 @@ already walks Image Trace. Short agent entry points:
 `dataset.select`, `dataset.next` and `dataset.prev` reply `{name, applied, skipped}`. They add `overflow: [id…]`
 when area type or type on a path whose text they rewrote doesn't fit, as `text.setText` does (see
 [Fitting area type](#fitting-area-type-auto-size-shrink-text-to-fit-overflow)). They skip an object that is
-locked or inside a hidden or locked layer or group. They apply the data set's visibility values that show objects
-first, outermost object first, then its other values in the order the variables are defined, then its visibility
-values that hide objects, innermost object first. A data set that shows a group sets the objects inside it in the
-same call, and one that hides a visible group sets the objects inside it before it hides the group. Of two
-variables of the same kind on one object, the one defined last wins.
+locked or inside a locked layer or group, and count it in `skipped`. They rewrite hidden objects and objects inside
+a hidden layer or group, which stay hidden unless one of the data set's visibility values shows them. When such a
+layer is shown again, its type holds the data set's text. They apply the values in the order the variables are
+defined. Of two variables of the same kind on one object, the one defined last wins. `dataset.list`,
+`dataset.capture` and `dataset.update` read hidden objects and objects inside a hidden layer or group as well.
 
 ```json
 {"name":"run_command","arguments":{"command":"symbol.list","params":{}}}
@@ -1146,8 +1174,8 @@ variables of the same kind on one object, the one defined last wins.
 ```
 
 `dataset.update {all?}` writes what the bound objects hold now into the active data set, for each variable that the
-data set holds. A variable whose objects report no value, because they are locked, inside a hidden or locked layer
-or group, or deleted, keeps the data set's value. With `all: true` it also adds every other variable that the
+data set holds. A variable whose objects report no value, because they are locked, inside a locked layer or group,
+or deleted, keeps the data set's value. With `all: true` it also adds every other variable that the
 objects report a value for. The reply gives `values`, the number of values it wrote, and `left`, the variables it
 did not write.
 
@@ -1371,6 +1399,34 @@ with); without `path` it returns `{data}`, and `user: true` saves into the user 
 file, or another document's graphic styles, as a library to add from; a file in the user library folder, or a file
 with the same extension and bytes as one there, loads as that User Defined library.
 
+## Library panels
+
+Each swatch or graphic style library opens in a read-only panel of its own (#2603), as in Illustrator, and
+several can be open at once. `window.swatchLibrary {library}` and `window.graphicStyleLibrary {library}`
+(remote mode, `invoke_menu`) open one floating, or bring its panel forward when it is already open, and answer
+`{open, panel, name, count}`; `library: null` closes every panel of that kind. The panel id is
+`library:<kind>:<library id>` (`library:swatches:pastels`, `library:graphicStyles:hand-drawn`,
+`library:swatches:loaded/C:/Palettes/Brand.ase`), and the panel commands take it like any other panel's:
+`window.panel.float {panel, onto?, x?, y?}` groups or moves it, `window.panel.dock {panel}` docks it,
+`window.panel.close {panel}` closes it. `window.swatchLibrary.other {path}` and `window.graphicStyleLibrary.other
+{path}` load a file and open it the same way.
+
+`ui.libraryPanel {panel, library?, view?, showFind?, persistent?}` sets one panel: `library` shows another library
+of its kind in that panel (what Previous Library and Next Library do; a library open in a panel of its own is
+brought forward instead), `view` is `smallThumb`, `mediumThumb`, `largeThumb`, `smallList` or `largeList`,
+`showFind` shows or hides the find field, and `persistent: true` is the panel menu's Persistent: the panel
+reopens when the app starts, with its view and find field, where the saved layout had it (or floating). A
+library loaded from a file is read again from its path; one whose file is gone is left out, and the status bar
+says which. A closed persistent panel can still be set, so `persistent: false` stops it reopening. The reply
+is `{panel, kind, library, view, showFind, persistent, open}`, and `ui.inspect` lists every panel's settings
+under `ui.library_panels`.
+
+```json
+{"name":"invoke_menu","arguments":{"command":"window.swatchLibrary","params":{"library":"pastels"}}}
+{"name":"invoke_menu","arguments":{"command":"ui.libraryPanel","params":{"panel":"library:swatches:pastels","view":"smallList","persistent":true}}}
+{"name":"invoke_menu","arguments":{"command":"window.panel.close","params":{"panel":"library:swatches:pastels"}}}
+```
+
 ## Libraries
 
 The Libraries panel's libraries hold graphics, colours and character and paragraph styles that any document can use.
@@ -1460,7 +1516,9 @@ opacity masks or raster effects reach (clipped to those regions with `clipComple
 `preset` is `high`, `medium` (the default) or `low`; option keys (`balance` 0–100, `lineArtPpi`, `gradientPpi`,
 `textToOutlines`, `strokesToOutlines`, `clipComplexRegions`, `antiAlias`, `preserveAlpha`, `preserveOverprints`)
 override it, at the top level or in `options`. `balance: 0` rasterizes everything; lower balances rasterize groups
-that split into many regions. The result reports `{ids, vector, rasterized, options}`.
+that split into many regions. The result reports `{ids, vector, rasterized, options}`. When an image in the art
+can't be decoded, the image that replaces the art does not show it, and the result also carries `warning`: "an image
+couldn't be decoded and is missing from the picture", the note raster exports give.
 
 ```json
 {"name":"run_command","arguments":{"command":"object.flattenTransparency","params":{"ids":[12,15],"preset":"high"}}}
@@ -1484,7 +1542,10 @@ the source's fills and strokes on top of each target's stack (Shift+Alt-click). 
 `eyedropper.setOptions {sampleSize?, pickUp?, apply?}` (or `prefs.get`/`prefs.set` with key `eyedropper`) reads and
 sets them; a tree names flags under `appearance` (`transparency`, `fill` `{color, transparency, overprint}`, `stroke`
 `{color, transparency, overprint, weight, cap, join, miter, dash}`), `character` and `paragraph`, and a bool for a
-branch sets all of it. `paint.sampleColor {color}` puts a sampled colour (in its own model) into the active proxy.
+branch sets all of it. `paint.sampleColor {color}` puts a sampled color into the active proxy (in a CMYK document an
+RGB color is stored as CMYK, as `paint.setFill` stores it). Clicking an image samples its pixels: a CMYK image (a
+four-component JPEG, or an 8- or 16-bit chunky CMYK TIFF) gives its ink amounts as they are, and an RGB image's sRGB
+pixel is taken into the working RGB space.
 
 ```json
 {"name":"run_command","arguments":{"command":"eyedropper.setOptions","params":{"pickUp":{"appearance":{"stroke":{"weight":false}}}}}}
@@ -1580,7 +1641,8 @@ document's raster effects resolution (shadows and outer glows under the art; a b
 the object with the image). Type with a geometry effect (Outline Object included) or with fills and strokes of its own
 is outlined; type that has no fills or strokes of its own and whose only effects are shadows or outer glows stays
 type, with the image under it. A group's or layer's own fills and strokes become objects among its members, and its
-members are expanded too.
+members are expanded too. The result is `{ids}`; when an image in the art can't be decoded, the images made from
+raster effects do not show it, and the result also carries the `warning` that Flatten Transparency gives.
 
 ```json
 {"name":"run_command","arguments":{"command":"effect.expandAppearance","params":{"ids":[12]}}}
@@ -1676,10 +1738,17 @@ limit. A rectangle's right-angle miters stay within half the weight of its edges
 
 A symbol instance is measured by its symbol's art, placed by the instance's transform. The bounds in
 `document.inspect` and `document.node`, the Align commands, `object.setBounds`, the bounding box, clicks, marquees,
-Fit to Artwork Bounds and exports of the art use that box. Visual bounds (Use Preview Bounds, Fit to Selected Art)
-take in the strokes in the art at their own weight, as the canvas draws them when the instance scales the art. An
-instance is measured as the 20 × 20 square around the origin, which symbols made in the app keep their art in, when
-its symbol is missing, when its symbol or a symbol nested in its art holds an instance of itself, and when symbols
+Fit to Artwork Bounds and exports of the art use that box. So do `artboard.rearrange` and `artboard.move` (which
+artboard the art moves with), `artboard.convertToArtboards`, `select.allOnArtboard`, `object.transformEach`,
+`object.lock.above` and `object.hide.above`. `edit.copy` and `edit.cut` record the artboard under the center of that
+box as the one the copy comes from, and `edit.pasteInPlace`, `edit.pasteInFront`, `edit.pasteInBack` and
+`edit.pasteOnAllArtboards` keep the copy's offset to it. `edit.paste {center}`, `library.use {center}` and the
+`clipboard.import*` commands center that box on the point, and `library.add` gives a graphic the size of that box.
+`clipboard.exportPng`, `clipboard.exportPdf` and the PNG and PDF that Copy offers other apps are cropped to that box.
+Visual bounds (Use Preview Bounds, Fit to Selected Art) take in the strokes in the art at their own weight, as the
+canvas draws them when the instance scales the art. An instance is measured as the 20 × 20
+square around the origin, which symbols made in the app keep their art in, when its symbol is missing,
+when its symbol or a symbol nested in its art holds an instance of itself, and when symbols
 nest 32 deep in its art. PDF and EPS export and the SVG of an artboard leave out art outside the page or artboard, and
 Skip Blank Artboards skips an artboard with no art on it. For both, the box of an instance whose art holds brushed
 strokes grows by 16 times the widest stroke (at least 1 pt) of the objects in its art that have a brushed stroke,
@@ -1806,6 +1875,9 @@ point at `t` by `dx`, `dy`: a smooth anchor at either end stays smooth, its othe
 With `perpendicular: true` (Shift held during the drag) both of the segment's handles stand at right angles to the
 line between its anchors, on the same side and at the same length, and the point at `t` lies as far from that line
 as the point moved by `dx`, `dy` does; a segment whose anchors coincide bends as it does without `perpendicular`.
+`path.reshapeSegment` refuses a delta of 1e9 pt or longer ("invalid delta"), as `object.blend.spine.reshapeSegment`
+does. `path.convertAnchor` (its `x`, `y`) and `path.freehand` (each of its `points`) refuse a point whose x or y is
+1e9 pt or more in size ("x and y must be finite").
 
 A `pointer_gesture` with `mods: {cmd: true}` held at the press, with any tool but the selection tools (Command on
 macOS, Ctrl elsewhere), drags with the selection tool chosen last (`select_tool`), or Direct Selection with the Pen,
@@ -2095,7 +2167,9 @@ The Selection & Anchor Display and General preferences apply to `pointer_gesture
 
 The preferences for the view need the desktop app (`vectorcraft-cli mcp --connect`): `zoomWithMouseWheel` (the
 wheel zooms about the pointer, Shift-wheel scrolls up and down, Cmd/Ctrl-wheel sideways; the control channel's
-`ui.wheel` turns the wheel), `zoomToSelection` (on: Zoom In and Zoom Out centre the selection), `showToolTips`,
+`ui.wheel` turns the wheel), `trackpadRotateView` (on by default: a two-finger rotation on a Mac trackpad, in the
+macOS app or in Safari, turns the view about the pointer once it reaches 5°; with it off, the gesture does not turn
+the view), `zoomToSelection` (on: Zoom In and Zoom Out centre the selection), `showToolTips`,
 `anchorSize` (1–7), `gridColor`, `gridStyle`, `gridsInBack`, `guideColor`, `guideStyle`, `showPixelGrid` (on by
 default: in View › Pixel Preview at 600% zoom and above, a line at every document pixel over the art),
 `recentFontsCount`, `antiAliasedArtwork` (on by default; off, the canvas draws the art with hard edges — a pixel is
@@ -2341,6 +2415,8 @@ paper colour), the flattener preset and Discard White Overprint (Overprint Previ
 it is on), the type options (language and its quotes, Use Typographer's Quotes for typed quotes, superscript, subscript
 and small caps proportions, SVG text export) and the background contents (white: raster exports are white behind the
 art). Pass any of these keys to change them in one undo step; `document.setUnits` stays as an alias for `units`.
+A file whose bleed (0 to 72 pt a side), superscript and subscript sizes (1 to 500%) and positions (-500 to 500%) or
+small caps size (1 to 200%) lies outside those ranges opens with the nearer end of each range.
 
 ```json
 {"name":"run_command","arguments":{"command":"document.setup","params":{"gridColors":"Blue","gridSize":"large","language":"German","bleed":9}}}
@@ -2355,7 +2431,9 @@ value outside that range is read as the nearer end) and `previewMode`.
 `file.newPresets {category?}` lists the categories and presets (Recent: the last sizes used; Saved: the user's presets,
 kept in the preferences by `file.newPresets.save` and removed by `file.newPresets.delete`). A listed preset can be
 passed straight back to `file.new`. Print presets and sizes without `units` start in `unitsGeneral`; screen presets
-(mobile, web, video, social) in Pixels.
+(mobile, web, video, social) in Pixels. A saved or Recent preset whose size (up to 163,830 pt), `artboards` (1 to
+1,000), spacing (0 to 100,000 pt) or bleed (0 to 72 pt a side) lies outside those ranges is read with the nearer end of
+each range, and a size of 0 or less is read as 1 pt.
 
 ```json
 {"name":"run_command","arguments":{"command":"file.new","params":{"preset":"A4","orientation":"landscape","artboards":4,"artboardLayout":{"columns":2},"bleed":9}}}
@@ -2491,9 +2569,29 @@ in one undo step. PDF export renders the raster effects of every kind of object 
 images, symbol instances, live objects, and those in opacity masks, symbols and pattern tiles): shadows and outer glows
 go in an image under the untouched vector art, other effects replace the object with its image, and a path whose
 fills or strokes carry effects is written as one piece per fill and stroke, so only the affected ones become images.
+When an image in the art can't be decoded, `object.rasterize` and `object.cropImage` (without `trim`) make their image
+without it, and their results carry the `warning` that Flatten Transparency gives.
 
 ```json
 {"name":"run_command","arguments":{"command":"document.rasterEffectsSettings","params":{"resolution":"high","background":"white","addAround":36}}}
+```
+
+`effect.apply {effect: "rasterize"}` (Effect › Rasterize…) draws an object as an image of square pixels while its
+paths, type and other art stay editable. It takes the options of Object › Rasterize under these names: `colorModel`
+(`document`, `grayscale` or `bitmap`), `useDocumentResolution` (true by default: the resolution above) or
+`resolution` (1 to 2400 ppi), `background` (`transparent` by default, or `white`), `antiAlias` (`art`, `type` or
+`none`), `clippingMask` and `addAround` (points). The image covers the object's bounds and the room around them,
+its first pixel at their top-left corner. Both `object.rasterize` and the effect measure the art as drawn: with its
+geometry effects, its brush art and its raster effects. The effects above Rasterize in the stack, shadows included,
+are part of the image, and the shadows and glows below it are cast by the image. The canvas draws an image of up to
+8.4 million pixels, at most 32,768 a side, on its own grid and then at the view's zoom: an image pixel wider than a
+screen pixel shows as one flat square, and smaller ones are averaged. A larger image is made from the art drawn at the canvas's resolution
+(lower for very large art), and its pixels no wider than a pixel of that drawing show the art as drawn.
+When Rasterize is an object's only raster effect, Expand Appearance and PDF and SVG export replace the object with the
+image `object.rasterize` makes with the same options.
+
+```json
+{"name":"run_command","arguments":{"command":"effect.apply","params":{"effect":"rasterize","params":{"useDocumentResolution":false,"resolution":150,"background":"white"}}}}
 ```
 
 ## Glass textures
@@ -3315,8 +3413,36 @@ left out when everything fits. `text.create` and `text.createInPath` also return
 as `document.inspect` reports it (after `justify`), so a script can place the type without a helper object (#2413). The warnings of `file.print` and `print.preview` give the ids of the objects that print
 and whose text doesn't fit: the first 20 ids, then how many more.
 
+In PDF, EPS, SVG, EMF, WMF and the raster formats, the warnings of `document.export`, `document.exportPdf` and
+`document.exportEps` give the ids in the same way for the visible objects that the export draws and whose text doesn't
+fit. The export draws the objects on the pages or artboards it writes; an EPS of the visible art and an SVG without
+chosen artboards draw all of them. A PDF leaves out the layers that don't print unless `includeNonPrinting` or
+`createLayers` is set. A `.ai` file keeps the whole text in its editing data and gives no such warning.
+
 ```json
 {"name":"run_command","arguments":{"command":"text.areaOptions","params":{"fit":"shrinkText","fitMinPercent":60}}}
+```
+
+## Threading text from the out port
+
+As in the reference app, a click with the Selection tool on the red "+" out port of selected area type whose text
+overflows loads the pointer with that text (the port sits on the frame's right side, just above the bottom-right
+corner, so the corner handle stays free). The next click threads the text into the closed path or area type under the
+pointer, which becomes the next frame; a click on empty canvas makes a new frame of the first one's shape and size
+with its top-left corner at the click, and a drag draws a rectangle for the new frame. Escape or another tool drops
+the loaded text. Each placement is one undo step (`text.thread.add`), which agents can run directly:
+
+`text.thread.add {from, to? | rect?: [x, y, width, height] | at?: [x, y]}` threads area type `from` into one more
+frame, put right after it in its thread (a new thread of the two when `from` has none): `to`, a closed path (converted
+to an empty frame) or area type that is not threaded yet; `rect`, a new rectangular frame (positive width and height);
+or `at`, a new frame of `from`'s shape and size whose top-left is at `at`. Give exactly one of the three. New frames
+take `from`'s type options, paint and first character and paragraph attributes, and go just above it. The story
+reflows through the thread, the two frames are selected, and it returns `{id}`, the frame threaded into. It refuses
+an `id` that doesn't exist, a `from` that isn't area type (type on a path doesn't thread), an open path, `from`
+itself, an object inside a compound path, a frame already in a thread, and coordinates that aren't finite numbers.
+
+```json
+{"name":"run_command","arguments":{"command":"text.thread.add","params":{"from":42,"at":[300,120]}}}
 ```
 
 ## Converting between point type and area type
@@ -3445,6 +3571,27 @@ not kerned). Off by default and saved only when on. One undo step.
 {"name":"run_command","arguments":{"command":"text.setFormat","params":{"proportionalMetrics":true}}}
 ```
 
+## Variable fonts
+
+`text.setFormat {fontAxes: {"wght": 650}}` (the selected type, or `ids`) and `text.setRangeStyle {id, start, end,
+fontAxes}` (a range) set variation axes of a variable font, as the Character panel's Variable Font sliders do: each tag
+named takes the value given, in the axis's own units and clamped to its range, in place of the style's setting of that
+axis, and `null` sets it back to the style's setting. The other axes keep their settings. A tag the font has no axis for is
+left out, and a value equal to the style's setting is not kept; for a font that isn't installed the values are kept as
+given. Layout, outlines, the substituted-glyph highlight and PDF export use the font instanced at the settings; SVG export
+writes them as `font-variation-settings` (and the `wght` setting as the weight, the `wdth` setting as `font-stretch`) and
+embeds the font instanced there, with a warning when embedded faces of one weight, style and width share characters; SVG
+import reads `font-variation-settings` back. Another font or style (`text.setStyle {font, style}`, `text.setRangeStyle
+{font, style}`, `text.replaceFont`, and a character style applied or redefined with another font unless it sets them)
+clears the settings, and Missing Glyph Protection keeps them on the characters that keep their font. They are saved as
+`fontAxes` only when set, and a character style captured from type (`charStyle.new`, `charStyle.redefine`) sets them
+explicitly, `{}` for none. Each command is one undo step.
+
+```json
+{"name":"run_command","arguments":{"command":"text.fontList","params":{"family":"Bahnschrift","style":"Regular"}}}
+{"name":"run_command","arguments":{"command":"text.setFormat","params":{"fontAxes":{"wght":650,"wdth":87.5}}}}
+```
+
 ## Digits
 
 `text.setFormat {digits: "default"|"arabic"|"hindi"|"farsi"}` (the selected type, or `ids`) and `text.setRangeStyle {id,
@@ -3556,7 +3703,9 @@ to `object.setBounds`, which scales the other dimension by the same factor; agen
 
 ## Plug-ins
 
-WebAssembly plug-ins ([plugins.md](plugins.md)) are installed per process and reached through commands:
+WebAssembly plug-ins ([plugins.md](plugins.md)) are reached through commands; the desktop app and an unconfined
+`vectorcraft-cli` keep the ones `plugin.install` installs in a `Plug-ins` folder next to the preferences and install
+them again at startup (`plugin.remove` deletes them there):
 `plugin.install {path | dataBase64}` installs one, `plugin.list` / `plugin.info {id}` describe them (parameters,
 schema, defaults). An object filter runs on the selected paths and compound paths with `plugin.run {id, params}` (one
 undo step; it may change, delete or add objects, and the result is selected). A live-effect plug-in is an effect with
@@ -3583,7 +3732,9 @@ effects keep their colours.
 ## Vector halftone
 
 `object.vectorHalftone` turns the selection into vector dots, lines or shapes sized by its
-tone (mono, or CMYK screens multiplied over each other), clipped to the art's outline by default:
+tone (mono, or CMYK screens multiplied over each other), clipped to the art's outline by default. An image in the
+art that can't be decoded is sampled as blank (no dots, or full dots with `invert`), and the result carries the
+`warning` that Flatten Transparency gives:
 
 ```json
 {"name":"run_command","arguments":{"command":"object.vectorHalftone","params":{"shape":"circle","frequency":25,"angle":45,"mode":"cmyk"}}}
@@ -3611,7 +3762,9 @@ lists every family available, the installed ones included, each by its English (
 `text.setStyle {font}` and documents use — without the system's hidden families, whose names start with "."
 (macOS's ".SF NS", ".LastResort"), which still resolve when a document names them. Preferences › Type › Show Font
 Names in English (`fontNamesInEnglish`) only changes the UI menu labels, not this list. With `family` it gives that
-family's styles (upright by weight, then italics) and fails when the family isn't available. `text.rescanFonts`
+family's styles (upright by weight, then italics) and fails when the family isn't available; `axes` lists a variable
+font's variation axes (`tag`, `name`, `min`, `default`, `max`, `hidden`, and `value`, the setting of `style`, else of the
+first style), empty for a static font. `text.rescanFonts`
 (Character panel menu › Refresh Font List) scans the font folders again, for fonts installed or removed since the app
 started: type set in a font that became available redraws in it, and type set in a family that was removed redraws in
 the fallback font and is listed as missing, without editing the document. The app does so by

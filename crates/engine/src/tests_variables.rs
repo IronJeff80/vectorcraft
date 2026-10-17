@@ -370,6 +370,79 @@ fn make_dynamic_errors_name_the_command() {
     assert!(e.contains("`variable.makeTextDynamic`") && e.contains("is not type"), "{e}");
 }
 
+/// Lock Variables refuses defining, deleting and renaming variables, Make … Dynamic included,
+/// while binding, unbinding and the dataset commands still run.
+#[test]
+fn locked_variables_refuse_new_deleted_and_renamed_variables() {
+    let mut s = session();
+    let t = text(&mut s, "Alice");
+    let r = rect(&mut s);
+    s.execute("variable.define", &json!({"name": "Name", "kind": "text"})).unwrap();
+    s.execute("variable.define", &json!({"name": "Show", "kind": "visibility"})).unwrap();
+    assert_eq!(s.execute("variable.list", &json!({})).unwrap()["locked"], false);
+    assert_eq!(s.execute("variable.lock", &json!({})).unwrap()["locked"], true, "without `locked` it toggles");
+    assert_eq!(s.execute("variable.list", &json!({})).unwrap()["locked"], true);
+
+    s.execute("select.set", &json!({"ids": [t.0]})).unwrap();
+    for (cmd, p) in [
+        ("variable.define", json!({"name": "Other", "kind": "text"})),
+        ("variable.delete", json!({"names": ["Name"]})),
+        ("variable.rename", json!({"name": "Name", "newName": "Renamed"})),
+        ("variable.makeTextDynamic", json!({})),
+        ("variable.makeVisibilityDynamic", json!({})),
+    ] {
+        let e = s.execute(cmd, &p).unwrap_err();
+        assert!(matches!(&e, EngineError::Disabled(_, why) if why == "variables are locked"), "{cmd}: {e}");
+    }
+    let names = |s: &mut Session| {
+        s.execute("variable.list", &json!({})).unwrap()["variables"].as_array().unwrap().iter().map(|v| v["name"].clone()).collect::<Vec<_>>()
+    };
+    assert_eq!(names(&mut s), [json!("Name"), json!("Show")], "the variables are as they were");
+
+    // Binding and unbinding still work, and so do the datasets.
+    s.execute("variable.bind", &json!({"variable": "Name", "ids": [t.0]})).unwrap();
+    s.execute("variable.bind", &json!({"variable": "Show", "ids": [r.0]})).unwrap();
+    s.execute("variable.unbind", &json!({"ids": [r.0], "variable": "Show"})).unwrap();
+    s.execute("dataset.capture", &json!({})).unwrap();
+    s.execute("dataset.new", &json!({"name": "Bob", "values": {"Name": "Bob"}})).unwrap();
+    s.execute("dataset.import", &json!({"csv": "name,Name\nCarol,Carol\n"})).unwrap();
+    s.execute("dataset.select", &json!({"name": "Carol"})).unwrap();
+    assert_eq!(plain(&s, t), "Carol");
+
+    // Unlocking lets a variable be defined again; `locked` sets the state rather than toggling.
+    assert_eq!(s.execute("variable.lock", &json!({"locked": false})).unwrap()["locked"], false);
+    assert_eq!(s.execute("variable.lock", &json!({"locked": false})).unwrap()["locked"], false);
+    s.execute("variable.define", &json!({"name": "Other", "kind": "text"})).unwrap();
+}
+
+/// Locking is an undo step only when it changes the state, and the lock is saved with the
+/// document: a file saved locked opens locked, and a file without the key opens unlocked.
+#[test]
+fn the_variables_lock_is_an_undo_step_and_is_saved() {
+    let mut s = session();
+    let steps = |s: &Session| s.doc().unwrap().history.undo.len();
+    let before = steps(&s);
+    s.execute("variable.lock", &json!({"locked": true})).unwrap();
+    assert_eq!(steps(&s), before + 1);
+    s.execute("variable.lock", &json!({"locked": true})).unwrap();
+    assert_eq!(steps(&s), before + 1, "locking locked variables is not a step");
+    assert!(s.doc().unwrap().is_dirty());
+
+    let saved = vectorcraft_format::save(&s.doc().unwrap().doc, false);
+    assert!(vectorcraft_format::load(&saved).unwrap().variables.locked, "a document saved locked opens locked");
+    let mut v: Value = serde_json::from_slice(&saved).unwrap();
+    assert_eq!(v["document"]["variables"]["locked"], true);
+    v["document"]["variables"].as_object_mut().unwrap().remove("locked");
+    assert!(!vectorcraft_format::load(&serde_json::to_vec(&v).unwrap()).unwrap().variables.locked, "a file without the key opens unlocked");
+
+    s.execute("edit.undo", &json!({})).unwrap();
+    assert!(!s.doc().unwrap().doc.variables.locked, "undo unlocks");
+    let v: Value = serde_json::from_slice(&vectorcraft_format::save(&s.doc().unwrap().doc, false)).unwrap();
+    assert!(v["document"].get("variables").is_none_or(|v| v.get("locked").is_none()), "unlocked variables write no key: {v}");
+    s.execute("edit.redo", &json!({})).unwrap();
+    assert!(s.doc().unwrap().doc.variables.locked, "redo locks again");
+}
+
 /// Capture Data Set records what the art holds now, which is how rows are made — the art is
 /// edited and captured, rather than the values typed.
 #[test]
@@ -686,6 +759,70 @@ fn a_hidden_object_comes_back_and_is_captured_hidden() {
     // A hidden object can still be bound by id.
     s.execute("variable.define", &json!({"name": "More", "kind": "visibility"})).unwrap();
     s.execute("variable.bind", &json!({"variable": "More", "ids": [r.0]})).unwrap();
+}
+
+/// A row selected while a layer is hidden rewrites the type on it and applies its other values,
+/// and leaves the layer hidden: showing the layer shows that row's text. A layer that is locked
+/// as well as hidden is still left alone.
+#[test]
+fn a_row_rewrites_type_on_a_hidden_layer_but_not_on_a_locked_one() {
+    let mut s = session();
+    let layer = NodeId(s.execute("layer.new", &json!({})).unwrap()["id"].as_u64().unwrap());
+    let t = text(&mut s, "Alice");
+    let r = rect(&mut s);
+    s.execute("variable.define", &json!({"name": "Name", "kind": "text"})).unwrap();
+    s.execute("variable.define", &json!({"name": "Show", "kind": "visibility"})).unwrap();
+    s.execute("variable.bind", &json!({"variable": "Name", "ids": [t.0]})).unwrap();
+    s.execute("variable.bind", &json!({"variable": "Show", "ids": [r.0]})).unwrap();
+    s.execute("dataset.new", &json!({"name": "A", "values": {"Name": "Alice", "Show": true}})).unwrap();
+    s.execute("dataset.new", &json!({"name": "B", "values": {"Name": "Bob", "Show": false}})).unwrap();
+    s.execute("dataset.select", &json!({"name": "A"})).unwrap();
+
+    s.execute("layer.setProps", &json!({"id": layer.0, "visible": false})).unwrap();
+    let v = s.execute("dataset.select", &json!({"name": "B"})).unwrap();
+    assert_eq!((v["applied"].as_u64(), v["skipped"].as_u64()), (Some(2), Some(0)), "{v}");
+    let doc = &s.doc().unwrap().doc;
+    assert_eq!(plain(&s, t), "Bob", "the type on the hidden layer holds the row's text");
+    assert!(!doc.node(r).unwrap().visible, "the row's visibility value applies on the hidden layer");
+    assert!(!doc.node(layer).unwrap().visible, "the row leaves the layer hidden");
+    let sets = s.execute("dataset.list", &json!({})).unwrap();
+    let matching: Vec<&Value> = sets["datasets"].as_array().unwrap().iter().filter(|d| d["matches"] == json!(true)).map(|d| &d["name"]).collect();
+    assert_eq!(matching, [&json!("B")], "only the row the hidden art holds matches: {sets}");
+    s.execute("layer.setProps", &json!({"id": layer.0, "visible": true})).unwrap();
+    assert_eq!(plain(&s, t), "Bob", "showing the layer shows the row's text");
+
+    // Locked and hidden: the row skips both objects and the type keeps its text.
+    s.execute("layer.setProps", &json!({"id": layer.0, "visible": false, "locked": true})).unwrap();
+    let v = s.execute("dataset.select", &json!({"name": "A"})).unwrap();
+    assert_eq!((v["applied"].as_u64(), v["skipped"].as_u64()), (Some(0), Some(2)), "{v}");
+    assert_eq!(plain(&s, t), "Bob", "the type on the locked layer keeps its text");
+    assert!(!s.doc().unwrap().doc.node(r).unwrap().visible);
+}
+
+/// Type inside a hidden group is rewritten too, and List and Capture Data Set read it.
+#[test]
+fn a_row_rewrites_type_in_a_hidden_group_and_capture_reads_it() {
+    let mut s = session();
+    let t = text(&mut s, "Alice");
+    let other = rect(&mut s);
+    let g = group(&mut s, &[t, other]);
+    s.execute("variable.define", &json!({"name": "Name", "kind": "text"})).unwrap();
+    s.execute("variable.bind", &json!({"variable": "Name", "ids": [t.0]})).unwrap();
+    s.execute("dataset.new", &json!({"name": "A", "values": {"Name": "Alice"}})).unwrap();
+    s.execute("dataset.new", &json!({"name": "B", "values": {"Name": "Bob"}})).unwrap();
+    s.execute("object.setProps", &json!({"ids": [g.0], "visible": false})).unwrap();
+
+    let v = s.execute("dataset.select", &json!({"name": "B"})).unwrap();
+    assert_eq!((v["applied"].as_u64(), v["skipped"].as_u64()), (Some(1), Some(0)), "{v}");
+    assert_eq!(plain(&s, t), "Bob");
+    assert!(!s.doc().unwrap().doc.node(g).unwrap().visible, "the group stays hidden");
+
+    let sets = s.execute("dataset.list", &json!({})).unwrap();
+    let matches: Vec<&Value> = sets["datasets"].as_array().unwrap().iter().map(|d| &d["matches"]).collect();
+    assert_eq!(matches, [&json!(false), &json!(true)], "the art holds B's text, not A's: {sets}");
+    let v = s.execute("dataset.capture", &json!({"name": "C"})).unwrap();
+    let sets = s.execute("dataset.list", &json!({})).unwrap();
+    assert_eq!(sets["datasets"][2]["values"], json!({"Name": {"text": "Bob"}}), "{v}: {sets}");
 }
 
 /// A row that hides selected objects deselects them, the key object included. Undo shows them

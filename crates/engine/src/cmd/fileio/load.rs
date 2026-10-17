@@ -168,6 +168,12 @@ fn through_editing_data(bytes: &[u8], opts: &LoadOptions, doc: Document, warning
     if !read {
         return (doc, warnings);
     }
+    // The layers' text objects hold type and the stroked paths around it, which can include stroked
+    // glyphs the PDF part kept as outlines: without any such glyph in the document, the warnings on
+    // outlines are dropped.
+    if !vectorcraft_pdf::holds_outlines(&doc) {
+        warnings.retain(|w| !vectorcraft_pdf::is_outlines_note(w));
+    }
     // The layers hold the art that the PDF part leaves out or, in a PDF, that the import clipped
     // to the page.
     warnings.retain(|w| w != vectorcraft_pdf::OFF_ARTBOARD_NOTE && w != vectorcraft_pdf::PAST_PAGE_NOTE);
@@ -442,10 +448,10 @@ pub(super) fn new_from_template(s: &mut Session, p: &Value) -> Result<Value> {
 /// that default: wasm32 has 4 GB to address and aborts when an allocation fails.
 pub(crate) use vectorcraft_doc::MAX_RASTER_ALLOC;
 
-/// What to say of encoded image `bytes` that need more than [`MAX_RASTER_ALLOC`] to decode (its
-/// header says so; the pixels aren't read): the renderer, which has the same allowance, draws
-/// nothing for them, so Open, Place and the Links panel say it (#1479). `None` for images that
-/// decode, and for bytes that aren't an image.
+/// What to say of encoded image `bytes` that need more than [`MAX_RASTER_ALLOC`] to decode,
+/// counted as RGBA (4 bytes a pixel) or as the decoder gives them when that is more (its header
+/// says so; the pixels aren't read): Open, Place and the Links panel say it (#1479). `None` for
+/// images within the allowance, and for bytes that aren't an image.
 pub(crate) fn too_large_note(bytes: &[u8]) -> Option<String> {
     use image::ImageDecoder as _;
     if let Some((w, h)) = vectorcraft_doc::cmyk::oversized_tiff(bytes) {
@@ -453,7 +459,10 @@ pub(crate) fn too_large_note(bytes: &[u8]) -> Option<String> {
     }
     let d = image::ImageReader::new(Cursor::new(bytes)).with_guessed_format().ok()?.into_decoder().ok()?;
     let (w, h) = d.dimensions();
-    (d.total_bytes() > MAX_RASTER_ALLOC).then(|| format!("an image of {w} × {h} pixels is too large to draw"))
+    // The allowance also counts the pixels as RGBA: an image of fewer than 4 bytes a pixel (gray,
+    // gray with alpha, RGB) takes more than the decoder counts (#1717).
+    let rgba_over = u64::from(w) * u64::from(h) > MAX_RASTER_ALLOC / 4;
+    (rgba_over || d.total_bytes() > MAX_RASTER_ALLOC).then(|| format!("an image of {w} × {h} pixels is too large to draw"))
 }
 
 /// Decode an image's header (and, for formats stored as PNG, its pixels). CMYK TIFFs are kept as

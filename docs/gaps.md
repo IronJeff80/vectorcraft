@@ -22,7 +22,7 @@ stage ([ROADMAP.md](../ROADMAP.md)).
 | 5 | [G11 Correctness bugs in core tools](#g11-correctness-bugs-in-core-tools) | 8–15 | yes | [target-app-parity.md](target-app-parity.md) |
 | 6 | [G4 Advanced type](#g4-advanced-type) | 34–47 | core part | [type-parity.md](type-parity.md) |
 | 7 | [G12 Preferences and panels that don't act yet](#g12-preferences-and-panels-that-dont-act-yet) | 13–20 | yes | [ui-parity.md](ui-parity.md) |
-| 8 | [G2 Photoshop-style raster effects and the Effect Gallery](#g2-photoshop-style-raster-effects-and-the-effect-gallery) | 22–38 | no | [effects-parity.md](effects-parity.md) |
+| 8 | [G2 Photoshop-style raster effects and the Effect Gallery](#g2-photoshop-style-raster-effects-and-the-effect-gallery) | 21–35 | no | [effects-parity.md](effects-parity.md) |
 | 9 | [G13 Illustrator 2026 (30.x) additions](#g13-illustrator-2026-30x-additions) | 15–25 | no | [target-app-parity.md](target-app-parity.md) |
 | 10 | [G14 Pen hardware beyond Windows pressure](#g14-pen-hardware-beyond-windows-pressure) | 8–16 | macOS pressure | [hardware-parity.md](hardware-parity.md) |
 | 11 | [G5 Brushes, symbols and libraries](#g5-brushes-symbols-and-libraries) | 16–27 | no | [target-app-parity.md](target-app-parity.md) |
@@ -209,13 +209,13 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G2 Photoshop-style raster effects and the Effect Gallery
 
-- **Missing:** 27 of 57 filters (the remaining 14 Artistic filters and 13 of Sketch's 14), the Effect Gallery dialog, Load
+- **Missing:** 24 of 57 filters (the remaining 11 Artistic filters and 13 of Sketch's 14), the Effect Gallery dialog, Load
   Texture for Texturizer. Measured in
   [effects-parity.md](effects-parity.md).
-- **Done:** the pixel-filter pipeline and 30 filters (Artistic: Film Grain, Blur, Brush Strokes, Distort, Pixelate, Sharpen, Sketch:
-  Halftone Pattern, Stylize, Texture, Video), Brush Strokes on 2026-10-11, Film Grain on 2026-10-12, Halftone Pattern on 2026-10-16, and Smart Blur's Edge Only and Overlay Edge
+- **Done:** the pixel-filter pipeline and 33 filters (Artistic: Cutout, Film Grain, Neon Glow, Poster Edges, Blur, Brush Strokes, Distort, Pixelate, Sharpen, Sketch:
+  Halftone Pattern, Stylize, Texture, Video), Brush Strokes on 2026-10-11, Film Grain on 2026-10-12, Halftone Pattern on 2026-10-16, Cutout, Neon Glow and Poster Edges on 2026-10-16, and Smart Blur's Edge Only and Overlay Edge
   modes.
-- **Estimate:** 22–38 h (measured 0.7–1.2 h per filter); parallelizes well.
+- **Estimate:** 21–35 h (measured 0.7–1.2 h per filter); parallelizes well.
 
 ## G13 Illustrator 2026 (30.x) additions
 
@@ -227,8 +227,10 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
   where three or more overlap. The group renders, saves and exports through its live expansion. Still missing: the
   right-click Bring Forward / Send Backward menu where three or more objects overlap; adding objects to the group by
   dragging them in the Layers panel is untested.
-- **Missing (asked for by users, from earlier versions):** Object › Create Gradient
-  Mesh on an embedded image, which turns it into a mesh of its colours (#1676); radial gradients in Image Trace's
+- **Done (from users' reports):** Object › Create Gradient Mesh on an embedded image turns it into a mesh over its
+  rectangle, with the image's transform kept; each point takes the average colour and opacity of the picture around it
+  (#1676). A linked image is refused, as the public documentation has it.
+- **Missing (asked for by users, from earlier versions):** radial gradients in Image Trace's
   Gradients option, which traces linear ones only (draft #1849). Inside the estimate below.
 - **Missing:** gradient dither and perceptual blending, gradient presets (30.0); tangent and perpendicular
   snapping and the consolidated snapping options (30.0); artboard locking, artboard colours and managing
@@ -248,10 +250,12 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 - **Done:** Symbol Options › Registration (9-point; stored and used by `symbol.place`); Symbol Options ›
   Export Type (Graphic or Movie Clip; default Movie Clip; `symbol.new` / `symbol.options` / Symbols panel;
-  canvas placement unchanged; Animate / Flash handoff metadata).
+  canvas placement unchanged; Animate / Flash handoff metadata); Symbol Options › Enable Guides for 9-Slice
+  Scaling (four guides as fractions of the symbol size, `nineSlice` / `nineSliceGuides` on `symbol.new` /
+  `symbol.options`, stored per symbol; handoff metadata, not drawn on the canvas, #2342).
 - **Missing:** the Art brush's Overlap, auto-generated Pattern brush corners, new tile art in Pattern Brush
   Options, the Key Color eyedropper; original brush, symbol and graphic-style libraries generated in code (never
-  Adobe's); dynamic symbols; Start Global Edit; Symbol Options 9-slice guides.
+  Adobe's); dynamic symbols; Start Global Edit; drawing the 9-slice guides on the canvas in symbol edit mode and scaling by them.
 - **Estimate:** 15–26 h.
 
 ## G3 3D and Materials
@@ -267,10 +271,11 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 ## G7 Views and windows
 
 - **Done:** custom document ruler origin (#1212): corner drag with preview, double-click reset to the active artboard, relative X/Y inputs and native save/reopen.
+- **Done:** View › Rulers › Change to Global / Artboard Rulers (`view.globalRulers`, Cmd+Alt+R): artboard rulers, a new document's, count from the active artboard, each artboard with its own zero point; rulers, X/Y fields and guide readouts follow the mode, which is saved with the document. Estimate unchanged.
 - **Missing (noted for reporters, 2026-10-14):** custom toolbars (Window › Toolbars › New Toolbar, #1759);
   panel widths kept with a workspace (#1753). Inside the estimate below.
 - **Missing:** multiple windows and Window › Arrange (Cascade, Tile, Float in Window, Consolidate All Windows),
-  panels on another monitor, New View/Edit Views, global/artboard ruler mode switch and video rulers.
+  panels on another monitor, New View/Edit Views, video rulers.
 - **Estimate:** 15–25 h.
 
 ## G6 Automation and scripting
@@ -352,6 +357,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 | 2026-10-14 | minor | G6: image variables (`VariableKind::Image`, `variable.makeImageDynamic`, path values on `dataset.select` keeping bounds); remaining: scripting surface, Batch, graph variables, dataset import/export; estimate 8–14 → 6–12 h |
 | 2026-10-14 | minor | Effect > Warp: style, orientation and percent controls; focused checks passed and original captures reviewed; scores and hours unchanged |
 | 2026-10-14 | minor | G11: open-path anchor Delete removes adjoining segments without bridging the gap; explicit Remove Anchors keeps its reconnect/refit behavior. Scores and hours unchanged. |
+| 2026-10-16 | minor | G13: Object › Create Gradient Mesh on an embedded image (#1676); a linked image is refused. No entry closed, estimates unchanged |
 | 2026-10-15 | minor | G13: Object › Intertwine (#1763): Make, Edit, Release, the Intertwine tool (hover, click, drawn path) and `object.intertwine.arrange` (toggle, front, back). Bring Forward / Send Backward stay missing; adding objects through the Layers panel is untested. No entry closed, estimates unchanged |
 | 2026-10-14 | minor | MCP `add_text` exposes the existing `vertical` option for point, area and path type; horizontal remains the default; scores and hours unchanged. |
 | 2026-10-14 | minor | Vertical fullwidth question and exclamation marks keep their nominal glyph upright when the font has no vertical alternate; scores and hours unchanged. |

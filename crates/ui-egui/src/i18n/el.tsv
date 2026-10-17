@@ -332,6 +332,7 @@
 	Change Case	Αλλαγή πεζών/κεφαλαίων
 	Change Screen Mode (F)	Αλλαγή λειτουργίας οθόνης (F)
 	Change to Global Rulers	Χρήση καθολικών χαράκων
+	Change to Artboard Rulers	Χρήση χαράκων πίνακα σχεδίασης
 	Change to Right-to-Left Layout	Μετάβαση σε διάταξη από δεξιά προς τα αριστερά
 	Changed since the last Refresh.	Τροποποιήθηκε μετά την τελευταία ανανέωση.
 	Changes allowed:	Επιτρεπόμενες αλλαγές:
@@ -505,6 +506,7 @@
 	Condition identifier:	Αναγνωριστικό συνθήκης:
 	Conflict {n} of {count}	Διένεξη {n} από {count}
 	Connect Selected End Points	Σύνδεση επιλεγμένων τελικών σημείων
+	Connect	Σύνδεση
 	Consolidate All Windows	Συγχώνευση όλων των παραθύρων
 	Constrain Angle	Περιορισμός γωνίας
 	Constrain Width and Height Proportions	Διατήρηση αναλογιών πλάτους και ύψους
@@ -745,6 +747,7 @@
 	Document open password	Κωδικός ανοίγματος εγγράφου
 	Document profile	Προφίλ εγγράφου
 	Document Raster Effects Settings	Ρυθμίσεις εφέ ράστερ εγγράφου
+	Use Document Raster Effects Resolution	Χρήση ανάλυσης από τις ρυθμίσεις εφέ ράστερ εγγράφου
 	Document Raster Effects Settings Dialog	Παράθυρο ρυθμίσεων εφέ ράστερ εγγράφου
 	Document Raster Effects Settings…	Ρυθμίσεις εφέ ράστερ εγγράφου…
 	Document Setup	Ρύθμιση εγγράφου
@@ -1098,6 +1101,7 @@
 	Font List	Λίστα γραμματοσειρών
 	Font Preview Size	Μέγεθος προεπισκόπησης γραμματοσειράς
 	Font Size	Μέγεθος γραμματοσειράς
+	Variable Font	Μεταβλητή γραμματοσειρά
 	Font:	Γραμματοσειρά:
 	Fonts	Γραμματοσειρές
 	Fonts in Document	Γραμματοσειρές στο έγγραφο
@@ -1280,6 +1284,76 @@
 	History	Ιστορικό
 	History Options…	Επιλογές ιστορικού…
 	History States	Καταστάσεις ιστορικού
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Εφαρμογή συνόλου δεδομένων
+	Cancel Pattern Editing	Ακύρωση επεξεργασίας μοτίβου
+	Copy Appearance	Αντιγραφή εμφάνισης
+	Copy Guide	Αντιγραφή οδηγού
+	Copy in Perspective	Αντιγραφή σε προοπτική
+	Create Slice from Selection	Δημιουργία τομής από επιλογή
+	Create Slices from Guides	Δημιουργία τομών από οδηγούς
+	Delete All Slices	Διαγραφή όλων των τομών
+	Delete Data Sets	Διαγραφή συνόλων δεδομένων
+	Delete Graphic Styles	Διαγραφή στυλ γραφικών
+	Delete Guide	Διαγραφή οδηγού
+	Delete Guides	Διαγραφή οδηγών
+	Delete Slice	Διαγραφή τομής
+	Delete Style	Διαγραφή στυλ
+	Delete Variables	Διαγραφή μεταβλητών
+	Delete View	Διαγραφή προβολής
+	Done Editing Pattern	Ολοκλήρωση επεξεργασίας μοτίβου
+	Duplicate Rows	Δημιουργία αντιγράφου γραμμών
+	Edit Perspective Grid	Επεξεργασία πλέγματος προοπτικής
+	Expand Blend	Επέκταση ανάμειξης
+	Expand Envelope	Επέκταση περιβλήματος
+	Expand Image Trace	Επέκταση ανίχνευσης περιγραμμάτων εικόνας
+	Expand Live Paint	Επέκταση δυναμικής βαφής
+	Live Shape	Δυναμικό σχήμα
+	Make Blend	Δημιουργία ανάμειξης
+	Make Dynamic	Μετατροπή σε δυναμικό
+	Make Intertwine	Δημιουργία διαπλοκής
+	Make Live Paint	Δημιουργία δυναμικής βαφής
+	Make Pattern	Δημιουργία μοτίβου
+	Make Slice	Δημιουργία τομής
+	Merge Live Paint	Συγχώνευση δυναμικής βαφής
+	Mesh Point Color	Χρώμα σημείου πλέγματος
+	Move Envelope Point	Μετακίνηση σημείου περιβλήματος
+	Move Plane and Copy Objects	Μετακίνηση επιπέδου προοπτικής και αντιγραφή αντικειμένων
+	Move Plane and Objects	Μετακίνηση επιπέδου προοπτικής και αντικειμένων
+	Move Slice	Μετακίνηση τομής
+	Move Type on a Path	Μετακίνηση κειμένου σε διαδρομή
+	New Guide	Νέος οδηγός
+	Place from Library	Τοποθέτηση από βιβλιοθήκη
+	Rearrange Artboards	Αναδιάταξη πινάκων σχεδίασης
+	Release Blend	Αποδέσμευση ανάμειξης
+	Release Envelope	Αποδέσμευση περιβλήματος
+	Release Intertwine	Αποδέσμευση διαπλοκής
+	Release Live Paint	Αποδέσμευση δυναμικής βαφής
+	Release Repeat	Αποδέσμευση επανάληψης
+	Release Slice	Αποδέσμευση τομής
+	Release Threaded Text	Αποδέσμευση συνδεδεμένου κειμένου
+	Rename Design	Μετονομασία σχεδίου
+	Rename Style	Μετονομασία στυλ
+	Rename View	Μετονομασία προβολής
+	Reorder Appearance	Αναδιάταξη εμφάνισης
+	Reorder Artboards	Αλλαγή σειράς πινάκων σχεδίασης
+	Reshape Spine	Αναδιαμόρφωση κεντρικής καμπύλης
+	Resize Artboard	Αλλαγή μεγέθους πίνακα σχεδίασης
+	Resize Slice	Αλλαγή μεγέθους τομής
+	Resize Type Area	Αλλαγή μεγέθους περιοχής κειμένου
+	Scale in Perspective	Κλιμάκωση σε προοπτική
+	Shape Builder Delete	Δημιουργία σχημάτων (διαγραφή)
+	Sort Swatches	Ταξινόμηση δειγμάτων χρωμάτων
+	Symbol Screener	Αραίωση συμβόλων
+	Symbol Scruncher	Σύμπτυξη συμβόλων
+	Symbol Shifter	Μετατόπιση συμβόλων
+	Symbol Sizer	Αλλαγή μεγέθους συμβόλων
+	Symbol Spinner	Περιστροφή συμβόλων
+	Symbol Stainer	Χρωματισμός συμβόλων
+	Symbol Styler	Μορφοποίηση συμβόλων
+	Text Orientation	Προσανατολισμός κειμένου
+	Thread Text	Σύνδεση κειμένου
+	Typing	Πληκτρολόγηση
 	Hollow	Κοίλο
 	Home	Αρχική οθόνη
 	Horizon Height:	Ύψος ορίζοντα:
@@ -1669,6 +1743,7 @@
 	Roman Hanging Punctuation	Κρεμαστή στίξη όρθιας γραφής
 	Rotate	Περιστροφή
 	Rotate View Tool	Εργαλείο περιστροφής προβολής (Rotate View Tool)
+	Trackpad Gesture to Rotate View	Περιστροφή προβολής με χειρονομία στην επιφάνεια αφής
 	Rotate…	Περιστροφή…
 	Rotation	Περιστροφή
 	Rows:	Γραμμές:
@@ -2146,6 +2221,20 @@ lighting	Light	Φως
 	Left Diagonal	Αριστερή διαγώνιος
 	Artistic	Καλλιτεχνικό
 	Film Grain…	Κόκκος φιλμ…
+	Cutout…	Αποκοπή…
+	Cutout	Αποκοπή
+	Neon Glow…	Λάμψη νέον…
+	Neon Glow	Λάμψη νέον
+	Poster Edges…	Άκρες αφίσας…
+	Poster Edges	Άκρες αφίσας
+	Levels	Επίπεδα
+	Edge Simplicity	Απλότητα άκρων
+	Edge Fidelity	Πιστότητα άκρων
+	Glow Size	Μέγεθος λάμψης
+	Glow Brightness	Φωτεινότητα λάμψης
+	Edge Thickness	Πάχος άκρων
+	Edge Intensity	Ένταση άκρων
+	Posterization	Αφισοποίηση
 	Highlight Area	Περιοχή φωτεινών τόνων
 	Skew:	Λοξότητα:
 	Inside	Εσωτερικά
@@ -3564,6 +3653,8 @@ theme	Appearance	Εμφάνιση
 	Variable Width Profile	Προφίλ μεταβλητού πλάτους
 	New Variable	Νέα μεταβλητή
 	Delete Variable	Διαγραφή μεταβλητής
+	Lock Variables	Κλείδωμα μεταβλητών
+	Unlock Variables	Ξεκλείδωμα μεταβλητών
 	List Variables	Λίστα μεταβλητών
 	Bind Variable	Σύνδεση μεταβλητής
 	Unbind Variable	Αποσύνδεση μεταβλητής
@@ -4081,6 +4172,7 @@ theme	Appearance	Εμφάνιση
 @msg	unknown tool or command `{key}`	άγνωστο εργαλείο ή εντολή `{key}`
 @msg	unknown workspace (one of {_1})	άγνωστος χώρος εργασίας (ένας από τους {_1})
 @msg	unsupported: {0}	δεν υποστηρίζεται: {0}
+@msg	variables are locked	οι μεταβλητές είναι κλειδωμένες
 @msg	version {0} files can't be compressed: only version {COMPRESSED_SINCE} and later open compressed files	τα αρχεία έκδοσης {0} δεν μπορούν να συμπιεστούν: μόνο η έκδοση {COMPRESSED_SINCE} και νεότερες ανοίγουν συμπιεσμένα αρχεία
 @msg	width and height are at least 1 pixel	το πλάτος και το ύψος πρέπει να είναι τουλάχιστον 1 εικονοστοιχείο
 @msg	workspace name can't be empty	το όνομα χώρου εργασίας δεν μπορεί να είναι κενό
@@ -5005,6 +5097,18 @@ effect	Points	Σημεία
 	Movie Clip	Κλιπ ταινίας
 @msg	name is empty	το όνομα είναι κενό
 @msg	no symbol named `{n}`	κανένα σύμβολο με όνομα `{n}`
+	Enable Guides for 9-Slice Scaling	Ενεργοποίηση οδηγών για κλιμάκωση 9-slice
 @msg	a mask has more than one art block	η μάσκα έχει περισσότερα από ένα μπλοκ γραφικών
 @msg	mask art ends outside a mask dictionary	τα γραφικά της μάσκας τελειώνουν έξω από το λεξικό της μάσκας
 @msg	cancelled; nothing was changed	ακυρώθηκε· δεν άλλαξε τίποτα
+@msg	a linked image can't become a gradient mesh: embed it first	μια συνδεδεμένη εικόνα δεν μπορεί να γίνει πλέγμα διαβάθμισης: ενσωματώστε την πρώτα
+@msg	the image has no usable size or position	η εικόνα δεν έχει χρησιμοποιήσιμο μέγεθος ή θέση
+@msg	the image's pixels can't be read	τα εικονοστοιχεία της εικόνας δεν μπορούν να διαβαστούν
+	Persistent	Μόνιμη
+	Library Panel Options	Επιλογές πίνακα βιβλιοθήκης
+@msg	Persistent libraries not found: {files}	Δεν βρέθηκαν μόνιμες βιβλιοθήκες: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	Το `{given}` δεν είναι πίνακας βιβλιοθήκης (δείτε window.swatchLibrary)
+@msg	library panel `{given}` isn't open	ο πίνακας βιβλιοθήκης `{given}` δεν είναι ανοιχτός
+@msg	too many library panels were opened in this session	άνοιξαν πάρα πολλοί πίνακες βιβλιοθηκών σε αυτή τη συνεδρία
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	Η εικόνα είναι {_1} × {_2} εικονοστοιχεία, πάνω από {LARGE_TRACE_SIDE} σε μία πλευρά: ανιχνεύεται, αλλά πιο αργά. Μια προρύθμιση χαμηλότερης πιστότητας ή ένα μικρότερο αντίγραφο της εικόνας ανιχνεύεται γρηγορότερα.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	Η εικόνα ανιχνεύτηκε σε {_1} × {_2} εικονοστοιχεία, σμικρυμένη από {_3} × {_4} (το πολύ {_5} megapixel).

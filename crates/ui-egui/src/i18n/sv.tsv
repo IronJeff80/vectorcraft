@@ -346,6 +346,7 @@
 	Change Case	Ändra skiftläge
 	Change Screen Mode (F)	Ändra skärmläge (F)
 	Change to Global Rulers	Byt till globala linjaler
+	Change to Artboard Rulers	Byt till ritytelinjaler
 	Change to Right-to-Left Layout	Byt till layout höger till vänster
 	Changed since the last Refresh.	Ändrad sedan senaste uppdateringen.
 	Changes allowed:	Tillåtna ändringar:
@@ -533,6 +534,7 @@
 	Condition identifier:	Villkorsidentifierare:
 	Conflict {n} of {count}	Konflikt {n} av {count}
 	Connect Selected End Points	Sammanfoga markerade slutpunkter
+	Connect	Sammanfoga
 	Consolidate All Windows	Samla alla fönster
 	Constrain Angle	Begränsa vinkel
 	Constrain Width and Height Proportions	Behåll proportioner för bredd och höjd
@@ -774,6 +776,7 @@
 	Document open password	Lösenord för att öppna dokumentet
 	Document profile	Dokumentprofil
 	Document Raster Effects Settings	Inställningar för rastereffekter i dokument
+	Use Document Raster Effects Resolution	Använd upplösningen från inställningarna för rastereffekter i dokument
 	Document Raster Effects Settings Dialog	Dialogruta för inställningar för rastereffekter i dokument
 	Document Raster Effects Settings…	Inställningar för rastereffekter i dokument…
 	Document Setup	Dokumentinställningar
@@ -1134,6 +1137,7 @@
 	Font List	Teckensnittslista
 	Font Preview Size	Storlek på teckensnittsförhandsgranskning
 	Font Size	Teckenstorlek
+	Variable Font	Variabelt teckensnitt
 	Font:	Typsnitt:
 	Fonts	Typsnitt
 	Fonts in Document	Typsnitt i dokumentet
@@ -1319,6 +1323,76 @@
 	History	Historik
 	History Options…	Historikalternativ…
 	History States	Historiktillstånd
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Använd datauppsättning
+	Cancel Pattern Editing	Avbryt mönsterredigering
+	Copy Appearance	Kopiera utseende
+	Copy Guide	Kopiera stödlinje
+	Copy in Perspective	Kopiera i perspektiv
+	Create Slice from Selection	Skapa skiva från markering
+	Create Slices from Guides	Skapa skivor från stödlinjer
+	Delete All Slices	Radera alla skivor
+	Delete Data Sets	Radera datauppsättningar
+	Delete Graphic Styles	Radera grafikstilar
+	Delete Guide	Radera stödlinje
+	Delete Guides	Radera stödlinjer
+	Delete Slice	Radera skiva
+	Delete Style	Radera stil
+	Delete Variables	Radera variabler
+	Delete View	Radera vy
+	Done Editing Pattern	Avsluta mönsterredigering
+	Duplicate Rows	Duplicera rader
+	Edit Perspective Grid	Redigera perspektivrutnät
+	Expand Blend	Expandera blandning
+	Expand Envelope	Expandera kuvert
+	Expand Image Trace	Expandera bildkalkering
+	Expand Live Paint	Expandera direktmålning
+	Live Shape	Direktform
+	Make Blend	Skapa blandning
+	Make Dynamic	Gör dynamisk
+	Make Intertwine	Skapa sammanflätning
+	Make Live Paint	Skapa direktmålning
+	Make Pattern	Skapa mönster
+	Make Slice	Skapa skiva
+	Merge Live Paint	Sammanfoga direktmålning
+	Mesh Point Color	Nätpunktsfärg
+	Move Envelope Point	Flytta kuvertpunkt
+	Move Plane and Copy Objects	Flytta plan och kopiera objekt
+	Move Plane and Objects	Flytta plan och objekt
+	Move Slice	Flytta skiva
+	Move Type on a Path	Flytta text på bana
+	New Guide	Ny stödlinje
+	Place from Library	Placera från bibliotek
+	Rearrange Artboards	Ordna om ritytor
+	Release Blend	Släpp blandning
+	Release Envelope	Släpp kuvert
+	Release Intertwine	Släpp sammanflätning
+	Release Live Paint	Släpp direktmålning
+	Release Repeat	Släpp upprepning
+	Release Slice	Släpp skiva
+	Release Threaded Text	Släpp länkad text
+	Rename Design	Byt namn på design
+	Rename Style	Byt namn på stil
+	Rename View	Byt namn på vy
+	Reorder Appearance	Ändra ordning på utseende
+	Reorder Artboards	Ändra ordning på ritytor
+	Reshape Spine	Omforma ryggrad
+	Resize Artboard	Ändra storlek på rityta
+	Resize Slice	Ändra storlek på skiva
+	Resize Type Area	Ändra storlek på textområde
+	Scale in Perspective	Skala i perspektiv
+	Shape Builder Delete	Formbyggare (radera)
+	Sort Swatches	Sortera färgrutor
+	Symbol Screener	Symbolopacitet
+	Symbol Scruncher	Dra ihop symboler
+	Symbol Shifter	Flytta symboler
+	Symbol Sizer	Symbolstorlek
+	Symbol Spinner	Rotera symboler
+	Symbol Stainer	Färga symboler
+	Symbol Styler	Symbolstil
+	Text Orientation	Textorientering
+	Thread Text	Länka text
+	Typing	Skrivning
 	Hollow	Ihålig
 	Home	Start
 	Horizon Height:	Horisonthöjd:
@@ -2487,6 +2561,7 @@
 	Rotate 90° CW	Rotera 90° medurs
 	Rotate Tool	Rotationsverktyg
 	Rotate View Tool	Verktyget Rotera vy
+	Trackpad Gesture to Rotate View	Rotera vyn med en gest på styrplattan
 	Rotate…	Rotera…
 	Rotation	Rotation
 	Roughen…	Ojämn…
@@ -3264,6 +3339,8 @@
 	Variables	Variabler
 	New Variable	Ny variabel
 	Delete Variable	Radera variabel
+	Lock Variables	Lås variabler
+	Unlock Variables	Lås upp variabler
 	List Variables	Lista variabler
 	Bind Variable	Bind variabel
 	Unbind Variable	Koppla bort variabel
@@ -4043,6 +4120,7 @@ axis	Both	Båda
 @msg	unknown tool or command `{key}`	okänt verktyg eller kommando `{key}`
 @msg	unknown workspace (one of {_1})	okänd arbetsyta (en av {_1})
 @msg	unsupported: {0}	stöds inte: {0}
+@msg	variables are locked	variablerna är låsta
 @msg	version {0} files can't be compressed: only version {COMPRESSED_SINCE} and later open compressed files	filer i version {0} kan inte komprimeras: endast version {COMPRESSED_SINCE} och senare kan öppna komprimerade filer
 @msg	width and height are at least 1 pixel	bredd och höjd är minst 1 pixel
 @msg	workspace name can't be empty	arbetsytans namn får inte vara tomt
@@ -4384,6 +4462,20 @@ lighting	Light	Ljus
 	Reset Ruler Origin	Återställ linjalens origo
 	Artistic	Konstnärligt
 	Film Grain…	Filmkorn…
+	Cutout…	Urklipp…
+	Cutout	Urklipp
+	Neon Glow…	Neonsken…
+	Neon Glow	Neonsken
+	Poster Edges…	Affischkanter…
+	Poster Edges	Affischkanter
+	Levels	Nivåer
+	Edge Simplicity	Kantförenkling
+	Edge Fidelity	Kanttrohet
+	Glow Size	Skenets storlek
+	Glow Brightness	Skenets ljusstyrka
+	Edge Thickness	Kanttjocklek
+	Edge Intensity	Kantintensitet
+	Posterization	Posterisering
 	Highlight Area	Högdagerområde
 @msg	the compressed file unpacks to more than VectorCraft reads ({_1} MB of document, {_2} MB per image)	den komprimerade filen packas upp till mer än VectorCraft läser ({_1} MB dokument, {_2} MB per bild)
 @msg	the document is too large to save compressed ({0}): save it with Use Compression off	dokumentet är för stort för att sparas komprimerat ({0}): spara det med Använd komprimering avstängt
@@ -5009,6 +5101,18 @@ theme	Appearance	Utseende
 	Movie Clip	Filmklipp
 @msg	name is empty	namnet är tomt
 @msg	no symbol named `{n}`	ingen symbol med namnet `{n}`
+	Enable Guides for 9-Slice Scaling	Aktivera hjälplinjer för 9-slice-skalning
 @msg	a mask has more than one art block	en mask innehåller mer än ett grafikblock
 @msg	mask art ends outside a mask dictionary	maskens grafik slutar utanför en maskordlista
 @msg	cancelled; nothing was changed	avbrutet; inget ändrades
+@msg	a linked image can't become a gradient mesh: embed it first	en länkad bild kan inte bli ett övertoningsnät: bädda in den först
+@msg	the image has no usable size or position	bilden har ingen användbar storlek eller position
+@msg	the image's pixels can't be read	bildens pixlar kan inte läsas
+	Persistent	Beständig
+	Library Panel Options	Alternativ för bibliotekspanelen
+@msg	Persistent libraries not found: {files}	Beständiga bibliotek hittades inte: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` är inte en bibliotekspanel (se window.swatchLibrary)
+@msg	library panel `{given}` isn't open	bibliotekspanelen `{given}` är inte öppen
+@msg	too many library panels were opened in this session	för många bibliotekspaneler har öppnats i den här sessionen
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	Bilden är {_1} × {_2} pixlar, mer än {LARGE_TRACE_SIDE} på en sida: den vektoriseras, men långsammare. En förinställning med lägre återgivning eller en mindre kopia av bilden går snabbare.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	Bilden vektoriserades vid {_1} × {_2} pixlar, nedskalad från {_3} × {_4} (högst {_5} megapixlar).

@@ -392,6 +392,7 @@
 	Font Family & Style	Fonttiperhe ja tyyli
 	Font Family, Style & Size	Fonttiperhe, tyyli ja koko
 	Font Size	Fonttikoko
+	Variable Font	Muuttuva fontti
 	Text Fill Color	Tekstin täyttöväri
 	Text Stroke Color	Tekstin viivan väri
 	All on Same Layers	Kaikki samoilla tasoilla
@@ -517,6 +518,7 @@
 	Show Rulers	Näytä viivaimet
 	Hide Rulers	Piilota viivaimet
 	Change to Global Rulers	Vaihda yleisiin viivaimiin
+	Change to Artboard Rulers	Vaihda piirtoalustan viivaimiin
 	Show Video Rulers	Näytä videoviivaimet
 	Hide Bounding Box	Piilota rajausruutu
 	Show Bounding Box	Näytä rajausruutu
@@ -643,6 +645,8 @@
 	New Variable…	Uusi muuttuja…
 	Unbind Variable	Pura muuttujan sidonta
 	Delete Variable	Poista muuttuja
+	Lock Variables	Lukitse muuttujat
+	Unlock Variables	Avaa muuttujien lukitus
 	New Data Set…	Uusi tietojoukko…
 	Edit Data Set…	Muokkaa tietojoukkoa…
 	Delete Data Set	Poista tietojoukko
@@ -1046,6 +1050,7 @@ lighting	Light	Valo
 	Click or drag	Napsauta tai vedä
 	Click the first point	Napsauta ensimmäistä pistettä
 	Connect Selected End Points	Yhdistä valitut päätepisteet
+	Connect	Yhdistä
 	Convert Selected Anchor Points to Corner	Muunna valitut ankkuripisteet kulmapisteiksi
 	Convert Selected Anchor Points to Smooth	Muunna valitut ankkuripisteet pehmeiksi
 	Convert:	Muunna:
@@ -1202,6 +1207,7 @@ lighting	Light	Valo
 	Reshape Tool	Uudelleenmuotoilutyökalu
 	Rotate Tool	Kiertotyökalu
 	Rotate View Tool	Näkymän kiertotyökalu
+	Trackpad Gesture to Rotate View	Kierrä näkymää ohjauslevyn eleellä
 	Rotate View	Kierrä näkymää
 	Rounded Rectangle Tool	Pyöristetyn suorakulmion työkalu
 	Scale Tool	Skaalaustyökalu
@@ -1482,6 +1488,76 @@ lighting	Light	Valo
 	{percent}% opacity	{percent}% peittävyys
 	History Options…	Historian asetukset…
 	Open a document to see its history.	Avaa asiakirja, niin näet sen historian.
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Käytä tietojoukkoa
+	Cancel Pattern Editing	Peruuta kuvion muokkaus
+	Copy Appearance	Kopioi ulkoasu
+	Copy Guide	Kopioi apuviiva
+	Copy in Perspective	Kopioi perspektiivissä
+	Create Slice from Selection	Luo siivu valinnasta
+	Create Slices from Guides	Luo siivut apuviivoista
+	Delete All Slices	Poista kaikki siivut
+	Delete Data Sets	Poista tietojoukot
+	Delete Graphic Styles	Poista grafiikkatyylit
+	Delete Guide	Poista apuviiva
+	Delete Guides	Poista apuviivat
+	Delete Slice	Poista siivu
+	Delete Style	Poista tyyli
+	Delete Variables	Poista muuttujat
+	Delete View	Poista näkymä
+	Done Editing Pattern	Lopeta kuvion muokkaus
+	Duplicate Rows	Monista rivit
+	Edit Perspective Grid	Muokkaa perspektiiviruudukkoa
+	Expand Blend	Laajenna sulautus
+	Expand Envelope	Laajenna kuori
+	Expand Image Trace	Laajenna kuvan jäljitys
+	Expand Live Paint	Laajenna elävä maalaus
+	Live Shape	Elävä muoto
+	Make Blend	Luo sulautus
+	Make Dynamic	Tee dynaamiseksi
+	Make Intertwine	Luo lomitus
+	Make Live Paint	Luo elävä maalaus
+	Make Pattern	Luo kuvio
+	Make Slice	Luo siivu
+	Merge Live Paint	Yhdistä elävä maalaus
+	Mesh Point Color	Verkkopisteen väri
+	Move Envelope Point	Siirrä kuoren pistettä
+	Move Plane and Copy Objects	Siirrä tasoa ja kopioi objektit
+	Move Plane and Objects	Siirrä tasoa ja objekteja
+	Move Slice	Siirrä siivua
+	Move Type on a Path	Siirrä polun tekstiä
+	New Guide	Uusi apuviiva
+	Place from Library	Sijoita kirjastosta
+	Rearrange Artboards	Järjestä piirtoalustat uudelleen
+	Release Blend	Vapauta sulautus
+	Release Envelope	Vapauta kuori
+	Release Intertwine	Vapauta lomitus
+	Release Live Paint	Vapauta elävä maalaus
+	Release Repeat	Vapauta toisto
+	Release Slice	Vapauta siivu
+	Release Threaded Text	Vapauta ketjutettu teksti
+	Rename Design	Nimeä malli uudelleen
+	Rename Style	Nimeä tyyli uudelleen
+	Rename View	Nimeä näkymä uudelleen
+	Reorder Appearance	Järjestä ulkoasu uudelleen
+	Reorder Artboards	Muuta piirtoalustojen järjestystä
+	Reshape Spine	Muotoile selkäranka uudelleen
+	Resize Artboard	Muuta piirtoalustan kokoa
+	Resize Slice	Muuta siivun kokoa
+	Resize Type Area	Muuta tekstialueen kokoa
+	Scale in Perspective	Skaalaa perspektiivissä
+	Shape Builder Delete	Muodonmuodostin (poisto)
+	Sort Swatches	Lajittele värimallit
+	Symbol Screener	Symbolien läpinäkyvyys
+	Symbol Scruncher	Symbolien tiivistys
+	Symbol Shifter	Symbolien siirto
+	Symbol Sizer	Symbolien koonmuutos
+	Symbol Spinner	Symbolien kierto
+	Symbol Stainer	Symbolien värjäys
+	Symbol Styler	Symbolien tyylittely
+	Text Orientation	Tekstin suunta
+	Thread Text	Ketjuta teksti
+	Typing	Kirjoitus
 	Abutting	Vierekkäinen
 	Black and White	Mustavalkoinen
 	Corners	Kulmat
@@ -2675,10 +2751,10 @@ lighting	Light	Valo
 	All in One Folder	Kaikki yhteen kansioon
 	By Size or Row	Koon tai rivin mukaan
 	By Format	Muodon mukaan
-	By Artboard or Item	Piirtoalueen tai kohteen mukaan
+	By Artboard or Item	Piirtoalustan tai kohteen mukaan
 	By Item, Then Format	Kohteen, sitten muodon mukaan
 	Document Name	Asiakirjan nimi
-	Artboard or Item Name	Piirtoalueen tai kohteen nimi
+	Artboard or Item Name	Piirtoalustan tai kohteen nimi
 	Number (####)	Numero (####)
 	Date (YYYYMMDD)	Päivämäärä (VVVVKKPP)
 	Date (YYYY-MM-DD)	Päivämäärä (VVVV-KK-PP)
@@ -3328,6 +3404,7 @@ theme	Appearance	Ulkoasu
 	Save Print Preset	Tallenna tulostuksen esiasetus
 	Print Tiling Pages	Tulosta sivujen ruudutus
 	Document Raster Effects Settings	Asiakirjan rasteritehosteiden asetukset
+	Use Document Raster Effects Resolution	Käytä asiakirjan rasteritehosteiden asetusten tarkkuutta
 	Artwork Colors	Kuvituksen värit
 	Randomize Colors	Satunnaista värit
 	Recolor Artwork	Väritä kuvitus uudelleen
@@ -4340,6 +4417,7 @@ imageTrace	Outline	Ääriviiva
 @msg	unknown tool or command `{key}`	tuntematon työkalu tai komento `{key}`
 @msg	unknown workspace (one of {_1})	tuntematon työtila (jokin seuraavista: {_1})
 @msg	unsupported: {0}	ei tuettu: {0}
+@msg	variables are locked	muuttujat on lukittu
 @msg	version {0} files can't be compressed: only version {COMPRESSED_SINCE} and later open compressed files	version {0} tiedostoja ei voi pakata: pakattuja tiedostoja voi avata vain versiosta {COMPRESSED_SINCE} alkaen
 @msg	width and height are at least 1 pixel	leveys ja korkeus ovat vähintään 1 pikseli
 @msg	workspace name can't be empty	työtilan nimi ei voi olla tyhjä
@@ -4772,6 +4850,20 @@ imageTrace	Outline	Ääriviiva
 	DWG (use DXF)	DWG (käytä DXF:ää)
 	Artistic	Taiteelliset
 	Film Grain…	Filmin rakeisuus…
+	Cutout…	Leikkaus…
+	Cutout	Leikkaus
+	Neon Glow…	Neonhehku…
+	Neon Glow	Neonhehku
+	Poster Edges…	Julisteen reunat…
+	Poster Edges	Julisteen reunat
+	Levels	Tasot
+	Edge Simplicity	Reunojen yksinkertaisuus
+	Edge Fidelity	Reunojen tarkkuus
+	Glow Size	Hehkun koko
+	Glow Brightness	Hehkun kirkkaus
+	Edge Thickness	Reunojen paksuus
+	Edge Intensity	Reunojen voimakkuus
+	Posterization	Posterointi
 	Highlight Area	Korostusalue
 file-filter	All readable files	Kaikki luettavat tiedostot
 file-filter	All placeable files	Kaikki sijoitettavat tiedostot
@@ -5009,7 +5101,7 @@ mark-style	Japanese	Japanilainen
 	Pattern Type	Kuviotyyppi
 	Dot	Piste
 # User Interface › Color Scheme
-	Color Scheme	Värimalli
+	Color Scheme	Väriteema
 	Modern	Moderni
 
 # Symbol Options › Export Type
@@ -5017,6 +5109,18 @@ mark-style	Japanese	Japanilainen
 	Movie Clip	Elokuvaleike
 @msg	name is empty	nimi on tyhjä
 @msg	no symbol named `{n}`	symbolia nimeltä `{n}` ei ole
+	Enable Guides for 9-Slice Scaling	Ota käyttöön 9-slice-skaalauksen apuviivat
 @msg	a mask has more than one art block	maskissa on useampi kuin yksi grafiikkalohko
 @msg	mask art ends outside a mask dictionary	maskin grafiikka päättyy maskin sanakirjan ulkopuolelle
 @msg	cancelled; nothing was changed	peruutettu; mitään ei muutettu
+@msg	a linked image can't become a gradient mesh: embed it first	linkitetystä kuvasta ei voi tehdä liukuväriverkkoa: upota se ensin
+@msg	the image has no usable size or position	kuvalla ei ole käyttökelpoista kokoa tai sijaintia
+@msg	the image's pixels can't be read	kuvan pikseleitä ei voi lukea
+	Persistent	Pysyvä
+	Library Panel Options	Kirjastopaneelin asetukset
+@msg	Persistent libraries not found: {files}	Pysyviä kirjastoja ei löytynyt: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` ei ole kirjastopaneeli (katso window.swatchLibrary)
+@msg	library panel `{given}` isn't open	kirjastopaneeli `{given}` ei ole auki
+@msg	too many library panels were opened in this session	tässä istunnossa on avattu liian monta kirjastopaneelia
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	Kuva on {_1} × {_2} kuvapistettä, yhdeltä sivultaan yli {LARGE_TRACE_SIDE}: se jäljitetään, mutta hitaammin. Pienemmän tarkkuuden esiasetus tai kuvan pienempi kopio jäljittyy nopeammin.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	Kuva jäljitettiin kokoon {_1} × {_2} kuvapistettä pienennettynä koosta {_3} × {_4} (enintään {_5} megapikseliä).

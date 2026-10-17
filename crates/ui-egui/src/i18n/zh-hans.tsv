@@ -314,6 +314,7 @@
 	Change Case	更改大小写
 	Change Screen Mode (F)	更改屏幕模式 (F)
 	Change to Global Rulers	更改为全局标尺
+	Change to Artboard Rulers	更改为画板标尺
 	Change to Right-to-Left Layout	更改为由右至左版面配置
 	Changed since the last Refresh.	自上次刷新后已更改
 	Changes allowed:	允许的更改：
@@ -501,6 +502,7 @@
 	Condition identifier:	条件识别码：
 	Conflict {n} of {count}	冲突 {n}／{count}
 	Connect Selected End Points	连接所选端点
+	Connect	连接
 	Consolidate All Windows	合并所有窗口
 	Constrain Angle	约束角度
 	Constrain Width and Height Proportions	约束宽高比例
@@ -738,6 +740,7 @@
 	Document open password	文档打开口令
 	Document profile	文档配置文档
 	Document Raster Effects Settings	文档栅格效果设置
+	Use Document Raster Effects Resolution	使用文档栅格效果设置的分辨率
 	Document Raster Effects Settings Dialog	文档栅格效果设置对话框
 	Document Raster Effects Settings…	文档栅格化效果设置…
 	Document Setup	文档设置
@@ -1113,6 +1116,7 @@ file-filter	Templates	模板
 	Font List	字体列表
 	Font Preview Size	字体预览大小
 	Font Size	字号
+	Variable Font	可变字体
 	Font:	字体：
 	Fonts	字体
 	Fonts in Document	文档中的字体
@@ -1294,6 +1298,84 @@ file-filter	Templates	模板
 	History	历史记录
 	History Options…	历史记录选项…
 	History States	历史记录步数
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	应用数据集
+	Bloat	膨胀
+	Cancel Pattern Editing	取消图案编辑
+	Copy Appearance	复制外观
+	Copy Guide	复制参考线
+	Copy in Perspective	在透视中复制
+	Create Slice from Selection	从选区创建切片
+	Create Slices from Guides	从参考线创建切片
+	Delete All Slices	删除所有切片
+	Delete Data Sets	删除数据集
+	Delete Graphic Styles	删除图形样式
+	Delete Guide	删除参考线
+	Delete Guides	删除参考线
+	Delete Slice	删除切片
+	Delete Style	删除样式
+	Delete Variables	删除变量
+	Delete View	删除视图
+	Done Editing Pattern	完成图案编辑
+	Duplicate Rows	复制行
+	Edit Perspective Grid	编辑透视网格
+	Expand Blend	扩展混合
+	Expand Envelope	扩展封套
+	Expand Image Trace	扩展图像描摹
+	Expand Live Paint	扩展实时上色
+	Grid Repeat	网格重复
+	Live Shape	实时形状
+	Make Blend	创建混合
+	Make Dynamic	使其动态化
+	Make Intertwine	创建交织
+	Make Live Paint	创建实时上色
+	Make Pattern	创建图案
+	Make Slice	创建切片
+	Merge Live Paint	合并实时上色
+	Mesh Point Color	网格点颜色
+	Mirror Repeat	镜像重复
+	Move Envelope Point	移动封套点
+	Move Plane and Copy Objects	移动平面并复制对象
+	Move Plane and Objects	移动平面和对象
+	Move Slice	移动切片
+	Move Type on a Path	移动路径文字
+	New Guide	新建参考线
+	Place from Library	从库置入
+	Pucker	收缩
+	Radial Repeat	径向重复
+	Rearrange Artboards	重新排列画板
+	Release Blend	释放混合
+	Release Envelope	释放封套
+	Release Intertwine	释放交织
+	Release Live Paint	释放实时上色
+	Release Repeat	释放重复
+	Release Slice	释放切片
+	Release Threaded Text	释放串接文本
+	Rename Design	重命名设计
+	Rename Style	重命名样式
+	Rename View	重命名视图
+	Reorder Appearance	重新排序外观
+	Reorder Artboards	重新排序画板
+	Reshape Spine	整形脊线
+	Resize Artboard	调整画板大小
+	Resize Slice	调整切片大小
+	Resize Type Area	调整文字区域大小
+	Scale in Perspective	在透视中缩放
+	Scallop	扇贝
+	Shape Builder Delete	形状生成器 (删除)
+	Sort Swatches	排序色板
+	Symbol Screener	符号透明度
+	Symbol Scruncher	符号紧缩
+	Symbol Shifter	符号移位
+	Symbol Sizer	符号缩放
+	Symbol Spinner	符号旋转
+	Symbol Stainer	符号着色
+	Symbol Styler	符号样式
+	Text Orientation	文字方向
+	Thread Text	串接文本
+	Twirl	旋转扭曲
+	Typing	输入文字
+	Wrinkle	褶皱
 	Hollow	空心
 	Home	主页
 	Horizon Height:	地平线高度：
@@ -2440,6 +2522,7 @@ mark-style	Japanese	日式
 	Rotate 90° CW	顺时针旋转 90°
 	Rotate Tool	旋转工具
 	Rotate View Tool	旋转视图工具
+	Trackpad Gesture to Rotate View	使用触控板手势旋转视图
 	Rotate…	旋转…
 	Rotation	旋转
 	Roughen…	粗糙效果…
@@ -3202,6 +3285,9 @@ mark-style	Japanese	日式
 	Variables	变量
 	New Variable	新建变量
 	Delete Variable	删除变量
+	Lock Variables	锁定变量
+	Unlock Variables	解锁变量
+@msg	variables are locked	变量已锁定
 	List Variables	列出变量
 	Bind Variable	绑定变量
 	Unbind Variable	解除变量绑定
@@ -4747,6 +4833,20 @@ lighting	Light	光源
 	Reset Ruler Origin	重置标尺原点
 	Artistic	艺术效果
 	Film Grain…	胶片颗粒…
+	Cutout…	剪纸…
+	Cutout	剪纸
+	Neon Glow…	霓虹灯光…
+	Neon Glow	霓虹灯光
+	Poster Edges…	海报边缘…
+	Poster Edges	海报边缘
+	Levels	色阶数
+	Edge Simplicity	边缘简化度
+	Edge Fidelity	边缘逼真度
+	Glow Size	发光大小
+	Glow Brightness	发光亮度
+	Edge Thickness	边缘厚度
+	Edge Intensity	边缘强度
+	Posterization	海报化
 	Highlight Area	高光区域
 	Concentric Dividers:	同心分隔线：
 	Radial Dividers:	径向分隔线：
@@ -4879,8 +4979,20 @@ lighting	Light	光源
 	Movie Clip	影片剪辑
 @msg	name is empty	名称为空
 @msg	no symbol named `{n}`	没有名为 `{n}` 的符号
+	Enable Guides for 9-Slice Scaling	启用 9-slice 缩放参考线
 @msg	cancelled; nothing was changed	已取消；未做任何更改
 @msg	Save writes {_1}, not {_2}: use file.saveAsTemplate to write it	保存会写入 {_1}，而不是 {_2}：要写入该格式请使用 file.saveAsTemplate
 @msg	a mask has more than one art block	蒙版包含多个图稿块
 @msg	mask art ends outside a mask dictionary	蒙版图稿在蒙版字典之外结束
 @msg	`{key}` must be a #rrggbb color	`{key}` 必须是 #rrggbb 格式的颜色
+@msg	a linked image can't become a gradient mesh: embed it first	链接的图像无法转换为渐变网格：请先嵌入它
+@msg	the image has no usable size or position	图像没有可用的尺寸或位置
+@msg	the image's pixels can't be read	无法读取图像的像素
+	Persistent	持久
+	Library Panel Options	库面板选项
+@msg	Persistent libraries not found: {files}	找不到持久库：{files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` 不是库面板 (请参阅 window.swatchLibrary)
+@msg	library panel `{given}` isn't open	库面板 `{given}` 未打开
+@msg	too many library panels were opened in this session	本次会话中打开的库面板过多
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	图像为 {_1} × {_2} 像素，某一边超过 {LARGE_TRACE_SIDE}：会进行描摹，但速度较慢。使用保真度较低的预设或图像的较小副本会更快。
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	图像已按 {_1} × {_2} 像素描摹，由 {_3} × {_4} 缩小而来（最多 {_5} 百万像素）。

@@ -287,6 +287,8 @@ pub struct DocState {
     /// The document as last saved (or opened). Structural sharing makes "unchanged" a pointer
     /// comparison, and undoing back to the saved state counts as clean.
     saved_doc: Arc<Document>,
+    /// The documents that changes that are not edits to save replaced ([`DocState::same_content`]).
+    unsaved_changes: SameContent,
     /// The layer new art goes into (the "current layer" in the Layers panel).
     pub active_layer: Option<NodeId>,
     /// The rows highlighted in the Layers panel (layers, sublayers, groups or objects, in the order
@@ -452,6 +454,36 @@ impl RecalledSelection {
     }
 }
 
+/// The documents that changes that are not edits to save (Puppet Warp pins dropped, Edit Text ended,
+/// type laid out again after a font scan) replaced, each counted as having the content of the
+/// document it was replaced by ([`DocState::change_unsaved`]). A document that nothing holds any
+/// more is dropped the next time one is added.
+#[derive(Clone, Debug, Default)]
+struct SameContent {
+    /// The document the last such change made.
+    now: std::sync::Weak<Document>,
+    /// The documents with its content that such changes replaced, oldest first.
+    before: Vec<std::sync::Weak<Document>>,
+}
+
+impl SameContent {
+    /// Note that `now` replaced `before` without a change to its content.
+    fn replaced(&mut self, before: std::sync::Weak<Document>, now: &Arc<Document>) {
+        if !self.now.ptr_eq(&before) {
+            self.before.clear();
+        }
+        self.before.retain(|d| d.strong_count() > 0);
+        if before.strong_count() > 0 {
+            self.before.push(before);
+        }
+        self.now = Arc::downgrade(now);
+    }
+    /// Whether `doc` is one of the documents with the content of `now`.
+    fn holds(&self, now: &Arc<Document>, doc: &Arc<Document>) -> bool {
+        std::ptr::eq(self.now.as_ptr(), Arc::as_ptr(now)) && self.before.iter().any(|d| std::ptr::eq(d.as_ptr(), Arc::as_ptr(doc)))
+    }
+}
+
 impl DocState {
     pub fn new(mut doc: Document, path: Option<String>) -> Self {
         let active_layer = doc.default_layer();
@@ -463,6 +495,7 @@ impl DocState {
         let doc = Arc::new(doc);
         Self {
             saved_doc: doc.clone(),
+            unsaved_changes: SameContent::default(),
             doc,
             selection: Selection::default(),
             history: History { limit: 500, ..Default::default() },
@@ -493,9 +526,10 @@ impl DocState {
             last_perspective: None,
         }
     }
-    /// Unsaved changes: the document differs from the saved one (selection changes don't count).
+    /// Unsaved changes: the document differs from the saved one (selection changes and changes that
+    /// are not edits to save don't count, [`DocState::same_content`]).
     pub fn is_dirty(&self) -> bool {
-        !Arc::ptr_eq(&self.doc, &self.saved_doc)
+        !self.same_content(&self.saved_doc)
     }
     /// Record the current document as saved.
     pub fn mark_saved(&mut self) {
@@ -505,6 +539,26 @@ impl DocState {
     /// keep the document modified.
     pub fn mark_saved_as(&mut self, snapshot: &Arc<Document>) {
         self.saved_doc = snapshot.clone();
+    }
+    /// Whether `doc` counts as having the content of the document now: it is the document, or one
+    /// that changes that are not edits to save replaced since ([`DocState::change_unsaved`]).
+    pub fn same_content(&self, doc: &Arc<Document>) -> bool {
+        Arc::ptr_eq(&self.doc, doc) || self.unsaved_changes.holds(&self.doc, doc)
+    }
+    /// Make a change that is not an edit to save with `f`, without an undo step: editing state that
+    /// is never saved, or type laid out again after a font scan (which can also refit the frame of
+    /// Auto Size area type). A saved document stays saved, and a save or recovery copy taken of the
+    /// document before counts as having its content ([`DocState::same_content`]).
+    pub(crate) fn change_unsaved(&mut self, f: impl FnOnce(&mut Arc<Document>)) {
+        let saved = !self.is_dirty();
+        let before = Arc::downgrade(&self.doc);
+        f(&mut self.doc);
+        if !std::ptr::eq(before.as_ptr(), Arc::as_ptr(&self.doc)) {
+            self.unsaved_changes.replaced(before, &self.doc);
+        }
+        if saved {
+            self.mark_saved();
+        }
     }
     /// Keep what interaction `it` (taken from this document) changed, as one undo step.
     pub(crate) fn keep_interaction(&mut self, it: Interaction) {
@@ -682,6 +736,18 @@ pub(crate) fn is_guide_path(d: &Document, id: NodeId) -> bool {
     d.node(id).is_some_and(|n| matches!(n.kind, NodeKind::Path { guide: true, .. }))
 }
 
+/// Deselect the ruler guides and the paths made into guides: while View → Guides → Lock Guides is
+/// on, they can't be selected (#1534), whatever selects them. → whether any was selected.
+pub(crate) fn deselect_guides(d: &Document, sel: &mut Selection) -> bool {
+    let paths: Vec<NodeId> = sel.objects.iter().copied().filter(|id| is_guide_path(d, *id)).collect();
+    let any = !paths.is_empty() || !sel.guides.is_empty();
+    for id in paths {
+        sel.remove(id);
+    }
+    sel.guides.clear();
+    any
+}
+
 /// The error of an edit that would nest objects deeper than [`vectorcraft_doc::MAX_DEPTH`].
 pub const TOO_DEEP: &str = "objects can't be nested more than 32 deep";
 const _: () = assert!(vectorcraft_doc::MAX_DEPTH == 32, "TOO_DEEP (and its catalog rows) names the cap");
@@ -737,6 +803,8 @@ pub struct Prefs {
     pub zoom_with_mouse_wheel: bool,
     /// A horizontal drag on a numeric field or its label steps its value (#400).
     pub scrub_numeric_fields: bool,
+    /// A two-finger rotation on a Mac trackpad turns the view about the pointer once it reaches 5°.
+    pub trackpad_rotate_view: bool,
     /// Offset for Paste / duplicate (Illustrator pastes to the view centre; we offset by this).
     pub paste_offset: f64,
     // Selection & Anchor Display
@@ -992,6 +1060,7 @@ impl Default for Prefs {
             scale_strokes: false,
             zoom_with_mouse_wheel: false,
             scrub_numeric_fields: true,
+            trackpad_rotate_view: true,
             paste_offset: 10.0,
             selection_tolerance: 3.0,
             object_selection_by_path_only: false,
@@ -1183,6 +1252,9 @@ pub struct Session {
     /// Where the ICC profiles `color.loadProfile` loads are kept; `None`: only for the process
     /// ([`Session::attach_profile_store`]).
     profile_dir: Option<std::path::PathBuf>,
+    /// Where the plug-ins `plugin.install` installs are kept; `None`: only for the process
+    /// ([`Session::attach_plugin_store`]).
+    plugin_dir: Option<std::path::PathBuf>,
     /// URLs recently given in the Attributes panel (`attributes.set {url}`), newest first; not saved.
     pub recent_urls: Vec<String>,
     /// The language the UI is drawn in (a language code, never `auto`), set by the UI each frame;
@@ -1277,6 +1349,7 @@ impl Session {
             libraries: Default::default(),
             pdf_preset_dir: None,
             profile_dir: None,
+            plugin_dir: None,
             recent_urls: vec![],
             ui_language: None,
             journal_note: Default::default(),
@@ -1595,6 +1668,7 @@ impl Session {
         if !self.previewing && cmd::typing_in_progress(self) {
             cmd::settle_interaction(self)?;
         }
+        let guides_locked = self.menu.guides_locked;
         let st = self.doc_mut()?;
         let before = st.doc.clone();
         let before_sel = st.selection.clone();
@@ -1642,6 +1716,10 @@ impl Session {
         match result {
             Ok(v) => {
                 st.selection.prune(&st.doc);
+                // An edit that selects what it unlocks, shows or pastes leaves locked guides out.
+                if guides_locked {
+                    deselect_guides(&st.doc, &mut st.selection);
+                }
                 st.revision += 1;
                 if st.interaction.is_none() {
                     let selection = match st.history.undo.last() {
@@ -1670,10 +1748,7 @@ impl Session {
         st.selection.prune(&st.doc);
         // Lock Guides locks the paths made into guides too (#1534), whatever selects them.
         if guides_locked {
-            let locked: Vec<NodeId> = st.selection.objects.iter().copied().filter(|id| is_guide_path(&st.doc, *id)).collect();
-            for id in locked {
-                st.selection.remove(id);
-            }
+            deselect_guides(&st.doc, &mut st.selection);
         }
         // Selecting art makes its layer (or sublayer) the current one, as in the Layers panel of
         // the reference app: new art then goes beside it.
@@ -1804,7 +1879,13 @@ impl Session {
 
     pub fn cancel_interaction(&mut self) -> Result<()> {
         self.pending_paint = None;
-        self.doc_mut()?.undo_interaction();
+        let guides_locked = self.menu.guides_locked;
+        let st = self.doc_mut()?;
+        st.undo_interaction();
+        // Guides locked during the interaction stay deselected.
+        if guides_locked {
+            deselect_guides(&st.doc, &mut st.selection);
+        }
         Ok(())
     }
 
@@ -1846,6 +1927,9 @@ impl Session {
             {
                 st.doc = e.doc;
                 st.selection = Arc::unwrap_or_clone(e.selection);
+                if self.menu.guides_locked {
+                    deselect_guides(&st.doc, &mut st.selection);
+                }
                 st.revision += 1;
                 journal = Some(g.journal);
             }

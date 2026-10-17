@@ -26,6 +26,7 @@
 	Center	中央
 	Character Alignment	文字揃え
 	Connect Selected End Points	選択した端点を連結
+	Connect	連結
 	Convert Selected Anchor Points to Corner	選択したアンカーポイントをコーナーポイントに変換
 	Convert Selected Anchor Points to Smooth	選択したアンカーポイントをスムーズポイントに変換
 	Convert:	変換:
@@ -390,6 +391,7 @@
 	Font Family & Style	フォントファミリー (スタイル)
 	Font Family, Style & Size	フォントファミリー (スタイルとサイズ)
 	Font Size	フォントサイズ
+	Variable Font	バリアブルフォント
 	Text Fill Color	テキストカラー (塗り)
 	Text Stroke Color	テキストカラー (線)
 	All on Same Layers	同じレイヤー上のすべて
@@ -510,6 +512,7 @@
 	Rulers	定規
 	Show Rulers	定規を表示
 	Change to Global Rulers	グローバル定規に変更
+	Change to Artboard Rulers	アートボード定規に変更
 	Show Video Rulers	ビデオ定規を表示
 	Hide Bounding Box	バウンディングボックスを隠す
 	Show Transparency Grid	透明グリッドを表示
@@ -614,6 +617,8 @@
 	Variables	変数
 	New Variable	新規変数
 	Delete Variable	変数を削除
+	Lock Variables	変数をロック
+	Unlock Variables	変数をロック解除
 	List Variables	変数一覧
 	Bind Variable	変数をバインド
 	Unbind Variable	変数のバインドを解除
@@ -1266,6 +1271,7 @@
 	Document Ink Options	ドキュメントのインキオプション
 	Document JSON	ドキュメント JSON
 	Document Raster Effects Settings	ドキュメントのラスタライズ効果設定
+	Use Document Raster Effects Resolution	ドキュメントのラスタライズ効果設定の解像度を使用
 	Document Raster Effects Settings Dialog	ドキュメントのラスタライズ効果設定ダイアログ
 	Document Setup	ドキュメント設定
 	Document Title:	ドキュメントのタイトル:
@@ -1595,6 +1601,90 @@
 	Highlight anchors on mouse over	マウスオーバー時にアンカーをハイライト
 	History Options…	ヒストリーオプション…
 	History States	ヒストリー数
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	データセットを適用
+	Area Type	エリア内文字
+	Bloat	膨張
+	Cancel Pattern Editing	パターン編集をキャンセル
+	Copy Appearance	アピアランスをコピー
+	Copy Guide	ガイドをコピー
+	Copy in Perspective	遠近でコピー
+	Create Slice from Selection	選択範囲からスライスを作成
+	Create Slices from Guides	ガイドからスライスを作成
+	Delete All Slices	すべてのスライスを削除
+	Delete Data Sets	データセットを削除
+	Delete Graphic Styles	グラフィックスタイルを削除
+	Delete Guide	ガイドを削除
+	Delete Guides	ガイドを削除
+	Delete Slice	スライスを削除
+	Delete Style	スタイルを削除
+	Delete Variables	変数を削除
+	Delete View	表示を削除
+	Done Editing Pattern	パターン編集を完了
+	Duplicate Rows	行を複製
+	Edit Perspective Grid	遠近グリッドを編集
+	Expand Blend	ブレンドを拡張
+	Expand Envelope	エンベロープを拡張
+	Expand Image Trace	画像トレースを拡張
+	Expand Live Paint	ライブペイントを拡張
+	Grid Repeat	グリッドリピート
+	Image Trace (Make and Expand)	画像トレース (作成して拡張)
+	Live Shape	ライブシェイプ
+	Make Blend	ブレンドを作成
+	Make Dynamic	動的にする
+	Make Intertwine	織り交ぜを作成
+	Make Live Paint	ライブペイントを作成
+	Make Pattern	パターンを作成
+	Make Slice	スライスを作成
+	Make Text Wrap	テキストの回り込みを作成
+	Merge Live Paint	ライブペイントを結合
+	Mesh Point Color	メッシュポイントのカラー
+	Mirror Repeat	ミラーリピート
+	Move Envelope Point	エンベロープのポイントを移動
+	Move Plane and Copy Objects	面を移動してオブジェクトをコピー
+	Move Plane and Objects	面とオブジェクトを移動
+	Move Slice	スライスを移動
+	Move Type on a Path	パス上文字を移動
+	New Guide	新規ガイド
+	Pen	ペン
+	Place from Library	ライブラリから配置
+	Pucker	収縮
+	Radial Repeat	ラジアルリピート
+	Rearrange Artboards	アートボードを再配置
+	Release Blend	ブレンドを解除
+	Release Envelope	エンベロープを解除
+	Release Image Trace	画像トレースを解除
+	Release Intertwine	織り交ぜを解除
+	Release Live Paint	ライブペイントを解除
+	Release Repeat	リピートを解除
+	Release Slice	スライスを解除
+	Release Text Wrap	テキストの回り込みを解除
+	Release Threaded Text	スレッドテキストを解除
+	Rename Design	デザインの名前を変更
+	Rename Style	スタイルの名前を変更
+	Rename View	表示の名前を変更
+	Reorder Appearance	アピアランスの順序を変更
+	Reorder Artboards	アートボードの順序を変更
+	Reshape Spine	スパインをシェイプ変形
+	Resize Artboard	アートボードのサイズを変更
+	Resize Slice	スライスのサイズを変更
+	Resize Type Area	テキストエリアのサイズを変更
+	Scale in Perspective	遠近で拡大・縮小
+	Scallop	ギザギザ
+	Shape Builder Delete	シェイプ形成 (削除)
+	Sort Swatches	スウォッチを並べ替え
+	Symbol Screener	シンボルスクリーナー
+	Symbol Scruncher	シンボルスクランチャー
+	Symbol Shifter	シンボルシフター
+	Symbol Sizer	シンボルリサイザー
+	Symbol Spinner	シンボルスピン
+	Symbol Stainer	シンボルステイン
+	Symbol Styler	シンボルスタイル
+	Text Orientation	組み方向
+	Thread Text	テキストをスレッド
+	Twirl	旋回
+	Typing	文字入力
+	Wrinkle	しわ
 	Hollow	中空
 	Home	ホーム
 	Horizon Height:	水平線の高さ:
@@ -2481,6 +2571,7 @@ mark-style	Japanese	日本式
 	Rotate	回転
 	Rotate Tool	回転ツール
 	Rotate View Tool	回転ビューツール
+	Trackpad Gesture to Rotate View	トラックパッドのジェスチャーでビューを回転
 	Rotation	回転
 	Round Cap	丸型線端
 	Round Join	ラウンド結合
@@ -3767,6 +3858,7 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	{command} didn't create an object	{command} でオブジェクトが作成されませんでした
 @msg	Make Guides: select paths	ガイドを作成: パスを選択してください
 @msg	Release Guides: no guides	ガイドを解除: ガイドがありません
+@msg	variables are locked	変数がロックされています
 @msg	guides are locked	ガイドがロックされています
 @msg	handle must be in or out	handle には in または out を指定してください
 @msg	no saved selection recalled	保存した選択範囲を呼び出していません
@@ -4519,6 +4611,20 @@ lighting	Light	ライト
 	Reset Ruler Origin	定規の原点をリセット
 	Artistic	アーティスティック
 	Film Grain…	フィルム粒子…
+	Cutout…	カットアウト…
+	Cutout	カットアウト
+	Neon Glow…	ネオングロー…
+	Neon Glow	ネオングロー
+	Poster Edges…	ポスターエッジ…
+	Poster Edges	ポスターエッジ
+	Levels	レベル数
+	Edge Simplicity	エッジの単純さ
+	Edge Fidelity	エッジの正確さ
+	Glow Size	光彩のサイズ
+	Glow Brightness	光彩の明るさ
+	Edge Thickness	エッジの太さ
+	Edge Intensity	エッジの強さ
+	Posterization	ポスタリゼーション
 	Highlight Area	ハイライト領域
 @msg	the compressed file unpacks to more than VectorCraft reads ({_1} MB of document, {_2} MB per image)	圧縮ファイルを展開すると VectorCraft が読み込める量を超えます (ドキュメント {_1} MB、画像 1 枚あたり {_2} MB)
 @msg	the document is too large to save compressed ({0}): save it with Use Compression off	ドキュメントが大きすぎて圧縮保存できません ({0}): 「圧縮を使用」をオフにして保存してください
@@ -4693,6 +4799,18 @@ lighting	Light	ライト
 	Movie Clip	ムービークリップ
 @msg	name is empty	名前が空です
 @msg	no symbol named `{n}`	`{n}` という名前のシンボルはありません
+	Enable Guides for 9-Slice Scaling	9スライス拡大・縮小用ガイドを有効にする
 @msg	a mask has more than one art block	マスクに複数のアートブロックがあります
 @msg	mask art ends outside a mask dictionary	マスクのアートがマスク辞書の外で終わっています
 @msg	cancelled; nothing was changed	キャンセルしました。何も変更されていません
+@msg	a linked image can't become a gradient mesh: embed it first	リンクされた画像はグラデーションメッシュにできません: 先に埋め込んでください
+@msg	the image has no usable size or position	画像に使用できるサイズまたは位置がありません
+@msg	the image's pixels can't be read	画像のピクセルを読み取れません
+	Persistent	永続
+	Library Panel Options	ライブラリパネルオプション
+@msg	Persistent libraries not found: {files}	永続ライブラリが見つかりません: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` はライブラリパネルではありません (window.swatchLibrary を参照)
+@msg	library panel `{given}` isn't open	ライブラリパネル `{given}` は開いていません
+@msg	too many library panels were opened in this session	このセッションで開いたライブラリパネルが多すぎます
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	画像は {_1} × {_2} ピクセルで、一辺が {LARGE_TRACE_SIDE} を超えています。トレースはできますが、時間がかかります。忠実度の低いプリセットや画像の小さいコピーを使うと速くなります。
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	画像は {_3} × {_4} から縮小した {_1} × {_2} ピクセルでトレースされました (最大 {_5} メガピクセル)。

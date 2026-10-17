@@ -510,6 +510,7 @@
 	Change Panel Layout	Panelelrendezés módosítása
 	Change Screen Mode (F)	Képernyőmód váltása (F)
 	Change to Global Rulers	Váltás globális vonalzókra
+	Change to Artboard Rulers	Váltás rajztábla-vonalzókra
 	Change to Left-to-Right Layout	Váltás balról jobbra elrendezésre
 	Change to Right-to-Left Layout	Váltás jobbról balra elrendezésre
 	Changed since the last Refresh.	A legutóbbi frissítés óta módosult.
@@ -731,6 +732,7 @@
 	Condition identifier:	Feltételazonosító:
 	Conflict {n} of {count}	Ütközés: {n}/{count}
 	Connect Selected End Points	Kijelölt végpontok összekötése
+	Connect	Összekötés
 	Consolidate All Windows	Összes ablak egyesítése
 	Constrain	Korlátozás
 	Constrain Angle	Korlátozási szög
@@ -1028,6 +1030,7 @@
 	Document open password	Dokumentummegnyitási jelszó
 	Document profile	Dokumentumprofil
 	Document Raster Effects Settings	Dokumentum raszteres effektusainak beállítása
+	Use Document Raster Effects Resolution	A dokumentum raszteres effektusainak felbontása
 	Document Raster Effects Settings Dialog	Dokumentum raszteres effektusainak beállítása – párbeszédablak
 	Document Raster Effects Settings…	Dokumentum raszteres effektusainak beállítása…
 	Document Setup	Dokumentumbeállítás
@@ -1453,6 +1456,7 @@ file-filter	Templates	Sablonok
 	Font List	Betűtípuslista
 	Font Preview Size	Betűtípus-előnézet mérete
 	Font Size	Betűméret
+	Variable Font	Változó betűtípus
 	Font:	Betűtípus:
 	Fonts	Betűtípusok
 	Fonts in Document	A dokumentum betűtípusai
@@ -1556,6 +1560,20 @@ file-filter	Templates	Sablonok
 	Select Segments	Szakaszok kijelölése
 	Artistic	Művészi
 	Film Grain…	Filmszemcse…
+	Cutout…	Kivágás…
+	Cutout	Kivágás
+	Neon Glow…	Neonfény…
+	Neon Glow	Neonfény
+	Poster Edges…	Poszterszélek…
+	Poster Edges	Poszterszélek
+	Levels	Szintek
+	Edge Simplicity	Élek egyszerűsége
+	Edge Fidelity	Élek hűsége
+	Glow Size	Fény mérete
+	Glow Brightness	Fény fényereje
+	Edge Thickness	Élek vastagsága
+	Edge Intensity	Élek intenzitása
+	Posterization	Poszterizálás
 	Highlight Area	Csúcsfény-terület
 	English	English
 	Graph Design	Diagramminta
@@ -1702,6 +1720,76 @@ file-filter	Templates	Sablonok
 	History	Előzmények
 	History Options…	Előzmények beállításai…
 	History States	Előzmények lépésszáma
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Adatkészlet alkalmazása
+	Cancel Pattern Editing	Mintázatszerkesztés megszakítása
+	Copy Appearance	Megjelenés másolása
+	Copy Guide	Segédvonal másolása
+	Copy in Perspective	Másolás perspektívában
+	Create Slice from Selection	Szelet létrehozása a kijelölésből
+	Create Slices from Guides	Szeletek létrehozása segédvonalakból
+	Delete All Slices	Összes szelet törlése
+	Delete Data Sets	Adatkészletek törlése
+	Delete Graphic Styles	Grafikai stílusok törlése
+	Delete Guide	Segédvonal törlése
+	Delete Guides	Segédvonalak törlése
+	Delete Slice	Szelet törlése
+	Delete Style	Stílus törlése
+	Delete Variables	Változók törlése
+	Delete View	Nézet törlése
+	Done Editing Pattern	Mintázatszerkesztés befejezése
+	Duplicate Rows	Sorok kettőzése
+	Edit Perspective Grid	Perspektivikus rács szerkesztése
+	Expand Blend	Összemosás kibontása
+	Expand Envelope	Burkoló kibontása
+	Expand Image Trace	Képvektorizálás kibontása
+	Expand Live Paint	Élő festés kibontása
+	Live Shape	Élő alakzat
+	Make Blend	Összemosás létrehozása
+	Make Dynamic	Dinamikussá tétel
+	Make Intertwine	Összefonás létrehozása
+	Make Live Paint	Élő festés létrehozása
+	Make Pattern	Mintázat létrehozása
+	Make Slice	Szelet létrehozása
+	Merge Live Paint	Élő festés összeolvasztása
+	Mesh Point Color	Hálópont színe
+	Move Envelope Point	Burkolópont áthelyezése
+	Move Plane and Copy Objects	Sík áthelyezése és objektumok másolása
+	Move Plane and Objects	Sík és objektumok áthelyezése
+	Move Slice	Szelet áthelyezése
+	Move Type on a Path	Útvonalszöveg áthelyezése
+	New Guide	Új segédvonal
+	Place from Library	Elhelyezés könyvtárból
+	Rearrange Artboards	Rajztáblák átrendezése
+	Release Blend	Összemosás megszüntetése
+	Release Envelope	Burkoló megszüntetése
+	Release Intertwine	Összefonás megszüntetése
+	Release Live Paint	Élő festés megszüntetése
+	Release Repeat	Ismétlés megszüntetése
+	Release Slice	Szelet megszüntetése
+	Release Threaded Text	Láncolt szöveg megszüntetése
+	Rename Design	Minta átnevezése
+	Rename Style	Stílus átnevezése
+	Rename View	Nézet átnevezése
+	Reorder Appearance	Megjelenés átrendezése
+	Reorder Artboards	Rajztáblák sorrendjének módosítása
+	Reshape Spine	Gerinc átformálása
+	Resize Artboard	Rajztábla átméretezése
+	Resize Slice	Szelet átméretezése
+	Resize Type Area	Szövegterület átméretezése
+	Scale in Perspective	Méretezés perspektívában
+	Shape Builder Delete	Alakzatépítő (törlés)
+	Sort Swatches	Színminták rendezése
+	Symbol Screener	Szimbólumhalványító
+	Symbol Scruncher	Szimbólumtömörítő
+	Symbol Shifter	Szimbólumtoló
+	Symbol Sizer	Szimbólumméretező
+	Symbol Spinner	Szimbólumforgató
+	Symbol Stainer	Szimbólumszínező
+	Symbol Styler	Szimbólumstilizáló
+	Text Orientation	Szöveg iránya
+	Thread Text	Szöveg láncolása
+	Typing	Gépelés
 	Hold	Nyomva tartás
 	Hollow	Üreges
 	Home	Kezdőképernyő
@@ -2078,6 +2166,7 @@ file-filter	Templates	Sablonok
 	Lock Others	Többi zárolása
 	Lock Slices	Szeletek zárolása
 	Lock Station Point	Nézőpont zárolása
+	Lock Variables	Változók zárolása
 	Logo 1000×1000	Logó 1000×1000
 	Long Lines	Hosszú vonalak
 	Long Strokes	Hosszú vonások
@@ -3080,6 +3169,7 @@ mark-style	Japanese	Japán
 	Rotate Tool	Elforgatás
 	Rotate View	Nézet elforgatása
 	Rotate View Tool	Nézet elforgatása
+	Trackpad Gesture to Rotate View	Nézet elforgatása kézmozdulattal az érintőpadon
 	Rotate…	Elforgatás…
 	Rotation	Elforgatás
 	Rotation relative to:	Elforgatás viszonyítási alapja:
@@ -3940,6 +4030,7 @@ mark-style	Japanese	Japán
 	Unlock All Layers	Összes réteg zárolásának feloldása
 	Unlock Grid	Rács zárolásának feloldása
 	Unlock Guides	Segédvonalak zárolásának feloldása
+	Unlock Variables	Változók zárolásának feloldása
 	Unnamed Objects	Névtelen objektumok
 	Unprintable margin:	Nem nyomtatható margó:
 	Unsharp Mask	Életlenítő maszk
@@ -4825,6 +4916,7 @@ imageTrace	Outline	Körvonal
 @msg	unsupported: {0}	nem támogatott: {0}
 @msg	Updated {_1} image(s)	Frissített képek: {_1}
 @msg	Updated {_1} linked file(s) changed on disk	Frissített, a lemezen módosult csatolt fájlok: {_1}
+@msg	variables are locked	a változók zárolva vannak
 @msg	VectorCraft doesn't search other apps' or the system's folders: {path}	a VectorCraft nem keres más alkalmazások és a rendszer mappáiban: {path}
 @msg	VectorCraft doesn't search the Shared or Public folder in Users: {path}	a VectorCraft nem keres a Users alatti Shared és Public mappában: {path}
 @msg	VectorCraft failed to start: {e}	A VectorCraft nem tudott elindulni: {e}
@@ -5039,6 +5131,18 @@ imageTrace	Outline	Körvonal
 	Movie Clip	Mozgóklip
 @msg	name is empty	a név üres
 @msg	no symbol named `{n}`	nincs `{n}` nevű szimbólum
+	Enable Guides for 9-Slice Scaling	Segédvonalak engedélyezése a 9-slice méretezéshez
 @msg	a mask has more than one art block	egy maszk egynél több grafikai blokkot tartalmaz
 @msg	mask art ends outside a mask dictionary	a maszk grafikája a maszk szótárán kívül ér véget
 @msg	cancelled; nothing was changed	megszakítva; semmi sem változott
+@msg	a linked image can't become a gradient mesh: embed it first	csatolt kép nem alakítható színátmenetes hálóvá: előbb ágyazza be
+@msg	the image has no usable size or position	a képnek nincs használható mérete vagy helyzete
+@msg	the image's pixels can't be read	a kép képpontjai nem olvashatók
+	Persistent	Állandó
+	Library Panel Options	Könyvtárpanel beállításai
+@msg	Persistent libraries not found: {files}	Nem találhatók állandó könyvtárak: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	A(z) `{given}` nem könyvtárpanel (lásd: window.swatchLibrary)
+@msg	library panel `{given}` isn't open	a(z) `{given}` könyvtárpanel nincs megnyitva
+@msg	too many library panels were opened in this session	ebben a munkamenetben túl sok könyvtárpanel nyílt meg
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	A kép {_1} × {_2} képpont, egyik oldalán több mint {LARGE_TRACE_SIDE}: a vektorizálás megtörténik, de lassabban. Kisebb hűségű előbeállítással vagy a kép kisebb másolatával gyorsabb.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	A kép vektorizálása {_1} × {_2} képponton történt, {_3} × {_4} méretről kicsinyítve (legfeljebb {_5} megapixel).

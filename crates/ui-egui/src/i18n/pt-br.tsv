@@ -335,6 +335,7 @@
 	Change All	Alterar Tudo
 	Change Case	Alterar Maiúsculas/Minúsculas
 	Change to Global Rulers	Mudar para Réguas Globais
+	Change to Artboard Rulers	Mudar para Réguas da Prancheta
 	Change to Right-to-Left Layout	Mudar para Layout da Direita para a Esquerda
 	Changed since the last Refresh.	Alterado desde a última Atualização.
 	Changes allowed:	Alterações permitidas:
@@ -704,6 +705,7 @@
 	Document Ink Options	Opções de Tinta do Documento
 	Document JSON	JSON do Documento
 	Document Raster Effects Settings	Configurações de Efeitos de Raster do Documento
+	Use Document Raster Effects Resolution	Usar a Resolução das Configurações de Efeitos de Raster do Documento
 	Document Raster Effects Settings Dialog	Diálogo de Configurações de Efeitos de Raster do Documento
 	Document Raster Effects Settings…	Configurações de Efeitos de Raster do Documento…
 	Document Setup	Configuração do Documento
@@ -1016,6 +1018,7 @@
 	Font List	Lista de Fontes
 	Font Preview Size	Tamanho da Visualização da Fonte
 	Font Size	Tamanho da Fonte
+	Variable Font	Fonte Variável
 	Font:	Fonte:
 	Fonts	Fontes
 	Fonts in Document	Fontes no Documento
@@ -1158,6 +1161,76 @@
 	History	Histórico
 	History Options…	Opções do Histórico…
 	History States	Estados do Histórico
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Aplicar Conjunto de Dados
+	Cancel Pattern Editing	Cancelar Edição de Padrão
+	Copy Appearance	Copiar Aparência
+	Copy Guide	Copiar Guia
+	Copy in Perspective	Copiar em Perspectiva
+	Create Slice from Selection	Criar Fatia a partir da Seleção
+	Create Slices from Guides	Criar Fatias a partir de Guias
+	Delete All Slices	Excluir Todas as Fatias
+	Delete Data Sets	Excluir Conjuntos de Dados
+	Delete Graphic Styles	Excluir Estilos Gráficos
+	Delete Guide	Excluir Guia
+	Delete Guides	Excluir Guias
+	Delete Slice	Excluir Fatia
+	Delete Style	Excluir Estilo
+	Delete Variables	Excluir Variáveis
+	Delete View	Excluir Exibição
+	Done Editing Pattern	Concluir Edição de Padrão
+	Duplicate Rows	Duplicar Linhas
+	Edit Perspective Grid	Editar Grade de Perspectiva
+	Expand Blend	Expandir Mesclagem
+	Expand Envelope	Expandir Envelope
+	Expand Image Trace	Expandir Rastreamento de Imagem
+	Expand Live Paint	Expandir Pintura ao Vivo
+	Live Shape	Forma ao Vivo
+	Make Blend	Criar Mesclagem
+	Make Dynamic	Tornar Dinâmico
+	Make Intertwine	Criar Entrelaçamento
+	Make Live Paint	Criar Pintura ao Vivo
+	Make Pattern	Criar Padrão
+	Make Slice	Criar Fatia
+	Merge Live Paint	Mesclar Pintura ao Vivo
+	Mesh Point Color	Cor do Ponto de Malha
+	Move Envelope Point	Mover Ponto do Envelope
+	Move Plane and Copy Objects	Mover Plano e Copiar Objetos
+	Move Plane and Objects	Mover Plano e Objetos
+	Move Slice	Mover Fatia
+	Move Type on a Path	Mover Texto em um Caminho
+	New Guide	Nova Guia
+	Place from Library	Colocar da Biblioteca
+	Rearrange Artboards	Reorganizar Mesas de Trabalho
+	Release Blend	Liberar Mesclagem
+	Release Envelope	Liberar Envelope
+	Release Intertwine	Liberar Entrelaçamento
+	Release Live Paint	Liberar Pintura ao Vivo
+	Release Repeat	Liberar Repetição
+	Release Slice	Liberar Fatia
+	Release Threaded Text	Liberar Texto Encadeado
+	Rename Design	Renomear Design
+	Rename Style	Renomear Estilo
+	Rename View	Renomear Exibição
+	Reorder Appearance	Reordenar Aparência
+	Reorder Artboards	Reordenar Mesas de Trabalho
+	Reshape Spine	Remodelar Coluna
+	Resize Artboard	Redimensionar Mesa de Trabalho
+	Resize Slice	Redimensionar Fatia
+	Resize Type Area	Redimensionar Área de Texto
+	Scale in Perspective	Dimensionar em Perspectiva
+	Shape Builder Delete	Construtor de Formas (Excluir)
+	Sort Swatches	Ordenar Amostras
+	Symbol Screener	Peneira de Símbolos
+	Symbol Scruncher	Amontoar Símbolos
+	Symbol Shifter	Deslocador de Símbolos
+	Symbol Sizer	Dimensionador de Símbolos
+	Symbol Spinner	Gira Símbolos
+	Symbol Stainer	Mancha de Símbolos
+	Symbol Styler	Estilizador de Símbolos
+	Text Orientation	Orientação do Texto
+	Thread Text	Encadear Texto
+	Typing	Digitação
 	Hollow	Oco
 	Home	Início
 	Horizon Height:	Altura do Horizonte:
@@ -2093,6 +2166,7 @@
 	Rotate	Girar
 	Rotate Tool	Ferramenta Girar
 	Rotate View Tool	Ferramenta Girar Visualização
+	Trackpad Gesture to Rotate View	Girar Visualização com Gesto do Trackpad
 	Rotate…	Girar…
 	Rotation	Rotação
 	Roughen…	Enrugar…
@@ -2709,6 +2783,8 @@
 	New Variable…	Nova variável…
 	Unbind Variable	Desassociar variável
 	Delete Variable	Excluir variável
+	Lock Variables	Bloquear variáveis
+	Unlock Variables	Desbloquear variáveis
 	New Data Set…	Novo conjunto de dados…
 	Edit Data Set…	Editar conjunto de dados…
 	Delete Data Set	Excluir conjunto de dados
@@ -2983,6 +3059,7 @@ lighting	Light	Luz
 	Above Text	Acima do texto
 	Position Panel Above Text	Posicionar painel acima do texto
 	Connect Selected End Points	Conectar extremidades selecionadas
+	Connect	Conectar
 	Convert Selected Anchor Points to Corner	Converter pontos de ancoragem selecionados em canto
 	Convert Selected Anchor Points to Smooth	Converter pontos de ancoragem selecionados em suaves
 	Convert:	Converter:
@@ -3700,6 +3777,7 @@ axis	Both	Ambos
 @msg	unknown tool or command `{key}`	ferramenta ou comando desconhecido `{key}`
 @msg	unknown workspace (one of {_1})	espaço de trabalho desconhecido (um de {_1})
 @msg	unsupported: {0}	não suportado: {0}
+@msg	variables are locked	as variáveis estão bloqueadas
 @msg	version {0} files can't be compressed: only version {COMPRESSED_SINCE} and later open compressed files	arquivos da versão {0} não podem ser compactados: somente a versão {COMPRESSED_SINCE} e posteriores abrem arquivos compactados
 @msg	width and height are at least 1 pixel	largura e altura têm pelo menos 1 pixel
 @msg	workspace name can't be empty	o nome do espaço de trabalho não pode estar vazio
@@ -3858,6 +3936,20 @@ axis	Both	Ambos
 	Reset Ruler Origin	Redefinir origem das réguas
 	Artistic	Artístico
 	Film Grain…	Granulação de filme…
+	Cutout…	Recorte…
+	Cutout	Recorte
+	Neon Glow…	Brilho neon…
+	Neon Glow	Brilho neon
+	Poster Edges…	Bordas de pôster…
+	Poster Edges	Bordas de pôster
+	Levels	Níveis
+	Edge Simplicity	Simplicidade das bordas
+	Edge Fidelity	Fidelidade das bordas
+	Glow Size	Tamanho do brilho
+	Glow Brightness	Intensidade do brilho
+	Edge Thickness	Espessura das bordas
+	Edge Intensity	Intensidade das bordas
+	Posterization	Posterização
 	Grain	Grão
 	Highlight Area	Área de realces
 @msg	the compressed file unpacks to more than VectorCraft reads ({_1} MB of document, {_2} MB per image)	o arquivo compactado se expande para mais do que o VectorCraft lê ({_1} MB de documento, {_2} MB por imagem)
@@ -4970,6 +5062,18 @@ mark-style	Japanese	Japonesas
 # Symbol Options › Export Type
 @msg	name is empty	o nome está vazio
 @msg	no symbol named `{n}`	nenhum símbolo chamado `{n}`
+	Enable Guides for 9-Slice Scaling	Ativar guias para dimensionamento 9-slice
 @msg	a mask has more than one art block	uma máscara contém mais de um bloco de arte
 @msg	mask art ends outside a mask dictionary	a arte da máscara termina fora de um dicionário de máscara
 @msg	cancelled; nothing was changed	cancelado; nada foi alterado
+@msg	a linked image can't become a gradient mesh: embed it first	uma imagem vinculada não pode virar uma malha de degradê: incorpore-a primeiro
+@msg	the image has no usable size or position	a imagem não tem tamanho nem posição utilizáveis
+@msg	the image's pixels can't be read	não é possível ler os pixels da imagem
+	Persistent	Persistente
+	Library Panel Options	Opções do Painel de Biblioteca
+@msg	Persistent libraries not found: {files}	Bibliotecas persistentes não encontradas: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` não é um painel de biblioteca (consulte window.swatchLibrary)
+@msg	library panel `{given}` isn't open	o painel de biblioteca `{given}` não está aberto
+@msg	too many library panels were opened in this session	foram abertos painéis de biblioteca demais nesta sessão
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	A imagem tem {_1} × {_2} pixels, mais de {LARGE_TRACE_SIDE} em um lado: ela é traçada, mas mais devagar. Uma predefinição de menor fidelidade ou uma cópia menor da imagem traça mais rápido.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	A imagem foi traçada em {_1} × {_2} pixels, reduzida de {_3} × {_4} (no máximo {_5} megapixels).

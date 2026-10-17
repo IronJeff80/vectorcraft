@@ -355,6 +355,7 @@
 	Change Case	Изменить регистр
 	Change Screen Mode (F)	Сменить режим экрана (F)
 	Change to Global Rulers	Переключить на глобальные линейки
+	Change to Artboard Rulers	Переключить на линейки монтажной области
 	Change to Right-to-Left Layout	Переключить на макет справа налево
 	Changed since the last Refresh.	Изменено с момента последнего обновления.
 	Changes allowed:	Разрешённые изменения:
@@ -544,6 +545,7 @@
 	Condition identifier:	Идентификатор условия:
 	Conflict {n} of {count}	Конфликт {n} из {count}
 	Connect Selected End Points	Соединить выбранные конечные точки
+	Connect	Соединить
 	Consolidate All Windows	Объединить все окна
 	Constrain Angle	Ограничить угол
 	Constrain Width and Height Proportions	Сохранять пропорции ширины и высоты
@@ -785,6 +787,7 @@
 	Document open password	Пароль для открытия документа
 	Document profile	Профиль документа
 	Document Raster Effects Settings	Параметры растровых эффектов документа
+	Use Document Raster Effects Resolution	Использовать разрешение из параметров растровых эффектов документа
 	Document Raster Effects Settings Dialog	Диалоговое окно «Параметры растровых эффектов документа»
 	Document Raster Effects Settings…	Параметры растровых эффектов документа…
 	Document Setup	Параметры документа
@@ -1164,6 +1167,7 @@ file-filter	Templates	Шаблоны
 	Font List	Список шрифтов
 	Font Preview Size	Размер предварительного просмотра шрифта
 	Font Size	Размер шрифта
+	Variable Font	Вариативный шрифт
 	Font:	Шрифт:
 	Fonts	Шрифты
 	Fonts in Document	Шрифты в документе
@@ -1350,6 +1354,90 @@ file-filter	Templates	Шаблоны
 	History	История
 	History Options…	Параметры истории…
 	History States	Состояния истории
+# History panel: the names of undo steps (`every_undo_label_is_translated`).
+	Apply Data Set	Применить набор данных
+	Area Type	Текст в области
+	Bloat	Раздувание
+	Cancel Pattern Editing	Отменить редактирование узора
+	Copy Appearance	Копировать оформление
+	Copy Guide	Копировать направляющую
+	Copy in Perspective	Копировать в перспективе
+	Create Slice from Selection	Создать фрагмент из выделения
+	Create Slices from Guides	Создать фрагменты из направляющих
+	Delete All Slices	Удалить все фрагменты
+	Delete Data Sets	Удалить наборы данных
+	Delete Graphic Styles	Удалить графические стили
+	Delete Guide	Удалить направляющую
+	Delete Guides	Удалить направляющие
+	Delete Slice	Удалить фрагмент
+	Delete Style	Удалить стиль
+	Delete Variables	Удалить переменные
+	Delete View	Удалить вид
+	Done Editing Pattern	Завершить редактирование узора
+	Duplicate Rows	Дублировать строки
+	Edit Perspective Grid	Редактировать сетку перспективы
+	Expand Blend	Разобрать переход
+	Expand Envelope	Разобрать оболочку
+	Expand Image Trace	Разобрать трассировку изображения
+	Expand Live Paint	Разобрать быструю заливку
+	Grid Repeat	Повтор сеткой
+	Image Trace (Make and Expand)	Трассировка изображения (создать и разобрать)
+	Live Shape	Динамическая фигура
+	Make Blend	Создать переход
+	Make Dynamic	Сделать динамическим
+	Make Intertwine	Создать переплетение
+	Make Live Paint	Создать быструю заливку
+	Make Pattern	Создать узор
+	Make Slice	Создать фрагмент
+	Make Text Wrap	Создать обтекание текстом
+	Merge Live Paint	Объединить быструю заливку
+	Mesh Point Color	Цвет точки сетки
+	Mirror Repeat	Зеркальный повтор
+	Move Envelope Point	Переместить точку оболочки
+	Move Plane and Copy Objects	Переместить плоскость и копировать объекты
+	Move Plane and Objects	Переместить плоскость и объекты
+	Move Slice	Переместить фрагмент
+	Move Type on a Path	Переместить текст по контуру
+	New Guide	Новая направляющая
+	Pen	Перо
+	Place from Library	Поместить из библиотеки
+	Pucker	Сморщивание
+	Radial Repeat	Радиальный повтор
+	Rearrange Artboards	Переставить монтажные области
+	Release Blend	Освободить переход
+	Release Envelope	Освободить оболочку
+	Release Image Trace	Освободить трассировку изображения
+	Release Intertwine	Освободить переплетение
+	Release Live Paint	Освободить быструю заливку
+	Release Repeat	Освободить повтор
+	Release Slice	Освободить фрагмент
+	Release Text Wrap	Освободить обтекание текстом
+	Release Threaded Text	Освободить связанный текст
+	Rename Design	Переименовать дизайн
+	Rename Style	Переименовать стиль
+	Rename View	Переименовать вид
+	Reorder Appearance	Изменить порядок оформления
+	Reorder Artboards	Изменить порядок монтажных областей
+	Reshape Spine	Изменить форму остова
+	Resize Artboard	Изменить размер монтажной области
+	Resize Slice	Изменить размер фрагмента
+	Resize Type Area	Изменить размер текстовой области
+	Scale in Perspective	Масштабировать в перспективе
+	Scallop	Фестоны
+	Shape Builder Delete	Создание фигур (удаление)
+	Sort Swatches	Сортировать образцы
+	Symbol Screener	Прозрачность символов
+	Symbol Scruncher	Сжатие символов
+	Symbol Shifter	Сдвиг символов
+	Symbol Sizer	Размер символов
+	Symbol Spinner	Вращение символов
+	Symbol Stainer	Тонирование символов
+	Symbol Styler	Стилизация символов
+	Text Orientation	Ориентация текста
+	Thread Text	Связать текст
+	Twirl	Закручивание
+	Typing	Ввод текста
+	Wrinkle	Морщины
 	Hollow	Полый
 	Home	Домой
 	Horizon Height:	Высота горизонта:
@@ -2546,6 +2634,7 @@ mark-style	Japanese	Японский
 	Rotate 90° CW	Повернуть на 90° по часовой стрелке
 	Rotate Tool	Инструмент «Поворот»
 	Rotate View Tool	Инструмент «Поворот вида»
+	Trackpad Gesture to Rotate View	Поворачивать вид жестом трекпада
 	Rotate…	Повернуть…
 	Rotation	Поворот
 	Roughen…	Огрубление…
@@ -3339,6 +3428,8 @@ mark-style	Japanese	Японский
 	Variables	Переменные
 	New Variable	Новая переменная
 	Delete Variable	Удалить переменную
+	Lock Variables	Заблокировать переменные
+	Unlock Variables	Разблокировать переменные
 	List Variables	Перечислить переменные
 	Bind Variable	Привязать переменную
 	Unbind Variable	Отвязать переменную
@@ -4140,6 +4231,7 @@ axis	Both	Оба
 @msg	unknown tool or command `{key}`	неизвестный инструмент или команда `{key}`
 @msg	unknown workspace (one of {_1})	неизвестная рабочая среда (одна из: {_1})
 @msg	unsupported: {0}	не поддерживается: {0}
+@msg	variables are locked	переменные заблокированы
 @msg	version {0} files can't be compressed: only version {COMPRESSED_SINCE} and later open compressed files	файлы версии {0} не могут быть сжаты: только версия {COMPRESSED_SINCE} и новее открывают сжатые файлы
 @msg	width and height are at least 1 pixel	ширина и высота должны быть не менее 1 пикселя
 @msg	workspace name can't be empty	имя рабочей среды не может быть пустым
@@ -4475,6 +4567,20 @@ lighting	Light	Свет
 	Reset Ruler Origin	Сбросить начало координат линеек
 	Artistic	Художественные
 	Film Grain…	Зернистость плёнки…
+	Cutout…	Аппликация…
+	Cutout	Аппликация
+	Neon Glow…	Неоновое свечение…
+	Neon Glow	Неоновое свечение
+	Poster Edges…	Края плаката…
+	Poster Edges	Края плаката
+	Levels	Уровни
+	Edge Simplicity	Простота краёв
+	Edge Fidelity	Точность краёв
+	Glow Size	Размер свечения
+	Glow Brightness	Яркость свечения
+	Edge Thickness	Толщина краёв
+	Edge Intensity	Интенсивность краёв
+	Posterization	Постеризация
 	Highlight Area	Область светов
 @msg	the compressed file unpacks to more than VectorCraft reads ({_1} MB of document, {_2} MB per image)	сжатый файл распаковывается в объём больше, чем читает VectorCraft ({_1} МБ документа, {_2} МБ на изображение)
 @msg	the document is too large to save compressed ({0}): save it with Use Compression off	документ слишком велик для сохранения со сжатием ({0}): сохраните его с выключенным параметром «Использовать сжатие»
@@ -4648,6 +4754,18 @@ lighting	Light	Свет
 	Movie Clip	Видеоклип
 @msg	name is empty	имя пустое
 @msg	no symbol named `{n}`	нет символа с именем `{n}`
+	Enable Guides for 9-Slice Scaling	Включить направляющие для 9-slice масштабирования
 @msg	a mask has more than one art block	маска содержит более одного блока графики
 @msg	mask art ends outside a mask dictionary	графика маски заканчивается за пределами словаря маски
 @msg	cancelled; nothing was changed	отменено; ничего не изменено
+@msg	a linked image can't become a gradient mesh: embed it first	связанное изображение нельзя превратить в сетчатый градиент: сначала встройте его
+@msg	the image has no usable size or position	у изображения нет пригодного размера или положения
+@msg	the image's pixels can't be read	не удаётся прочитать пиксели изображения
+	Persistent	Постоянная
+	Library Panel Options	Параметры панели библиотеки
+@msg	Persistent libraries not found: {files}	Постоянные библиотеки не найдены: {files}
+@msg	`{given}` isn't a library panel (see window.swatchLibrary)	`{given}` — не панель библиотеки (см. window.swatchLibrary)
+@msg	library panel `{given}` isn't open	панель библиотеки `{given}` не открыта
+@msg	too many library panels were opened in this session	в этом сеансе открыто слишком много панелей библиотек
+@msg	The image is {_1} × {_2} pixels, more than {LARGE_TRACE_SIDE} on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster.	Изображение {_1} × {_2} пикселей, больше {LARGE_TRACE_SIDE} по одной стороне: трассировка выполняется, но медленнее. Стиль с меньшей точностью или уменьшенная копия изображения трассируются быстрее.
+@msg	The image was traced at {_1} × {_2} pixels, scaled down from {_3} × {_4} ({_5} megapixels at most).	Изображение трассировано в размере {_1} × {_2} пикселей, уменьшенное с {_3} × {_4} (не более {_5} мегапикселей).
