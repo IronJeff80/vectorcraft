@@ -1632,6 +1632,8 @@ lighting	Light	Światło
 	Corner Point Angle Threshold:	Próg kąta punktów narożnych:
 	Convert to Straight Lines	Konwertuj na linie proste
 	Show Original Path	Pokaż oryginalną ścieżkę
+	Open this dialog with these settings next time	Następnym razem otwórz to okno dialogowe z tymi ustawieniami
+	Auto-Simplify	Uprość automatycznie
 	Transparency Options	Opcje przezroczystości
 	Color Mixer (Shift-click the chip)	Mikser kolorów (kliknij próbkę z Shift)
 	Fill: click for swatches, Shift-click for the color mixer	Wypełnienie: kliknij, aby wybrać próbkę, z Shift — mikser kolorów
@@ -2165,6 +2167,7 @@ lighting	Light	Światło
 	Edit selected paths within:	Edytuj zaznaczone ścieżki w odległości:
 	Fidelity:	Wierność:
 	Fill new strokes	Wypełniaj nowe pociągnięcia
+	Alt key toggles to Smooth Tool	Klawisz Alt przełącza na narzędzie Wygładzanie
 	Keep selected	Zachowaj zaznaczenie
 	Merge only with selection	Scalaj tylko z zaznaczeniem
 	The document has no colour swatches.	Dokument nie zawiera próbek kolorów.
@@ -3994,6 +3997,7 @@ imageTrace	Outline	Kontur
 @msg	background {other}: transparent, white, black or a colour such as "#ff8800"	tło {other}: transparent, white, black lub kolor, np. "#ff8800"
 @msg	bad color {v}	nieprawidłowy kolor {v}
 @msg	the Color Picker is not open	Próbnik kolorów nie jest otwarty
+@msg	the Simplify slider is not open	Suwak Uprość nie jest otwarty
 @msg	the screen color sampler is already open	narzędzie do pobierania koloru z ekranu jest już otwarte
 @msg	this system has no screen color sampler	ten system nie ma narzędzia do pobierania koloru z ekranu
 @msg	bad colour `{hex}` (#rrggbb)	nieprawidłowy kolor `{hex}` (#rrggbb)
@@ -5079,3 +5083,14 @@ mark-style	Japanese	Japońskie
 # Select by Color (select.color)
 	Select by Color	Zaznacz według koloru
 	Move Anchor Point	Przesuń punkt kontrolny
+@msg	{label} keeps 1 of the document's {n} artboards: the file reopens with one. Turn on Preserve Editing Capabilities to keep them all.	{label} zachowuje 1 z {n} obszarów kompozycji dokumentu: plik otworzy się ponownie z jednym. Włącz Zachowaj możliwości edycji, aby zachować wszystkie.
+	Chalk & Charcoal…	Kreda i węgiel…
+	Chalk & Charcoal	Kreda i węgiel
+	Graphic Pen…	Pióro graficzne…
+	Graphic Pen	Pióro graficzne
+	Reticulation…	Siateczkowanie…
+	Reticulation	Siateczkowanie
+	Plastic Wrap…	Folia plastikowa…
+	Plastic Wrap	Folia plastikowa
+	Chrome…	Chrom…
+	Chrome	Chrom

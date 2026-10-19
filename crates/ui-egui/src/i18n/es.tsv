@@ -1078,6 +1078,7 @@
 	Fill (X), double-click for the Color Picker	Relleno (X), doble clic para el selector de color
 	Fill and Stroke	Relleno y trazo
 	Fill new strokes	Rellenar trazos nuevos
+	Alt key toggles to Smooth Tool	La tecla Alt cambia a la herramienta Suavizar
 	Keep selected	Mantener seleccionado
 	Merge only with selection	Combinar solo con la selección
 	Fill Color	Color de relleno
@@ -2924,6 +2925,8 @@
 	Show Note	Mostrar nota
 	Show Options	Mostrar opciones
 	Show Original Path	Mostrar trazado original
+	Open this dialog with these settings next time	Abrir este cuadro de diálogo con estos ajustes la próxima vez
+	Auto-Simplify	Simplificar automáticamente
 	Color Panel Options	Opciones del panel Color
 	Show Package	Mostrar paquete
 	Show Panel	Mostrar panel
@@ -3870,6 +3873,7 @@ axis	Both	Ambos
 @msg	background {other}: transparent, white, black or a colour such as "#ff8800"	fondo {other}: transparent, white, black o un color como "#ff8800"
 @msg	bad color {v}	color no válido {v}
 @msg	the Color Picker is not open	el Selector de color no está abierto
+@msg	the Simplify slider is not open	el regulador de Simplificar no está abierto
 @msg	the screen color sampler is already open	el muestreador de color de la pantalla ya está abierto
 @msg	this system has no screen color sampler	este sistema no tiene muestreador de color de la pantalla
 @msg	bad colour `{hex}` (#rrggbb)	color no válido `{hex}` (#rrggbb)
@@ -5169,3 +5173,14 @@ mark-style	Japanese	Japonesas
 # Select by Color (select.color)
 	Select by Color	Seleccionar por color
 	Move Anchor Point	Mover punto de ancla
+@msg	{label} keeps 1 of the document's {n} artboards: the file reopens with one. Turn on Preserve Editing Capabilities to keep them all.	{label} conserva 1 de las {n} mesas de trabajo del documento: el archivo se vuelve a abrir con una. Active Conservar capacidades de edición para conservarlas todas.
+	Chalk & Charcoal…	Tiza y carboncillo…
+	Chalk & Charcoal	Tiza y carboncillo
+	Graphic Pen…	Pluma gráfica…
+	Graphic Pen	Pluma gráfica
+	Reticulation…	Reticulación…
+	Reticulation	Reticulación
+	Plastic Wrap…	Envoltura plástica…
+	Plastic Wrap	Envoltura plástica
+	Chrome…	Cromo…
+	Chrome	Cromo

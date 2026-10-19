@@ -2064,6 +2064,7 @@ lighting	Light	Lys
 	Edit selected paths within:	Redigér markerede stier inden for:
 	Fidelity:	Præcision:
 	Fill new strokes	Udfyld nye konturer
+	Alt key toggles to Smooth Tool	Alt-tasten skifter til Udglatningsværktøj
 	The document has no colour swatches.	Dokumentet har ingen farveprøver.
 	Style Name:	Typografinavn:
 	Crop To	Beskær til
@@ -5051,6 +5052,8 @@ swatch	Bright Violet	Kraftig violet
 	Outline Object	Objekt til kontur
 	Update Selection	Opdater markering
 	Show Original Path	Vis oprindelig kurve
+	Open this dialog with these settings next time	Åbn denne dialogboks med disse indstillinger næste gang
+	Auto-Simplify	Forenkl automatisk
 @msg	check a layer to export	markér et lag, der skal eksporteres
 @msg	select the art to export first	markér først grafikken, der skal eksporteres
 @msg	no saved selection recalled	ingen gemt markering hentet
@@ -5208,3 +5211,13 @@ swatch	Bright Violet	Kraftig violet
 # Select by Color (select.color)
 	Select by Color	Markér efter farve
 	Move Anchor Point	Flyt ankerpunkt
+	Chalk & Charcoal…	Kridt og kul…
+	Chalk & Charcoal	Kridt og kul
+	Graphic Pen…	Grafisk pen…
+	Graphic Pen	Grafisk pen
+	Reticulation…	Retikulering…
+	Reticulation	Retikulering
+	Plastic Wrap…	Plastfolie…
+	Plastic Wrap	Plastfolie
+	Chrome…	Krom…
+	Chrome	Krom

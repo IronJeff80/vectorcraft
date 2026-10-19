@@ -1423,7 +1423,8 @@ group together.
 Groups and layers carry fills, strokes and effects of their own, as in the reference app: their fills and strokes
 paint every member's geometry, and their effects apply to the members as one piece (one combined drop shadow; a
 Transform or Warp moves or bends the whole group). Their Contents row (type: Characters) is a slot in the stack:
-fills and strokes above it paint over the members (characters), those below under them; new items go above it.
+fills and strokes above it paint over the members (characters), those below under them; new items go above it
+(on an image, below it).
 `appearance.moveItem {"from": "contents", "to": n}` puts the row above the bottom `n` items, and an item move takes
 `contents` to say where the row ends up in the same undo step; `document.node` shows the slot as
 `appearance.contents_index`. The `appearance.*`, `effect.*` and `graphicStyle.apply` commands edit the selected
@@ -1435,6 +1436,13 @@ A geometry effect on one of type's own fills or strokes (`effect.apply` with `it
 the fill or stroke paints, and SVG, PDF, EPS and the other vector exports write such type as paths. On type that
 holds inline graphics, those effects are drawn and exported only when the type has a geometry effect or perspective
 of its own.
+An image's own fills and strokes draw only when they carry a visible Convert to Shape or Outline Object effect: Convert
+to Shape sizes its shape from the image's box, Outline Object gives the image's frame, the effects after it reshape
+that shape, and the effects before it are left out. Its Contents row stands for the image; `appearance.addFill` and
+`appearance.addStroke` put a new item right below that row, so it paints under the image. SVG, PDF, EPS and the other
+vector exports write those items as paths, and `effect.expandAppearance` turns them into objects in a group with the
+image.
+Use Preview Bounds measures an image by its frame.
 
 ```json
 {"name":"run_command","arguments":{"command":"appearance.addFill","params":{"ids":[7]}}}
@@ -2023,6 +2031,23 @@ the path it had begun while that stays selected. Its reply's `tool` is the tool 
 {"name":"run_command","arguments":{"command":"path.cutAtAnchors","params":{}}}
 {"name":"run_command","arguments":{"command":"path.moveAnchors","params":{"dx":0,"dy":40}}}
 ```
+
+## Simplify
+
+`object.path.simplify` takes the amount as `tolerance` (points, 1 by default) or as the Simplify slider's `level`, a whole
+number from 0 (the fewest anchor points) to 100 (the closest fit). Level 50 is a tolerance of 1 pt, and every 10 levels
+halve or double it, so level 0 is 32 pt and level 100 is 1/32 pt. `auto: true` (Auto-Simplify) uses the lowest level
+whose tolerance is at most 1/400 of the selection's longer side, or level 100 when that side is under 12.5 pt. With
+`level` or `auto`, the reply also has the `level` used:
+
+```json
+{"name":"run_command","arguments":{"command":"object.path.simplify","params":{"auto":true}}}
+```
+
+In the desktop app, Object › Path › Simplify opens the slider (`ui.menuDialog {command: "object.path.simplify"}`,
+dialog `simplifySlider` with field `level`) and previews the result until `ui.dialog.confirm`. `ui.simplifyAuto` moves
+the open slider to the Auto-Simplify level, and `ui.simplifyMoreOptions` opens the Simplify dialog at the slider's
+tolerance. When OK confirms the dialog with `retain` ticked, the menu item opens the dialog on those settings next time.
 
 ## Editing a path with the Curvature tool
 
@@ -3183,8 +3208,8 @@ or in `options` (`file.formatOptions {format}` lists them with their values):
   (default true) with false write blank pages around the native document (smaller; other apps show empty pages).
 - `.ai` only: `compress` (default true) is the PDF option `compression.compressText`.
 
-File → Save As asks for these in the save options dialog (VectorCraft Options) after the save panel; Save, Save a Copy
-and Save as Template reuse the options as last saved (or Use Compression).
+File → Save As asks for these in the save options dialog (VectorCraft Options) after the save panel, and Save a Copy
+does too for a `.ai` file; Save, Save a Copy to a native file and Save as Template reuse the options as last saved (or Use Compression).
 
 ```json
 {"name":"run_command","arguments":{"command":"file.saveAs","params":{"path":"/tmp/set.vectorcraft","separateArtboards":true,"range":"2-3","includeLinked":true}}}

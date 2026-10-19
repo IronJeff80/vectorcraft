@@ -2064,6 +2064,7 @@ lighting	Light	Cahaya
 	Edit selected paths within:	Edit jalur terpilih dalam jarak:
 	Fidelity:	Fidelitas:
 	Fill new strokes	Isi stroke baru
+	Alt key toggles to Smooth Tool	Tombol Alt beralih ke Alat penghalus
 	The document has no colour swatches.	Dokumen tidak memiliki swatch warna.
 	Style Name:	Nama gaya:
 	Crop To	Pangkas ke
@@ -5051,6 +5052,8 @@ swatch	Bright Violet	Violet cerah
 	Outline Object	Kerangka objek
 	Update Selection	Perbarui seleksi
 	Show Original Path	Tampilkan jalur asli
+	Open this dialog with these settings next time	Buka dialog ini dengan pengaturan ini lain kali
+	Auto-Simplify	Sederhanakan otomatis
 @msg	check a layer to export	centang lapisan yang akan diekspor
 @msg	select the art to export first	pilih dulu karya yang akan diekspor
 @msg	no saved selection recalled	tidak ada seleksi tersimpan yang dipanggil
@@ -5208,3 +5211,13 @@ swatch	Bright Violet	Violet cerah
 # Select by Color (select.color)
 	Select by Color	Pilih berdasarkan warna
 	Move Anchor Point	Pindahkan titik jangkar
+	Chalk & Charcoal…	Kapur dan arang…
+	Chalk & Charcoal	Kapur dan arang
+	Graphic Pen…	Pena grafis…
+	Graphic Pen	Pena grafis
+	Reticulation…	Retikulasi…
+	Reticulation	Retikulasi
+	Plastic Wrap…	Pembungkus plastik…
+	Plastic Wrap	Pembungkus plastik
+	Chrome…	Krom…
+	Chrome	Krom

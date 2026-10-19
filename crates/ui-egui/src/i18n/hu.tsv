@@ -1365,6 +1365,7 @@
 	Fill and Stroke	Kitöltés és körvonal
 	Fill Color	Kitöltőszín
 	Fill new strokes	Új vonások kitöltése
+	Alt key toggles to Smooth Tool	Az Alt billentyű a Simítás eszközre vált
 	Keep selected	Kijelölés megtartása
 	Merge only with selection	Összeolvasztás csak a kijelöléssel
 	Fill New Type Objects With Placeholder Text	Új szövegobjektumok kitöltése helykitöltő szöveggel
@@ -3542,6 +3543,8 @@ mark-style	Japanese	Japán
 	Show Note	Megjegyzés megjelenítése
 	Show Options	Beállítások megjelenítése
 	Show Original Path	Eredeti útvonal megjelenítése
+	Open this dialog with these settings next time	Legközelebb ez a párbeszédablak nyíljon meg ezekkel a beállításokkal
+	Auto-Simplify	Automatikus egyszerűsítés
 	Color Panel Options	Szín panel beállításai
 	Show Package	Csomag megjelenítése
 	Show Panel	Panel megjelenítése
@@ -4413,6 +4416,7 @@ imageTrace	Outline	Körvonal
 @msg	background {other}: transparent, white, black or a colour such as "#ff8800"	background {other}: transparent, white, black vagy egy szín, például "#ff8800"
 @msg	bad color {v}	hibás szín: {v}
 @msg	the Color Picker is not open	a Színválasztó nincs megnyitva
+@msg	the Simplify slider is not open	az Egyszerűsítés csúszka nincs megnyitva
 @msg	the screen color sampler is already open	a képernyős színmintavevő már nyitva van
 @msg	this system has no screen color sampler	ezen a rendszeren nincs képernyős színmintavevő
 @msg	bad colour `{hex}` (#rrggbb)	hibás szín: `{hex}` (#rrggbb)
@@ -5213,3 +5217,14 @@ imageTrace	Outline	Körvonal
 # Select by Color (select.color)
 	Select by Color	Kijelölés szín szerint
 	Move Anchor Point	Horgonypont áthelyezése
+@msg	{label} keeps 1 of the document's {n} artboards: the file reopens with one. Turn on Preserve Editing Capabilities to keep them all.	A(z) {label} a dokumentum {n} rajztáblájából 1-et tart meg: a fájl eggyel nyílik meg újra. Kapcsolja be a Szerkeszthetőség megtartása beállítást, hogy mind megmaradjon.
+	Chalk & Charcoal…	Kréta és szén…
+	Chalk & Charcoal	Kréta és szén
+	Graphic Pen…	Grafikus toll…
+	Graphic Pen	Grafikus toll
+	Reticulation…	Recézés…
+	Reticulation	Recézés
+	Plastic Wrap…	Fóliázás…
+	Plastic Wrap	Fóliázás
+	Chrome…	Króm…
+	Chrome	Króm

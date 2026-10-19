@@ -2078,6 +2078,7 @@ lighting	Light	Licht
 	Edit selected paths within:	Geselecteerde paden bewerken binnen:
 	Fidelity:	Nauwkeurigheid:
 	Fill new strokes	Nieuwe lijnen vullen
+	Alt key toggles to Smooth Tool	Alt-toets schakelt over naar Gladmaken-gereedschap
 	The document has no colour swatches.	Het document heeft geen kleurstalen.
 	Style Name:	Stijlnaam:
 	Crop To	Bijsnijden tot
@@ -5063,6 +5064,8 @@ swatch	Bright Violet	Felviolet
 	Outline Object	Object omtrekken
 	Update Selection	Selectie bijwerken
 	Show Original Path	Oorspronkelijk pad tonen
+	Open this dialog with these settings next time	Dit dialoogvenster de volgende keer met deze instellingen openen
+	Auto-Simplify	Automatisch vereenvoudigen
 @msg	check a layer to export	vink een laag aan om te exporteren
 @msg	select the art to export first	selecteer eerst de illustratie die je wilt exporteren
 @msg	no saved selection recalled	geen opgeslagen selectie opgeroepen
@@ -5250,3 +5253,13 @@ swatch	Bright Violet	Felviolet
 # Select by Color (select.color)
 	Select by Color	Selecteren op kleur
 	Move Anchor Point	Ankerpunt verplaatsen
+	Chalk & Charcoal…	Krijt en houtskool…
+	Chalk & Charcoal	Krijt en houtskool
+	Graphic Pen…	Grafische pen…
+	Graphic Pen	Grafische pen
+	Reticulation…	Reticulatie…
+	Reticulation	Reticulatie
+	Plastic Wrap…	Plasticfolie…
+	Plastic Wrap	Plasticfolie
+	Chrome…	Chroom…
+	Chrome	Chroom

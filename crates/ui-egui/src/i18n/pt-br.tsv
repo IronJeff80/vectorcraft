@@ -963,6 +963,7 @@
 	Fill Rule	Regra de Preenchimento
 	Fill and Stroke	Preenchimento e Traçado
 	Fill new strokes	Preencher novos traçados
+	Alt key toggles to Smooth Tool	A tecla Alt alterna para a ferramenta Suavizar
 	Keep selected	Manter selecionado
 	Merge only with selection	Mesclar somente com a seleção
 	Fill with Placeholder Text	Preencher com Texto de Placeholder
@@ -2429,6 +2430,8 @@
 	Show Note	Mostrar Nota
 	Show Options	Mostrar Opções
 	Show Original Path	Mostrar Caminho Original
+	Open this dialog with these settings next time	Abrir este diálogo com estas configurações na próxima vez
+	Auto-Simplify	Simplificar Automaticamente
 	Show Package	Mostrar Pacote
 	Show Panel	Mostrar Painel
 	Show Perspective Grid	Mostrar Grade de Perspectiva
@@ -5067,6 +5070,7 @@ mark-style	Japanese	Japonesas
 @msg	Unknown dimension mode	Modo de cota desconhecido
 @msg	Unknown dimension option {k}	Opção de cota desconhecida {k}
 @msg	the Color Picker is not open	o Seletor de Cores não está aberto
+@msg	the Simplify slider is not open	o controle deslizante Simplificar não está aberto
 @msg	the screen color sampler is already open	o coletor de cores da tela já está aberto
 @msg	this system has no screen color sampler	este sistema não tem coletor de cores da tela
 	Darkness	Escuridão
@@ -5144,3 +5148,14 @@ mark-style	Japanese	Japonesas
 # Select by Color (select.color)
 	Select by Color	Selecionar por Cor
 	Move Anchor Point	Mover Ponto de Ancoragem
+@msg	{label} keeps 1 of the document's {n} artboards: the file reopens with one. Turn on Preserve Editing Capabilities to keep them all.	{label} mantém 1 das {n} mesas de trabalho do documento: o arquivo reabre com uma. Ative Preservar Capacidades de Edição para manter todas.
+	Chalk & Charcoal…	Giz e carvão…
+	Chalk & Charcoal	Giz e carvão
+	Graphic Pen…	Caneta gráfica…
+	Graphic Pen	Caneta gráfica
+	Reticulation…	Reticulação…
+	Reticulation	Reticulação
+	Plastic Wrap…	Envoltório plástico…
+	Plastic Wrap	Envoltório plástico
+	Chrome…	Cromo…
+	Chrome	Cromo

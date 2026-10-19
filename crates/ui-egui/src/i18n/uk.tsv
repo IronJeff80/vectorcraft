@@ -1072,6 +1072,7 @@
 	Fill (X), double-click for the Color Picker	Заливка (X), двічі клацніть на палітрі кольорів
 	Fill and Stroke	Заливка та обведення
 	Fill new strokes	Заповнювати нові обведення
+	Alt key toggles to Smooth Tool	Клавіша Alt перемикає на інструмент «Згладжування»
 	Keep selected	Залишати вибраним
 	Merge only with selection	Об’єднувати лише з виділеним
 	Fill Color	Колір заливки
@@ -2949,6 +2950,8 @@ mark-style	Japanese	Японський
 	Show Note	Показати примітку
 	Show Options	Показати параметри
 	Show Original Path	Показати початковий контур
+	Open this dialog with these settings next time	Наступного разу відкривати це діалогове вікно з цими параметрами
+	Auto-Simplify	Автоматичне спрощення
 	Color Panel Options	Параметри панелі «Колір»
 	Show Package	Показати пакет
 	Show Panel	Показати панель
@@ -3893,6 +3896,7 @@ axis	Both	Обидві
 @msg	background {other}: transparent, white, black or a colour such as "#ff8800"	фон {other}: transparent, white, black або колір, наприклад "#ff8800"
 @msg	bad color {v}	неприпустимий колір {v}
 @msg	the Color Picker is not open	палітра кольорів не відкрита
+@msg	the Simplify slider is not open	повзунок «Спростити» не відкрито
 @msg	the screen color sampler is already open	засіб вибору кольору з екрана вже відкритий
 @msg	this system has no screen color sampler	у цій системі немає засобу вибору кольору з екрана
 @msg	bad colour `{hex}` (#rrggbb)	неприпустимий колір `{hex}` (#rrggbb)
@@ -4821,3 +4825,14 @@ lighting	Light	Світло
 # Select by Color (select.color)
 	Select by Color	Виділити за кольором
 	Move Anchor Point	Перемістити опорну точку
+@msg	{label} keeps 1 of the document's {n} artboards: the file reopens with one. Turn on Preserve Editing Capabilities to keep them all.	{label} зберігає 1 з {n} монтажних областей документа: файл відкриється знову з однією. Увімкніть «Зберігати можливості редагування», щоб зберегти всі.
+	Chalk & Charcoal…	Крейда і вугілля…
+	Chalk & Charcoal	Крейда і вугілля
+	Graphic Pen…	Графічне перо…
+	Graphic Pen	Графічне перо
+	Reticulation…	Ретикуляція…
+	Reticulation	Ретикуляція
+	Plastic Wrap…	Целофанова плівка…
+	Plastic Wrap	Целофанова плівка
+	Chrome…	Хром…
+	Chrome	Хром

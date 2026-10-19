@@ -80,7 +80,9 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 - **Missing:** Average and Join in one step, with a corner or smooth choice for the joined anchor. `path.average` and `path.join` are separate commands and Join has no such choice (coinciding anchors merge into one since #1533). [ui-parity.md](ui-parity.md) listed "Join with corner/smooth choice" as done until 2026-10-13. About 1–2 h (estimated), inside the estimate below.
 - **Implemented (#1760):** Effect › Warp has a shared style selector with original previews, orientation buttons and percent sliders. Existing effects retain their stack slot and target. Focused checks passed and original captures were reviewed; optional Properties integration and remembered defaults remain outside this change.
 - **Done (#2120):** Smart Guides line extension: dragging the end of a straight segment with Direct Selection or Curvature, the point snaps to the segment's own direction at any angle and the guide runs along it from the other end. Inside the estimate below.
-- **Missing (noted for reporters, 2026-10-14):** Tab in the Color Picker moves through its fields in order (#1692); aligning anchor points selected with
+- **Done (#1692):** Tab in the Color Picker moves through one color model's fields before the next. Completed upstream before the layout change (#2008).
+- **Improved (#2008):** Color Picker layout: stacked top-right actions, aligned inputs, less empty space, a distinct header and compact color controls. Narrow windows use stacked sections and vertical scrolling. Pointer/key, warning, layout and mode-switch regressions cover the change; the broader fidelity pass and estimates remain unchanged.
+- **Missing (noted for reporters, 2026-10-14):** aligning anchor points selected with
   Direct Selection to a key anchor (from #1636: they align to their bounds; the current public Align page does
   not say how the key anchor is chosen, so this waits for the owner). Inside the estimate below.
 - **Missing:** a tool-by-tool, panel-by-panel pass over modifiers, cursors, the Properties panel per context,
@@ -97,7 +99,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 - **Missing:** faithful layer and group structure from the editing data in real files (#951: 109 layers instead
   of 14), guides and non-printing construction
-  lines (#779), open speed on large files (#758), live effects, brushes and symbols as live objects (#637; pattern fills and global colours are read since #1025, placed (linked) files since #1264). Writing Illustrator's own editing data is out of scope
+  lines (#779), open speed on large files (#758), live effects, brushes and symbols as live objects (#637; plain art styles read Drop Shadow, Outer Glow and Feather as live effects; pattern fills and global colours are read since #1025, placed (linked) files since #1264). Writing Illustrator's own editing data is out of scope
   (undocumented): a PDF-compatible `.ai` opens in Illustrator 2018 without its layers and groups (#868). Save As
   `.ai` › Version: Legacy (version 7) writes the PostScript form from the published version 7 specification
   instead, keeping layers (names, order, visibility, lock), groups, compound paths, clipping groups, gradients and
@@ -221,11 +223,11 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G2 Photoshop-style raster effects and the Effect Gallery
 
-- **Missing:** 24 of 57 filters (the remaining 11 Artistic filters and 13 of Sketch's 14), the Effect Gallery dialog, Load
+- **Missing:** 23 of 57 filters (the remaining 11 Artistic filters and 12 of Sketch's 14), the Effect Gallery dialog, Load
   Texture for Texturizer. Measured in
   [effects-parity.md](effects-parity.md).
-- **Done:** the pixel-filter pipeline and 33 filters (Artistic: Cutout, Film Grain, Neon Glow, Poster Edges, Blur, Brush Strokes, Distort, Pixelate, Sharpen, Sketch:
-  Halftone Pattern, Stylize, Texture, Video), Brush Strokes on 2026-10-11, Film Grain on 2026-10-12, Halftone Pattern on 2026-10-16, Cutout, Neon Glow and Poster Edges on 2026-10-16, and Smart Blur's Edge Only and Overlay Edge
+- **Done:** the pixel-filter pipeline and 35 filters (Artistic: Cutout, Film Grain, Neon Glow, Poster Edges, Blur, Brush Strokes, Distort, Pixelate, Sharpen, Sketch:
+  Chalk & Charcoal, Chrome, Graphic Pen and Halftone Pattern, Stylize, Texture, Video), Brush Strokes on 2026-10-11, Film Grain on 2026-10-12, Halftone Pattern on 2026-10-16, Graphic Pen on 2026-10-18, Chrome on 2026-10-19, Cutout, Neon Glow and Poster Edges on 2026-10-16, and Smart Blur's Edge Only and Overlay Edge
   modes.
 - **Estimate:** 21–35 h (measured 0.7–1.2 h per filter); parallelizes well.
 
@@ -292,22 +294,12 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G6 Automation and scripting
 
-- **Missing:** a scripting surface over the command registry (Illustrator: JavaScript), image and graph
-  variable kinds (dataset CSV import/export and Batch are open as PRs). Actions, Variables (text and
-  visibility) and full agent control over MCP are done.
-- **Estimate:** 6–12 h.
-- **Missing:** a scripting surface over the command registry (Illustrator: JavaScript), Batch, image variable kind and dataset import/export (graph variables land separately). Actions, Variables (text,
-  visibility, graph) and full agent control over MCP are done.
-- **Estimate:** 8–14 h.
-- **Missing:** a scripting surface over the command registry (Illustrator: JavaScript), Batch, graph variable
-  kinds. Actions, Variables (text, visibility and image), dataset CSV import/export and full agent control over
-  kinds, dataset import/export. Actions, Variables (text, visibility and image) and full agent control over
+- **Missing:** a scripting surface over the command registry (Illustrator: JavaScript, File › Scripts;
+  #1183 is open). Actions, Batch, Variables (text, visibility, image and graph), data set CSV import and
+  export, and full agent control over MCP are done.
+- **Estimate:** 4–8 h.
 - **Done (2026-10-16):** the MCP server hears the client during a long call: `notifications/cancelled` stops a queued or running export (PDF pages, flattening, baking, drawing, artboards) without writing anything or changing the document, `ping` and the list methods answer at once, any other request that would wait behind a call running for two seconds or more is refused as busy (`-32003`, naming the call), and `_meta.progressToken` gets page progress (#2165, #2171, #2172). Reading the document during an export is not served (refused as busy); estimate unchanged.
 - **Exposed in MCP:** `add_text {vertical: true}` uses the existing vertical point, area and path type commands. Horizontal writing remains the default; the broader automation gap and estimate are unchanged.
-- **Missing:** a scripting surface over the command registry (Illustrator: JavaScript), Batch, image and graph
-  variable kinds, dataset import/export. Actions, Variables (text and visibility) and full agent control over
-  MCP are done.
-- **Estimate:** 4–8 h.
 
 ## G15 Performance budgets and a GPU renderer
 
@@ -357,6 +349,7 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 | 2026-10-19 | minor | Status messages and readouts use stable responsive allocations sized for localized labels and ordinary coordinates. Contributor original-file acceptance confirmed; scores and estimates unchanged. |
 | 2026-10-19 | minor | Cached canvas dimensions match the renderer limit before cache-key creation, view construction and worker submission. Regression coverage; scores and estimates unchanged. |
 | 2026-10-19 | minor | Cached canvas reprojection preserves scale during resize, rotation and DPI changes. Contributor original-file acceptance confirmed; scores and estimates unchanged. |
+| 2026-10-19 | minor | Color Picker layout (#2008): compact controls, centered header, stacked actions and aligned inputs; screen-reader channel values, current shared button names and styling, screen sampler and model-by-model Tab order retained. Narrow windows scroll vertically. Documentation correction: #1692 was completed upstream before #2008; the Direct Selection alignment gap remains open. Scores and hours unchanged. |
 | 2026-10-18 | minor | Mirror Repeat shows its axis when selected (#2877): drag the line or center handle to move it, drag an end handle to rotate it (Shift: 45°), Escape cancels and each drag is one undo step. Engine and headless canvas gesture regressions passed; native move, rotation and Escape screenshots reviewed. Formatting, Clippy, WASM and repository checks passed; the undo label reuses translated Repeat Options. (#2877) Scores and hours unchanged. |
 | 2026-10-18 | minor | Bounding-box handles take priority where a selected Mirror Repeat axis crosses them; a Top-handle regression confirms scaling of the default repeat. Center and end handles retain their move and rotation behavior. G1 scope and estimate unchanged. |
 | 2026-10-17 | minor | Blend spine Anchor Point conversions, selection/stacking priority and Shift regression coverage (#2544); scores and hours unchanged. Windows native canvas checks and screenshots reviewed in PR #2643. |

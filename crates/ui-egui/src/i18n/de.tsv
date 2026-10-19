@@ -1062,6 +1062,7 @@
 	Fill (X), double-click for the Color Picker	Fläche (X), Doppelklick öffnet den Farbwähler
 	Fill and Stroke	Fläche und Kontur
 	Fill new strokes	Neue Striche füllen
+	Alt key toggles to Smooth Tool	Alt-Taste schaltet auf Glätten-Werkzeug um
 	Keep selected	Ausgewählt lassen
 	Merge only with selection	Nur mit Auswahl zusammenfügen
 	Fill Color	Flächenfarbe
@@ -2906,6 +2907,8 @@ mark-style	Japanese	Japanisch
 	Show Note	Notiz einblenden
 	Show Options	Optionen einblenden
 	Show Original Path	Originalpfad einblenden
+	Open this dialog with these settings next time	Dieses Dialogfeld nächstes Mal mit diesen Einstellungen öffnen
+	Auto-Simplify	Automatisch vereinfachen
 	Color Panel Options	Optionen für das Farbbedienfeld
 	Show Package	Paket anzeigen
 	Show Panel	Bedienfeld einblenden
@@ -3807,6 +3810,7 @@ theme	Appearance	Erscheinungsbild
 @msg	background {other}: transparent, white, black or a colour such as "#ff8800"	background {other}: transparent, white, black oder eine Farbe wie "#ff8800"
 @msg	bad color {v}	ungültige Farbe {v}
 @msg	the Color Picker is not open	der Farbwähler ist nicht geöffnet
+@msg	the Simplify slider is not open	der Regler „Vereinfachen“ ist nicht geöffnet
 @msg	the screen color sampler is already open	die Farbaufnahme vom Bildschirm ist bereits geöffnet
 @msg	this system has no screen color sampler	dieses System hat keine Farbaufnahme vom Bildschirm
 @msg	bad colour `{hex}` (#rrggbb)	ungültige Farbe `{hex}` (#rrggbb)
@@ -4807,3 +4811,14 @@ effect	Soft	Weich
 # Select by Color (select.color)
 	Select by Color	Nach Farbe auswählen
 	Move Anchor Point	Ankerpunkt verschieben
+@msg	{label} keeps 1 of the document's {n} artboards: the file reopens with one. Turn on Preserve Editing Capabilities to keep them all.	{label} behält 1 der {n} Zeichenflächen des Dokuments: Die Datei wird mit einer wieder geöffnet. Aktivieren Sie „Bearbeitungsfunktionen beibehalten“, um alle zu behalten.
+	Chalk & Charcoal…	Kreide & Kohle…
+	Chalk & Charcoal	Kreide & Kohle
+	Graphic Pen…	Grafikstift…
+	Graphic Pen	Grafikstift
+	Reticulation…	Retikulation…
+	Reticulation	Retikulation
+	Plastic Wrap…	Kunststofffolie…
+	Plastic Wrap	Kunststofffolie
+	Chrome…	Chrom…
+	Chrome	Chrom
