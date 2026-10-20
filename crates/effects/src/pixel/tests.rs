@@ -2106,6 +2106,44 @@ fn halftone_pattern_params_take_defaults_and_stay_in_range() {
     assert_eq!(f.reach(), Some(0.0));
 }
 
+#[test]
+fn note_paper_params_take_defaults_and_stay_in_range() {
+    assert_eq!(fx("sketch.notePaper", json!({})), PixelFx::NotePaper { balance: 25.0, graininess: 0.0, relief: 4.0 });
+    assert_eq!(
+        fx("sketch.notePaper", json!({"imageBalance": -1, "graininess": 20, "relief": 100})),
+        PixelFx::NotePaper { balance: 0.0, graininess: 10.0, relief: 50.0 }
+    );
+    let doc = crate::effect_info("sketch.notePaper").unwrap().params;
+    assert!(doc.contains("imageBalance") && doc.contains("graininess") && doc.contains("relief"), "{doc}");
+    let f = fx("sketch.notePaper", json!({"relief": 12}));
+    assert_eq!(f.outset(Rect::new(0.0, 0.0, 100.0, 50.0)), 0.0);
+    assert_eq!(f.reach(), Some(0.0));
+}
+
+/// Note Paper embosses a horizontal gradient and graininess adds fibre.
+#[test]
+fn note_paper_embosses_a_gradient_and_grain_changes_pixels() {
+    let (w, h) = (32, 32);
+    let src = image(w, h, |x, _| grey((x * 255 / (w - 1)) as u8));
+    let flat = {
+        let mut out = src.clone();
+        fx("sketch.notePaper", json!({"relief": 0, "graininess": 0})).apply(&mut out, w, h, &space(w, h));
+        out
+    };
+    let embossed = {
+        let mut out = src.clone();
+        fx("sketch.notePaper", json!({"relief": 50, "graininess": 0})).apply(&mut out, w, h, &space(w, h));
+        out
+    };
+    assert_ne!(flat, embossed, "relief changes the emboss");
+    let grainy = {
+        let mut out = src.clone();
+        fx("sketch.notePaper", json!({"relief": 0, "graininess": 10})).apply(&mut out, w, h, &space(w, h));
+        out
+    };
+    assert_ne!(flat, grainy, "graininess adds fibre");
+}
+
 /// Line's rows repeat every Size points: Size pixels at 72 ppi, twice as many at 144 ppi.
 #[test]
 fn halftone_line_period_is_the_size_at_any_resolution() {
@@ -2148,6 +2186,41 @@ fn halftone_pattern_type_changes_the_pattern() {
     for y in 0..h {
         assert!((0..w).all(|x| at(&line, w, x, y) == at(&line, w, 0, y)), "row {y} of Line is uniform");
     }
+}
+
+/// Plaster of `p` over `w` × `h` pixels of `src`, laid out by `s`.
+fn plaster(p: serde_json::Value, src: &[u8], w: usize, h: usize, s: &PixelSpace) -> Vec<u8> {
+    let mut out = src.to_vec();
+    fx("sketch.plaster", p).apply(&mut out, w, h, s);
+    out
+}
+
+#[test]
+fn plaster_params_take_defaults_and_stay_in_range() {
+    use super::texture::Light;
+    assert_eq!(fx("sketch.plaster", json!({})), PixelFx::Plaster { image_balance: 20.0, smoothness: 8.0, light: Light::Top });
+    assert_eq!(
+        fx("sketch.plaster", json!({"imageBalance": 0, "smoothness": 1e9, "lightDirection": "bottomRight"})),
+        PixelFx::Plaster { image_balance: 1.0, smoothness: 15.0, light: Light::BottomRight }
+    );
+    assert_eq!(fx("sketch.plaster", json!({"lightDirection": "nonsense"})), fx("sketch.plaster", json!({})));
+    let doc = crate::effect_info("sketch.plaster").unwrap().params;
+    assert!(doc.contains("\"bottomRight\""), "{doc}");
+    let f = fx("sketch.plaster", json!({"smoothness": 24}));
+    assert_eq!(f.reach(), Some(super::sketch::plaster_reach(15.0)));
+}
+
+/// Plaster changes the image and different light directions give different results.
+#[test]
+fn plaster_light_direction_shifts_shading() {
+    let (w, h) = (48, 32);
+    let src = image(w, h, |x, y| grey((16 + (x + y) % 200) as u8));
+    let s = space(w, h);
+    let base = plaster(json!({"imageBalance": 20, "smoothness": 6, "lightDirection": "top"}), &src, w, h, &s);
+    assert_ne!(base, src, "plaster changes opaque pixels");
+    let left = plaster(json!({"lightDirection": "left"}), &src, w, h, &s);
+    let right = plaster(json!({"lightDirection": "right"}), &src, w, h, &s);
+    assert_ne!(left, right, "light direction changes the relief shading");
 }
 
 #[test]

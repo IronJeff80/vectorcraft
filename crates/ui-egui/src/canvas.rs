@@ -502,6 +502,7 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
         // Selected guides in the selection colour.
         let picked = LineLook { color: t.selection, ..look };
         let selected: &[usize] = app.session.active().map_or(&[], |st| &st.selection.guides);
+        let key = app.session.active().and_then(|st| st.selection.key_guide);
         let view = view_bounds(&xf);
         // Guides on a hidden layer hide with it.
         for (i, g) in doc.guides.iter().enumerate().filter(|(_, g)| doc.guide_shown(g)) {
@@ -517,6 +518,10 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
                 }
             };
             if selected.contains(&i) { picked } else { look }.guide(&painter, a, b);
+            // The key guide (Align to Key Object, #2143): thicker, as a key object's outline is.
+            if key == Some(i) {
+                painter.line_segment([a, b], Stroke::new(KEY_OUTLINE, picked.color));
+            }
         }
     }
 
@@ -2040,6 +2045,8 @@ fn panel_drop(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Response, xf: &Xf)
         // Art dragged back onto the canvas: its move was already dropped. (A symbol was placed
         // above.)
         widgets::PanelDrag::Art(_) | widgets::PanelDrag::Symbol(_) | widgets::PanelDrag::LibraryGraphic { .. } => return,
+        // A Libraries panel style or group only moves within that panel.
+        widgets::PanelDrag::LibraryItem { .. } | widgets::PanelDrag::LibraryGroup { .. } => return,
     };
     if let Err(e) = app.run(cmd, params) {
         app.status(e);
@@ -6958,7 +6965,7 @@ mod tests {
         let fill = |app: &VectorcraftApp| app.session.active().unwrap().doc.node(vectorcraft_doc::NodeId(id)).unwrap().appearance.fill_paint();
         let red = Paint::solid(Color::from_hex("#ed1c24").unwrap());
         let rows = SwatchRows { grabbed: "Red".into(), names: vec!["Red".into()], groups: false };
-        let swatch = PanelDrag::Paint { paint: red.clone(), params: json!({"swatch": "Red"}), rows: Some(rows) };
+        let swatch = PanelDrag::Paint { paint: red.clone(), params: json!({"swatch": "Red"}), rows: Some(rows), library: None };
         // Off the art nothing happens.
         drop(&mut app, swatch.clone(), Point::new(300.0, 250.0));
         assert_eq!(fill(&app), Paint::solid(Color::WHITE));
