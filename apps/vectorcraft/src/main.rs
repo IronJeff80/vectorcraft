@@ -144,11 +144,7 @@ impl App {
         // again on its document when it answers.
         #[cfg(target_os = "macos")]
         if !self.app.file_dialog_open() {
-            // Files from the Finder and the Dock wait while a file dialog is open: what asked for it runs
-            // again on its document when it answers.
-            if !self.app.file_dialog_open() {
-                open_files(&mut self.app, open_documents::take());
-            }
+            open_files(&mut self.app, open_documents::take());
         }
         self.app.logic(ctx);
         window::track(ctx, &mut self.app.ui.window);
@@ -293,7 +289,7 @@ type Parent = Option<std::sync::Arc<winit::window::Window>>;
 trait DialogSettings: Sized {
     fn parent(self, window: &winit::window::Window) -> Self;
     fn title(self, title: &str) -> Self;
-    fn filter(self, name: &str, exts: &[&str]) -> Self;
+    fn filter(self, name: &str, exts: &[impl ToString]) -> Self;
     fn folder(self, folder: &str) -> Self;
     fn file_name(self, name: &str) -> Self;
 }
@@ -307,7 +303,7 @@ macro_rules! dialog_settings {
             fn title(self, title: &str) -> Self {
                 self.set_title(title)
             }
-            fn filter(self, name: &str, exts: &[&str]) -> Self {
+            fn filter(self, name: &str, exts: &[impl ToString]) -> Self {
                 self.add_filter(name, exts)
             }
             fn folder(self, folder: &str) -> Self {
@@ -333,10 +329,9 @@ fn dialog_for<D: DialogSettings>(d: D, request: &PickRequest) -> D {
         }
         PickRequest::Folder => return d,
     };
-    let d = pick
-        .filters
-        .iter()
-        .fold(d, |d, (name, exts)| d.filter(vectorcraft_ui_egui::i18n::tr_ctx(vectorcraft_ui_egui::i18n::current(), "file-filter", name), exts));
+    let d = pick.filters.iter().fold(d, |d, (name, exts)| {
+        d.filter(vectorcraft_ui_egui::i18n::tr_ctx(vectorcraft_ui_egui::i18n::current(), "file-filter", name.as_str()), exts)
+    });
     let d = match &pick.folder {
         Some(folder) => d.folder(folder),
         None => d,
