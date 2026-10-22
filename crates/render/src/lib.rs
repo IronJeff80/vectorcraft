@@ -8,6 +8,7 @@
 
 mod brush_fx;
 mod changed;
+mod dither;
 pub mod encode;
 mod freeform;
 mod fx;
@@ -82,6 +83,11 @@ pub fn drawn_outline(doc: &Document, n: &Node) -> Option<(BezPath, FillRule)> {
 /// Largest raster an export may ask [`Renderer::render_region`] for, per side. The CPU rasteriser
 /// addresses at most `u16::MAX` pixels per side (and panics at that edge).
 pub const MAX_RASTER_SIDE: u32 = 32_768;
+/// Largest side of a render context the renderer makes. The CPU rasteriser keeps pixel positions
+/// in `u16` and overflows near `u16::MAX` (its tile and bucket arithmetic rounds past it), so
+/// contexts stay within the side raster exports are limited to.
+const MAX_CONTEXT_SIDE: u32 = MAX_RASTER_SIDE;
+
 /// Largest raster an export may ask for in total (16384², 1 GiB of RGBA pixels).
 pub const MAX_RASTER_PIXELS: u64 = 1 << 28;
 
@@ -282,7 +288,7 @@ const MAX_SUPERSAMPLED_PIXELS: u64 = 40_000_000;
 pub fn supersample_factor(w: u32, h: u32) -> Option<u32> {
     (2..=4u32).rev().find(|k| {
         let (sw, sh) = (u64::from(w) * u64::from(*k), u64::from(h) * u64::from(*k));
-        sw <= u64::from(u16::MAX) && sh <= u64::from(u16::MAX) && sw * sh <= MAX_SUPERSAMPLED_PIXELS
+        sw <= u64::from(MAX_CONTEXT_SIDE) && sh <= u64::from(MAX_CONTEXT_SIDE) && sw * sh <= MAX_SUPERSAMPLED_PIXELS
     })
 }
 
@@ -667,7 +673,7 @@ impl Renderer {
     fn render_as(&mut self, doc: &Document, width: u32, height: u32, view: Affine, opts: &RenderOptions, inks: bool) -> Rendered {
         let start = now();
         if opts.supersample && opts.anti_alias == AntiAlias::Art && opts.mask_view.is_none() {
-            let (w, h) = (width.clamp(1, u16::MAX as u32), height.clamp(1, u16::MAX as u32));
+            let (w, h) = (width.clamp(1, MAX_CONTEXT_SIDE), height.clamp(1, MAX_CONTEXT_SIDE));
             if let Some(k) = supersample_factor(w, h) {
                 let hard = RenderOptions { anti_alias: AntiAlias::None, supersample: false, ..opts.clone() };
                 let big = self.render_as(doc, w * k, h * k, Affine::scale(f64::from(k)) * view, &hard, inks);
@@ -681,8 +687,8 @@ impl Renderer {
         self.check_symbols(doc);
         let prepared = proof::prepare(doc, opts, &mut self.proof_art);
         let doc: &Document = &prepared;
-        let w = width.clamp(1, u16::MAX as u32) as u16;
-        let h = height.clamp(1, u16::MAX as u32) as u16;
+        let w = width.clamp(1, MAX_CONTEXT_SIDE) as u16;
+        let h = height.clamp(1, MAX_CONTEXT_SIDE) as u16;
         // Raster filters (drop shadow, glows, blur) are rendered offscreen on this thread when the
         // main context is multithreaded (see `fx::with_filters`).
         let threads = self.threads;
@@ -910,7 +916,7 @@ impl Renderer {
         let b = brush_fx::cull_bounds(&doc.symbol_boxes(), n)?;
         let s = (size as f64 - 2.0) / b.width().max(b.height()).max(1e-6);
         let view = Affine::translate((size as f64 / 2.0, size as f64 / 2.0)) * Affine::scale(s) * Affine::translate(-b.center().to_vec2());
-        let w = size.clamp(1, u16::MAX as u32) as u16;
+        let w = size.clamp(1, MAX_CONTEXT_SIDE) as u16;
         let mut ctx = single_threaded_context(w, w);
         if let Some(bg) = background {
             ctx.set_paint(peniko::Color::from_rgba8(bg[0], bg[1], bg[2], bg[3]));
@@ -1513,7 +1519,7 @@ impl Renderer {
                         ctx.push_layer(None, Some(blend_mode(fl.blend)), Some(fl.opacity), None, None);
                     }
                     ctx.set_transform(f.view);
-                    if paint::set_paint(ctx, &fl.paint, bounds, f) {
+                    if paint::set_fill_paint(ctx, &fl.paint, bounds, f) {
                         self.fold_alpha(ctx, f.ink, &fl.paint);
                         ctx.set_fill_rule(fill_rule(rule));
                         ctx.fill_path(bp);
@@ -1853,7 +1859,7 @@ impl Renderer {
             }
             ctx.set_transform(xf);
             ctx.set_fill_rule(peniko::Fill::NonZero);
-            if paint::set_paint(ctx, &run.style.fill, g.bounds, f) {
+            if paint::set_fill_paint(ctx, &run.style.fill, g.bounds, f) {
                 self.fold_alpha(ctx, f.ink, &run.style.fill);
                 overprint(ctx, run.style.overprint_fill);
                 ctx.fill_path(path);
@@ -1884,7 +1890,7 @@ impl Renderer {
                         ctx.push_layer(None, Some(blend_mode(fl.blend)), Some(fl.opacity), None, None);
                     }
                     ctx.set_transform(f.view);
-                    if paint::set_paint(ctx, &fl.paint, tb, f) {
+                    if paint::set_fill_paint(ctx, &fl.paint, tb, f) {
                         ctx.set_fill_rule(peniko::Fill::NonZero);
                         ctx.fill_path(all);
                     }
@@ -2570,6 +2576,8 @@ mod tests_clip;
 mod tests_cmykblend;
 #[cfg(test)]
 mod tests_container;
+#[cfg(test)]
+mod tests_dither;
 #[cfg(test)]
 mod tests_fontchange;
 #[cfg(test)]
