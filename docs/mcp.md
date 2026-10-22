@@ -1719,11 +1719,12 @@ under `ui.library_panels`.
 `ui.libraryPanel.locate {panel, path?}` is Locate Library…: it loads the library at `path` (without one, it
 asks for a file) as Other Library… does and shows it in the open panel `panel`, which keeps its view, find
 field and Persistent, and answers as `ui.libraryPanel` does. When the file's library already has a panel open,
-`panel` closes and is forgotten, and that panel is brought forward, made persistent when `panel` was. On a
-panel whose library isn't missing, it answers an error without asking for or loading a file, and the panel
-keeps its library.
+`panel` closes and is forgotten, and that panel is brought forward, made persistent when `panel` was. It
+runs on any open panel whose library is missing, with Persistent on or off. On a panel whose library isn't
+missing, it answers an error without asking for or loading a file, and the panel keeps its library.
 `window.swatchLibrary` and `window.graphicStyleLibrary` also take a missing library's id, so a closed missing
-panel opens again; they answer its file's name without the extension and `count: 0`.
+panel opens again, and an open panel whose library is missing is brought forward with Persistent on or off;
+they answer its file's name without the extension and `count: 0`.
 
 ```json
 {"name":"invoke_menu","arguments":{"command":"window.swatchLibrary","params":{"library":"pastels"}}}
@@ -4469,7 +4470,9 @@ tool keeps last across tool switches (and documents) and are saved with the pref
 `prefs.get`'s full object), as the reference app keeps them: the Liquify tools' brush and tool options, Mirror & Cut's
 axis and side, Puppet Warp's mesh, the Symbolism brush, the line, grid, pencil, brush and eraser tools' options,
 polygon sides and star points, the Flare Tool Options and the Shape Builder Tool Options. The Liquify tools share one set of Global Brush Dimensions (width, height, angle,
-intensity), and the Symbolism tools one brush. Interaction state (pins, a reference point) starts afresh.
+intensity), and the Symbolism tools one brush. Interaction state (pins, a reference point) starts afresh. In the
+desktop app, while the Artboard tool is in use, a change to its `selected` or `active` makes the artboard it then has
+active the active artboard (the navigator's and the Artboards panel's).
 
 ```json
 {"name":"run_command","arguments":{"command":"tool.setOption","params":{"tool":"twirl","values":{"width":60,"rate":90}}}}
