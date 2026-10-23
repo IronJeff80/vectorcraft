@@ -513,7 +513,8 @@ scaled while it has effects, brushes or live objects; and every instance of a sy
 opacity masks (those stay on the page). `hiddenLayers: true` keeps hidden layers and objects, not displayed
 (`display="none"`); `document.save` and the CLI's `convert` keep them unless told otherwise, other exports leave
 them out, and they reopen hidden. An object's own data (`object.setProps {data: {pivot: "100,180"}}`) is written as
-`data-*` attributes (`data-pivot="100,180"`), and an SVG's `data-*` attributes come in as it. A `preserveEditing` SVG carries the native document (CDATA in `<metadata>`) and a hash of the
+`data-*` attributes (`data-pivot="100,180"`), and an SVG's `data-*` attributes come in as it. Attributes in other applications' XML namespaces
+(`plotter:pen="2"`) come in on their objects too and are written back, each namespace declared once on the root. A `preserveEditing` SVG carries the native document (CDATA in `<metadata>`) and a hash of the
 markup around it: if another app changed the SVG since, `document.open` reads it as plain SVG and says so in
 `warnings`.
 
@@ -2318,9 +2319,10 @@ whose tolerance is at most 1/400 of the selection's longer side, or level 100 wh
 ```
 
 In the desktop app, Object › Path › Simplify opens the slider (`ui.menuDialog {command: "object.path.simplify"}`,
-dialog `simplifySlider` with field `level`) and previews the result until `ui.dialog.confirm`. `ui.simplifyAuto` moves
-the open slider to the Auto-Simplify level, and `ui.simplifyMoreOptions` opens the Simplify dialog at the slider's
-tolerance. When OK confirms the dialog with `retain` ticked, the menu item opens the dialog on those settings next time.
+dialog `simplifySlider` with field `level`) at the Auto-Simplify level for the selection and previews the result until
+`ui.dialog.confirm`. `ui.simplifyAuto` moves the open slider back to the Auto-Simplify level, and `ui.simplifyMoreOptions`
+opens the Simplify dialog at the slider's tolerance. When OK confirms the dialog with `retain` ticked, the menu item opens
+the dialog on those settings next time.
 
 ## Editing a path with the Curvature tool
 
@@ -2960,7 +2962,11 @@ Placement: `edit.paste {center}` centres the objects on a point (the app passes 
 by `dx`/`dy` (the Paste Offset preference). With nothing selected, `edit.pasteInFront` / `edit.pasteInBack` put them
 on top / at the bottom of the current layer. `edit.pasteOnAllArtboards` keeps their offset to the artboard they were
 copied from. `layer.pasteRemembersLayers {on?}` (a document option, `document.inspect` → `pasteRemembersLayers`)
-pastes objects back into the layers they came from, by name, making missing ones.
+pastes objects back into the layers they came from, by name, making missing ones. Drawing modes (`view.drawMode`) apply
+too: in Draw Inside, `edit.paste`, `edit.pasteInPlace` and `edit.pasteOnAllArtboards` put the objects inside the
+object drawn into (its clip group, made on the first paste), whatever Paste Remembers Layers says; in Draw Behind,
+`edit.pasteInPlace` and `edit.pasteOnAllArtboards` put them just below the selection. `edit.pasteInFront` and
+`edit.pasteInBack` ignore the drawing mode.
 
 Artboards copy with their art. `artboard.copy {index? | indices?, art?}` puts artboards on the clipboard together
 with the art fully inside each (`index` and `indices` default to the artboards the Artboard tool has selected; `art`
@@ -2999,7 +3005,7 @@ value: true}`; the Control bar's and Properties' Scale Artwork with Artboard che
 Artboard) makes its handle drags proportional and passes `scaleArt`, as do Properties' and the Transform panel's
 artboard size fields while the tool is in use.
 
-`artboard.setProps {artboards: [{index, name?, color?, locked?, x?, y?, width?, height?}…], scaleArt?, moveArt?, …}` sets several
+`artboard.setProps {artboards: [{index, name?, color?, locked?, showCenterMark?, showCrossHairs?, x?, y?, width?, height?}…], scaleArt?, moveArt?, …}` sets several
 artboards in one undo step, each with its own fields; the other params apply to all of them. The art that moves or
 scales with each artboard is the art inside it before any of them changes, and an object inside several of them goes
 with the first one listed that moves or scales its art. An empty list and a list that names an artboard twice are
@@ -3050,6 +3056,13 @@ the color. With Simulate Colored Paper on, it multiplies the color with the pape
 artboard × paper / 255; artboards without a color show the paper color. The transparency grid still covers it while
 it shows. Copies, duplicates and the native format keep the color; exports and print do not draw it. `inspect_document`
 lists it as the artboard's `color` (`#rrggbb`), and `ui.colorPicker {artboard: index}` opens the Color Picker for it.
+
+Artboard Options' Show Center Mark and Show Cross Hairs: `artboard.setProps {index, showCenterMark?: bool,
+showCrossHairs?: bool}` (or each entry of `artboards`) turns them on or off for that artboard in one undo step, and
+`artboard.new` takes them too. The canvas draws the center mark as a small cross at the artboard's center and the cross
+hairs as lines from the middle of each side through the center, 1 point wide on screen at any zoom; exports and print
+leave them out. Duplicates, copies and the native format keep them, and `inspect_document` adds `showCenterMark: true`
+and `showCrossHairs: true` to an artboard that shows them.
 
 ```json
 {"name":"run_command","arguments":{"command":"artboard.copy","params":{"index":0}}}
