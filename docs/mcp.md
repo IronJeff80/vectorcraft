@@ -271,7 +271,8 @@ while an export runs (#2165, #2171, #2172):
 - **Progress.** A request with `_meta.progressToken` gets `notifications/progress`
   ([spec](https://modelcontextprotocol.io/specification/2025-06-18/basic/utilities/progress)) before
   its reply: the PDF writer reports "Writing page 2 of 5" with `progress` 2 and `total` 5, raster
-  export reports each artboard, and the PDF flattening stage reports a message without a total. `progress` only grows, updates come at most every 200 ms (the last page always),
+  export reports each artboard, `document.exportForScreens` and `assets.export` report each file
+  ("Exporting file 3 of 250", in place of their encoders' steps), and the PDF flattening stage reports a message without a total. `progress` only grows, updates come at most every 200 ms (the last page always),
   and none follows the reply. A client that does not read fast enough misses updates, never the reply.
 - **A busy engine.** `ping`, `tools/list`, `resources/list`, `resources/templates/list`,
   `prompts/list` and `prompts/get` need no engine and are answered at once, whatever is running.
@@ -4412,7 +4413,9 @@ id `plugin.<id>`: `effect.apply`, `effect.setParams` and `effect.expandAppearanc
 `effect.list` lists it. An exporter adds a write-only file format `plugin.<id>` (listed by `document.formats`):
 `document.export {format: "plugin.<id>", params?, path?}` writes it, as does a `path` ending in one of its extensions
 that no built-in format has. A failing plug-in returns an error and leaves the document as it was (an export writes
-no file).
+no file). A filter whose manifest asks for a heavy budget (minutes rather than a minute, `budget: "heavy"` in its
+`plugin.inspect {path | dataBase64}` entry) installs only with `allowHeavy: true`: ask the user first. `plugin.run`
+runs it where it is called, so the call may take minutes; `notifications/cancelled` stops it.
 
 ```json
 {"name":"run_command","arguments":{"command":"plugin.install","params":{"path":"/plugins/desaturate.wasm"}}}
@@ -4574,10 +4577,12 @@ Clicking Stroke Splits the Path; off), `highlightStroke` (Highlight Stroke When 
 (`#rrggbb` or a layer color's name; `#ff4f4f`, the layer color Red). With `clickStrokeSplitsPath` on, in merge mode,
 the pointer shows scissors within 4 screen pixels of a stroke, `highlightStroke` draws the run of stroke under it in
 `highlightColor`, and a click splits that run off its path: the run goes from the anchor or crossing point before the
-pointer to the one after it, the path keeps the rest of it, and a copy of the path with the run goes directly above it.
-A lone rectangle's side is such a run. A lone line is a run that is all of its path, so the pointer shows no scissors
-over it and a click on it does not split it. A release up to 3 screen pixels from the press is a click when the pointer
-went no farther during the drag.
+pointer to the one after it, the path keeps the rest of it, and a copy of the path with the run, in the path's
+direction, goes directly above it. Both keep the path's gradients where they were on it.
+A lone rectangle's side is such a run. A lone line is a run that is all of its path, and a run that would leave 0.05 pt
+or less of its path (a ten-thousandth of the larger side of a path over 500 pt) counts as all of it, so the pointer
+shows no scissors over it and a click on it does not split it. A release up to 3 screen pixels from the press is a
+click when the pointer went no farther during the drag.
 With `pickColorFrom` `swatches`, the run takes the current fill as its stroke. The tool sends `openFilledAsClosed`,
 `pickColorFrom`, the gap length (`gap`, 0 with Gap Detection off) and, for such a click, `splitStroke: true` with
 `shapeBuilder.merge`, which takes them all as params, and `shapeBuilder.regions` takes `openFilledAsClosed` and `gap`.
@@ -4586,6 +4591,23 @@ With `pickColorFrom` `swatches`, the run takes the current fill as its stroke. T
 ```json
 {"name":"run_command","arguments":{"command":"tool.setOption","params":{"tool":"shapeBuilder","values":{"selection":"straightLine","pickColorFrom":"swatches"}}}}
 {"name":"run_command","arguments":{"command":"shapeBuilder.merge","params":{"points":[[50,-1]],"splitStroke":true}}}
+```
+
+With Shift held at the press, a Shape Builder drag draws a rectangular marquee from where the drag started to the
+pointer, and the Selection option does not apply to it. The regions the marquee reaches are shaded while it is drawn
+and merge into one shape on release; with Alt also held at the press, they are deleted. The marquee reaches a region
+when the region's outline crosses the rectangle or has an anchor inside it, or when the region holds the whole
+rectangle. The tool sends the marquee to `shapeBuilder.merge` as `rect: [x, y, width, height]` in place of `points`:
+`x` and `y` are where the drag started, and the width and height are negative for a drag up or to the left. For Pick
+Color From Artwork, the corner where the drag started counts as the drag's first point, and the opposite corner counts
+as its last: the merged shape takes the look of the front-most selected object under the first corner, else of the one
+under the opposite corner, else of the front-most selected object. A Shift-click that does not move sends `points`
+as a click does, so with `clickStrokeSplitsPath` on, a Shift-click on a stroke splits it. A marquee splits no stroke,
+however little the pointer moves: the tool sends no `splitStroke` with `rect`, and `shapeBuilder.merge` does not split
+a stroke when it has `rect`. With both `rect` and `points`, the command also touches what the points touch.
+
+```json
+{"name":"run_command","arguments":{"command":"shapeBuilder.merge","params":{"rect":[50,50,200,200]}}}
 ```
 
 ## Perspective grid
