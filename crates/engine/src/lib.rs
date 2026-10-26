@@ -25,7 +25,6 @@ use vectorcraft_doc::{Document, NodeId, NodeKind, Selection};
 use vectorcraft_geom::Affine;
 use vectorcraft_tools::{PaintDefaults, Tool};
 
-pub use cmd::EyedropperOptions;
 pub use cmd::clipboard::Clipboard;
 pub use cmd::create::constrain_click;
 pub use cmd::distortcmds::perspective_click;
@@ -33,6 +32,7 @@ pub use cmd::params::{check_keys, check_params};
 pub use cmd::pathops::auto_simplify_level;
 pub use cmd::rasterfx::{export_pdf, flatten_raster_effects};
 pub use cmd::{CommandInfo, CommandSpec, command_specs, find_command};
+pub use cmd::{EyedropperOptions, PathfinderOptions};
 pub use journal::Journal;
 pub use tooling::{UiRequest, ViewInfo};
 pub use vectorcraft_doc as doc;
@@ -986,6 +986,9 @@ pub struct Prefs {
     pub recent_fonts_count: u32,
     pub missing_glyph_protection: bool,
     pub highlight_alternate_glyphs: bool,
+    /// Type › Highlight Substituted Fonts: on screen, text drawn in a substitute for a missing
+    /// font is highlighted, in every document (on by default).
+    pub highlight_substituted_fonts: bool,
     pub placeholder_text: bool,
     // Units
     pub units_general: String,
@@ -1109,6 +1112,9 @@ pub struct Prefs {
     /// Eyedropper Options (`eyedropper.setOptions`; a preference group, see
     /// [`cmd::prefscmds::PREF_GROUPS`]).
     pub eyedropper: EyedropperOptions,
+    /// Pathfinder panel › Pathfinder Options (`object.pathfinder.options`; a preference group, see
+    /// [`cmd::prefscmds::PREF_GROUPS`]).
+    pub pathfinder: PathfinderOptions,
     /// Edit → Transparency Flattener Presets: the user's presets (the built-in ones aren't stored).
     /// Not a `prefs.set` key or group (resetting the preferences keeps them): `flattener.presets.*`
     /// edit it.
@@ -1167,6 +1173,16 @@ pub struct Prefs {
     pub constrain_proportions: bool,
     /// One Corner Radius field sets every corner of a live rectangle (off: a field per corner).
     pub single_corner_radius: bool,
+    /// The Transform panel menu's Transform Object Only / Transform Pattern Only / Transform Both
+    /// (`object`, `pattern`, `both`): what the panel's fields, flips and menu flips transform
+    /// (they pass `objects` and `patterns` to the transform commands). `default` (and any other
+    /// value), until one is chosen: they pass neither, so patterns follow General › Transform
+    /// Pattern Tiles (`transformPatternTiles`), as before the menu acted.
+    pub transform_panel_patterns: String,
+    /// The Transform panel menu's Use Registration Point for Symbol: with one symbol instance
+    /// selected, the panel and the Properties panel's Transform section measure and transform it
+    /// from its symbol's registration point instead of the reference point.
+    pub use_registration_point_for_symbol: bool,
     /// The tools' persistent options by store (a tool id, or a store a family shares: `liquify`
     /// holds the Liquify tools' Global Brush Dimensions), see [`vectorcraft_tools::settings`]:
     /// kept across tool switches and saved with the preferences. Not a Preferences dialog field:
@@ -1243,6 +1259,7 @@ impl Default for Prefs {
             recent_fonts_count: 10,
             missing_glyph_protection: true,
             highlight_alternate_glyphs: false,
+            highlight_substituted_fonts: true,
             placeholder_text: true,
             units_general: s("points"),
             units_stroke: s("points"),
@@ -1323,6 +1340,7 @@ impl Default for Prefs {
                 Color::rgb8(r, g, b).to_hex()
             },
             eyedropper: Default::default(),
+            pathfinder: Default::default(),
             flattener_presets: vec![],
             width_profiles: vec![],
             japanese_crop_marks: false,
@@ -1340,6 +1358,8 @@ impl Default for Prefs {
             print_presets: vec![],
             constrain_proportions: false,
             single_corner_radius: true,
+            transform_panel_patterns: "default".to_string(),
+            use_registration_point_for_symbol: false,
             tool_settings: Default::default(),
             perspective_presets: vec![],
             blend_options: None,
@@ -1413,6 +1433,8 @@ pub struct Session {
     pub style_libraries: cmd::stylelib::Libraries,
     /// User Defined and loaded symbol libraries (Window → Symbol Libraries); not saved.
     pub symbol_libraries: cmd::symbollib::Libraries,
+    /// User Defined and loaded brush libraries (Window → Brush Libraries); not saved.
+    pub brush_libraries: cmd::brushlib::Libraries,
     /// The Libraries panel's libraries of graphics, colours and text styles (`library.*`).
     pub libraries: cmd::library::Libraries,
     /// Where the saved PDF presets are kept, one file each; `None`: only for the session
@@ -1572,6 +1594,7 @@ impl Session {
             freeform_point: None,
             style_libraries: Default::default(),
             symbol_libraries: Default::default(),
+            brush_libraries: Default::default(),
             libraries: Default::default(),
             pdf_preset_dir: None,
             profile_dir: None,
@@ -2497,7 +2520,7 @@ impl Session {
     /// closes it. A scope that joined an open group leaves the group open; with `cancel`, it puts the
     /// document and its selection back as they were when the scope began and cuts the journal back to
     /// where the scope began (only while the group's step is still the newest one), and an undo step
-    /// that the scope's first edit recorded goes too.
+    /// that the scope's first edit recorded goes too. The open undo groups drop the cut entries.
     pub fn end_undo_scope(&mut self, scope: UndoScope, cancel: bool) {
         let Some((doc, selection, first)) = scope.joined else {
             self.end_document_undo_group(scope.uid, cancel);
@@ -2526,6 +2549,11 @@ impl Session {
         st.history.recost_last(&st.doc);
         st.revision += 1;
         self.journal.truncate(scope.journal);
+        // The next commands take the cut entries' numbers, so no open undo group keeps them.
+        for g in self.docs.iter_mut().filter_map(|st| st.undo_group.as_mut()) {
+            g.journal.retain(|&(n, _)| n < scope.journal);
+            g.steps.retain(|&(n, _)| n < scope.journal);
+        }
     }
 
     /// Commands with enablement (for menus, palette, MCP `list_commands`).
@@ -2588,6 +2616,8 @@ mod tests_blendfidelity;
 mod tests_blendopts;
 #[cfg(test)]
 mod tests_blendspine;
+#[cfg(test)]
+mod tests_brushlib;
 #[cfg(test)]
 mod tests_brushsym;
 #[cfg(test)]

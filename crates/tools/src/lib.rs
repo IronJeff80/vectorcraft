@@ -30,6 +30,7 @@ pub mod pen;
 pub mod pie;
 pub mod place;
 pub mod printtiling;
+pub mod repeat_grid;
 pub mod rulerguide;
 pub mod select;
 pub mod settings;
@@ -578,6 +579,9 @@ pub enum Cursor {
     MagicWand,
     /// The Pencil tool.
     Pencil,
+    /// The Pencil tool before a press that draws a new freehand path: the pointer is not over a
+    /// selected path that the press would continue or redraw. A crosshair with a small star.
+    PencilNew,
     /// The Pencil tool with Alt pressed after the drag starts and Alt key toggles to Smooth Tool off:
     /// releasing the mouse button with Alt still held closes the path. A drag started with Shift or
     /// Alt held draws an open straight line instead. Also while a freehand stroke is drawn back near
@@ -706,6 +710,7 @@ impl Cursor {
             | Cursor::Lasso
             | Cursor::MagicWand
             | Cursor::Pencil
+            | Cursor::PencilNew
             | Cursor::PencilClose
             | Cursor::PencilStraight
             | Cursor::PencilContinue
@@ -737,7 +742,7 @@ impl Cursor {
     }
 
     /// The cursor this one borrows until it's drawn: the generic crosshair for the
-    /// tools, the I-beam for vertical type and loaded text, the Pen's add cursor for the Mesh tool and Puppet
+    /// tools, the I-beam for vertical type, the Pen's add cursor for the Mesh tool and Puppet
     /// Warp, not-allowed for the Scissors away from a path. `None` for a cursor with a look of
     /// its own.
     pub fn stand_in(self) -> Option<Self> {
@@ -766,7 +771,7 @@ impl Cursor {
             | Cursor::SymbolScreener
             | Cursor::SymbolStyler
             | Cursor::Scissors => Some(Cursor::Crosshair),
-            Cursor::TypeVertical | Cursor::LoadedText => Some(Cursor::Text),
+            Cursor::TypeVertical => Some(Cursor::Text),
             Cursor::MeshAdd | Cursor::PuppetPin => Some(Cursor::PenAdd),
             Cursor::ScissorsNotAllowed => Some(Cursor::NotAllowed),
             _ => None,
@@ -794,6 +799,7 @@ pub enum ImeSurrounding {
 }
 
 impl Default for ImeSurrounding {
+    /// Report surrounding text as unavailable because no document is active.
     fn default() -> Self {
         Self::Unavailable("no document is active")
     }
@@ -916,6 +922,14 @@ pub trait Tool: Send {
     }
     /// Does the tool want [`Tool::tick`]s now (the host keeps time only then)?
     fn wants_ticks(&self) -> bool {
+        false
+    }
+    /// Does the tool build a stroke from the drag's samples (the Pencil and the other freehand
+    /// tools)? The host then hands it every position the pointer passed between two frames, not
+    /// only the last, so a fast stroke keeps its curve. Every other tool gets one drag a frame, so
+    /// one whose drag preview is costly (moving a large selection, Free Distort, the Width tool)
+    /// doesn't redo it for each sample.
+    fn wants_samples(&self) -> bool {
         false
     }
     /// Is the tool waiting for work it runs on another thread (the planar map of a large selection
@@ -1198,7 +1212,6 @@ mod cursor_tests {
         for (id, c) in [
             ("lasso", Cursor::Lasso),
             ("magicWand", Cursor::MagicWand),
-            ("pencil", Cursor::Pencil),
             ("paintbrush", Cursor::Paintbrush),
             ("blobBrush", Cursor::BlobBrush),
             ("eraser", Cursor::Eraser),
@@ -1224,6 +1237,13 @@ mod cursor_tests {
             assert_eq!(c.precise(), Cursor::Crosshair, "{id}");
             assert_eq!(c.stand_in(), Some(if id == "mesh" { Cursor::PenAdd } else { Cursor::Crosshair }), "{id}");
         }
+        // Away from a selected path the Pencil shows its new-path cursor, drawn with a star; its
+        // own cursor, for drawing and for a selected path under the pointer, borrows the crosshair.
+        assert_eq!(cursor_at("pencil", &d, away), Cursor::PencilNew);
+        assert_eq!(Cursor::PencilNew.precise(), Cursor::Crosshair);
+        assert_eq!(Cursor::PencilNew.stand_in(), None);
+        assert_eq!(Cursor::Pencil.precise(), Cursor::Crosshair);
+        assert_eq!(Cursor::Pencil.stand_in(), Some(Cursor::Crosshair));
     }
 
     #[test]
