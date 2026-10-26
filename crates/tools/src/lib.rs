@@ -392,6 +392,10 @@ impl ToolContext<'_> {
     pub fn size_label(&self, w: f64, h: f64) -> String {
         format!("W: {}\nH: {}", self.len(w), self.len(h))
     }
+    /// Star tool drag: outer (R1) and inner (R2) radii from the centre to the pointer.
+    pub fn star_radii_label(&self, outer: f64, inner: f64) -> String {
+        format!("R1: {}\nR2: {}", self.len(outer), self.len(inner))
+    }
     /// A move label: `dX: …` over `dY: …`.
     pub fn offset_label(&self, dx: f64, dy: f64) -> String {
         format!("dX: {}\ndY: {}", self.len(dx), self.len(dy))
@@ -924,6 +928,12 @@ pub trait Tool: Send {
     /// Checks on the work [`Tool::waiting`] reports, waiting for it to finish with `wait`. Once it
     /// is done, the tool shows the highlight under the pointer where it last moved.
     fn poll(&mut self, _cx: &ToolContext, _wait: bool) {}
+    /// The Shape Builder's planar map of the selection, with the outline edges, and the gap it
+    /// closes, when the tool has one. `shapeBuilder.merge` uses it in place of a map of its own
+    /// when the map's inputs are the merge's inputs.
+    fn shape_builder_map(&self) -> Option<(std::sync::Arc<builder::BuilderMap>, f64)> {
+        None
+    }
 }
 
 /// Create a tool by id. Unknown or not-yet-implemented tools fall back to a no-op tool that keeps the id.
