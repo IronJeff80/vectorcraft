@@ -62,6 +62,7 @@ pub mod new_brush;
 pub mod new_color_group;
 mod new_document;
 pub mod new_swatch;
+pub mod new_text_style;
 pub mod office_export;
 pub mod package;
 pub(crate) mod path_ops;
@@ -111,6 +112,7 @@ pub mod text_import;
 mod tiff_bmp_tga;
 pub mod tile_edge_color;
 mod tools;
+pub mod trace_presets;
 pub(crate) mod transform;
 pub mod transform_each;
 pub mod variables;
@@ -297,6 +299,7 @@ registry! {
     GradientStop: ["gradientStop"] => gradient_stop::SPEC,
     ColorPicker: [color_picker::KIND] => color_picker::SPEC,
     GraphicStyleOptions: [graphic_style_options::KIND] => graphic_style_options::SPEC,
+    NewTextStyle: [new_text_style::KIND] => new_text_style::SPEC,
     EffectExists: [effect::EXISTS] => effect::EXISTS_SPEC,
     ColorGuideOptions: [color_guide_options::KIND] => color_guide_options::SPEC,
     ColorBalance: [color_balance::KIND] => color_balance::SPEC,
@@ -306,6 +309,7 @@ registry! {
     EyedropperOptions: [eyedropper::KIND] => eyedropper::SPEC,
     FlattenTransparency: [flatten::KIND] => flatten::SPEC,
     FlattenerPresets: [flattener_presets::KIND] => flattener_presets::SPEC,
+    ImageTracePreset: [trace_presets::KIND] => trace_presets::SPEC,
     SaveStyleLibrary: [save_style_library::KIND] => save_style_library::SPEC,
     SaveSymbolLibrary: [save_symbol_library::KIND] => save_symbol_library::SPEC,
     SaveBrushLibrary: [save_brush_library::KIND] => save_brush_library::SPEC,

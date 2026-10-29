@@ -220,6 +220,7 @@
 	Clipping Mask	მომჭრელი ნიღაბი
 	Edit Clipping Path	მომჭრელი ტრაექტორიის რედაქტირება
 	Compound Path	შედგენილი ტრაექტორია
+	Compound Shape	შედგენილი ფიგურა
 	Artboards	სამუშაო დაფები
 	Convert to Artboards	სამუშაო დაფებად გარდაქმნა
 	Rearrange All Artboards…	ყველა სამუშაო დაფის გადალაგება…
@@ -334,6 +335,11 @@
 	Fill Color	შევსების ფერი
 	Opacity	გაუმჭვირვალობა
 	Stroke Color	კონტურის ფერი
+	Fill Gradient	შევსების გრადიენტი
+	Stroke Gradient	კონტურის გრადიენტი
+	Fill Pattern	შევსების პატერნი
+	Stroke Pattern	კონტურის პატერნი
+	Patterns	პატერნები
 	Stroke Weight	კონტურის სისქე
 	Graphic Style	გრაფიკული სტილი
 	Symbol Instance	სიმბოლოს ეგზემპლარი
@@ -525,6 +531,8 @@
 	Saved View 25	შენახული ხედი 25
 	Window	ფანჯარა
 	New Window	ახალი ფანჯარა
+	Next Document	შემდეგი დოკუმენტი
+	Previous Document	წინა დოკუმენტი
 	Cascade	კასკადად
 	Tile	ფილებად
 	Float in Window	ცალკე ფანჯარაში გამოტანა
@@ -1407,6 +1415,12 @@ lighting	Light	სინათლე
 	Document Library	დოკუმენტის ბიბლიოთეკა
 	Library:	ბიბლიოთეკა:
 	Tracing Presets	ვექტორიზაციის პრესეტები
+	Manage Presets	პრესეტების მართვა
+	Save as New Preset…	ახალ პრესეტად შენახვა…
+	Rename…	სახელის შეცვლა…
+	Rename Preset	პრესეტის სახელის შეცვლა
+	Save Image Trace Preset	გამოსახულების ვექტორიზაციის პრესეტის შენახვა
+	Delete Image Trace Preset	გამოსახულების ვექტორიზაციის პრესეტის წაშლა
 	Method:	მეთოდი:
 	Mode:	რეჟიმი:
 	Noise	ხმაური
@@ -1527,13 +1541,13 @@ lighting	Light	სინათლე
 	Roman Hanging Punctuation	ლათინური გამოწეული პუნქტუაცია
 	Select a text object to edit its paragraph attributes.	აბზაცის ატრიბუტების რედაქტირებისთვის მონიშნეთ ტექსტური ობიექტი.
 	Single-line Composer	სტრიქონის მიხედვით აწყობა
+	Toggle Line Composer	აწყობის რეჟიმის გადართვა
 	Space After Paragraph	ინტერვალი აბზაცის შემდეგ
 	Space Before Paragraph	ინტერვალი აბზაცის წინ
 	Top-to-Top Leading	სტრიქონთა დაშორება ზედა კიდიდან ზედა კიდემდე
 	Bottom-to-Bottom Leading	სტრიქონთა დაშორება ქვედა კიდიდან ქვედა კიდემდე
 	Burasagari	Burasagari
 	Force	იძულებით
-	Expand applies to compound shapes (Alt-click a shape mode) — on the roadmap	გაშლა შედგენილ ფიგურებზე მოქმედებს (Alt-დაწკაპუნება ფიგურის რეჟიმზე) — სამომავლო გეგმაშია
 	Expand Compound Shape	შედგენილი ფიგურის გაშლა
 	Make Compound Shape	შედგენილი ფიგურის შექმნა
 	Pathfinder Options…	ტრაექტორიების ოპერაციების პარამეტრები…
@@ -2049,6 +2063,8 @@ lighting	Light	სინათლე
 	Locate Selected Objects	მონიშნული ობიექტების მოძებნა
 	Thumbnails:	ესკიზები:
 	Anchor Points	საყრდენი წერტილები
+	"In" Control Points	„შემავალი“ საკონტროლო წერტილები
+	"Out" Control Points	„გამავალი“ საკონტროლო წერტილები
 	Brush Affects:	ფუნჯი მოქმედებს:
 	Complexity:	სირთულე:
 	Detail:	დეტალიზაცია:
@@ -3491,6 +3507,7 @@ font-technology	Variable	ცვლადი
 	Default Fill and Stroke (D)	ნაგულისხმევი შევსება და კონტური (D)
 	Fill (X), double-click for the Color Picker	შევსება (X), ორმაგი დაწკაპუნება — ფერის ამრჩევი
 	Opacity:	გაუმჭვირვალობა:
+	Shape Mode	ფიგურის რეჟიმი
 	Shape Modes:	ფიგურის რეჟიმები:
 	Stroke (X), double-click for the Color Picker	კონტური (X), ორმაგი დაწკაპუნება — ფერის ამრჩევი
 	Stroke:	კონტური:
@@ -3538,7 +3555,9 @@ font-technology	Variable	ცვლადი
 	Mojikumi	Mojikumi
 	N pt per	N pt თითოზე
 	New Character Style	სიმბოლოს ახალი სტილი
+	New Character Style…	სიმბოლოს ახალი სტილი…
 	New Paragraph Style	აბზაცის ახალი სტილი
+	New Paragraph Style…	აბზაცის ახალი სტილი…
 	Paragraph Style Options	აბზაცის სტილის პარამეტრები
 	Redefine Character Style	სიმბოლოს სტილის ხელახლა განსაზღვრა
 	Redefine Paragraph Style	აბზაცის სტილის ხელახლა განსაზღვრა
@@ -3611,6 +3630,13 @@ font-technology	Variable	ცვლადი
 @plural	{n} stroke|{n} strokes	კონტური: {n}
 @msg	no library `{id}`	ბიბლიოთეკა `{id}` არ არსებობს
 @msg	select some type first	ჯერ მონიშნეთ ტექსტი
+@msg	the selection has no gradient fill	მონიშნულს შევსების გრადიენტი არ აქვს
+@msg	the selection has no gradient stroke	მონიშნულს კონტურის გრადიენტი არ აქვს
+@msg	the selection has no pattern fill	მონიშნულს შევსების პატერნი არ აქვს
+@msg	the selection has no pattern stroke	მონიშნულს კონტურის პატერნი არ აქვს
+@msg	no gradient swatch `{name}`	გრადიენტის ფერის ნიმუში `{name}` არ არის
+@msg	no pattern swatch `{name}`	პატერნის ფერის ნიმუში `{name}` არ არის
+@msg	the library item is damaged	ბიბლიოთეკის ელემენტი დაზიანებულია
 @msg	{_1} has no {_2} style	{_1}-ს არ აქვს სტილი {_2}
 @msg	a layer couldn't be read	შრის წაკითხვა ვერ მოხერხდა
 @msg	it has more than one artboard	მას ერთზე მეტი სამუშაო დაფა აქვს
@@ -3625,6 +3651,7 @@ font-technology	Variable	ცვლადი
 @msg	its page has text, and its layers have no text objects to put it in	მის გვერდზე ტექსტია, შრეებში კი არ არის ტექსტური ობიექტები, სადაც ის ჩაჯდებოდა
 @msg	its type is to come in as outlines, which only its page has	მისი ტექსტი კონტურებად უნდა შემოვიდეს, ასეთი კი მხოლოდ მის გვერდზეა
 @msg	the art on them differs from the page's in {_1}% of it	მათზე არსებული ნახატი გვერდისას {_1}%-ით განსხვავდება
+@msg	`Custom` stands for changed settings: save the preset under another name	`Custom` შეცვლილ პარამეტრებს ნიშნავს: შეინახეთ პრესეტი სხვა სახელით
 @msg	`to` must be "corner" or "smooth"	`to` უნდა იყოს "corner" ან "smooth"
 @msg	BMP files are RGB or grayscale: colorModel rgb or gray	BMP ფაილები RGB-ა ან ნაცრისფერი: colorModel rgb ან gray
 @msg	Blend colors: select at least three objects with filled colours	ფერების შერევა: მონიშნეთ მინიმუმ სამი ობიექტი ფერადი შევსებით
@@ -3703,8 +3730,10 @@ font-technology	Variable	ცვლადი
 @msg	`freeform.points` must be an array	`freeform.points` უნდა იყოს მასივი
 @msg	`freeform.lines` must be an array	`freeform.lines` უნდა იყოს მასივი
 @msg	`gradient` must be an object	`gradient` უნდა იყოს ობიექტი
+@msg	`groupColors` must be an array	`groupColors` უნდა იყოს მასივი
 @msg	`library` is a library id or name (see {list})	`library` არის ბიბლიოთეკის id ან სახელი (იხ. {list})
 @msg	`mode` applies to freeform gradients	`mode` ეხება თავისუფალი ფორმის გრადიენტებს
+@msg	`preserve` must be an object	`preserve` უნდა იყოს ობიექტი
 @msg	`sampleSize` must be 1, 3 or 5	`sampleSize` უნდა იყოს 1, 3 ან 5
 @msg	`stops` must be an array	`stops` უნდა იყოს მასივი
 @msg	`svg` must be an object of SVG options (see document.formats)	`svg` უნდა იყოს SVG-ის პარამეტრების ობიექტი (იხ. document.formats)
@@ -3737,6 +3766,7 @@ font-technology	Variable	ცვლადი
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` პროცესული ფერია: ტონირება გამოიყენება გლობალურ და სპოტ-ფერებზე
 @msg	`{name}` is no recovery entry name	`{name}` აღდგენის ჩანაწერის სახელი არ არის
 @msg	`{name}` isn't a colour swatch	`{name}` ფერის ნიმუში არ არის
+@msg	a process color can't colorize a grayscale image with transparency: use a spot color, black or white	პროცესული ფერი ვერ გააფერადებს გამჭვირვალობის მქონე ნაცრისფერ გამოსახულებას: გამოიყენეთ სპოტ-ფერი, შავი ან თეთრი
 @msg	`{path}` must be a bool or an object of bools	`{path}` უნდა იყოს bool ან bool-ების ობიექტი
 @msg	`{s}` is not a colour (#rrggbb or a preset name)	`{s}` ფერი არ არის (#rrggbb ან პრესეტის სახელი)
 @msg	`{tool}` isn't a Liquify tool	`{tool}` გათხევადების ხელსაწყო არ არის
@@ -3781,6 +3811,10 @@ font-technology	Variable	ცვლადი
 @msg	a page tree node has no kids	გვერდების ხის კვანძს შვილობილები არ აქვს
 @msg	a page's placement is not finite	გვერდის განლაგება სასრული არ არის
 @msg	a preset named `{_1}` exists	პრესეტი სახელით `{_1}` არსებობს
+@msg	`name` is empty	`name` ცარიელია
+@msg	`newName` is empty	`newName` ცარიელია
+@msg	`{name}` is a built-in preset and can't change: save it under another name	`{name}` ჩაშენებული პრესეტია და მისი შეცვლა შეუძლებელია: შეინახეთ სხვა სახელით
+@msg	`{name}` is a built-in preset and stays	`{name}` ჩაშენებული პრესეტია და მისი წაშლა შეუძლებელია
 @msg	a swatch or color group named `{n}` exists	ფერის ნიმუში ან ფერების ჯგუფი სახელით `{n}` არსებობს
 @msg	a slice size must be a positive number of points	ნაჭრის ზომა წერტილების დადებითი რიცხვი უნდა იყოს
 @msg	a stream runs past the end	ნაკადი ბოლოს სცილდება
@@ -3928,6 +3962,8 @@ font-technology	Variable	ცვლადი
 @msg	no print service	ბეჭდვის სერვისი არ არის
 @msg	no revert command	დაბრუნების ბრძანება არ არის
 @msg	no saved PDF preset named `{name}` (built-in presets are read-only: start a new one from them)	შენახული PDF პრესეტი სახელით `{name}` არ არის (ჩაშენებული პრესეტები მხოლოდ წასაკითხია: მათგან ახალი შექმენით)
+@msg	no saved preset named `{name}`	შენახული პრესეტი სახელით `{name}` არ არის
+@msg	no saved preset named `{name}` to rename	გადასარქმევი შენახული პრესეტი სახელით `{name}` არ არის
 @msg	no saved presets	შენახული პრესეტები არ არის
 @msg	no saved print preset named `{name}` ({DEFAULT_PRESET} is protected: start a new one from it)	შენახული ბეჭდვის პრესეტი სახელით `{name}` არ არის ({DEFAULT_PRESET} დაცულია: მისგან ახალი შექმენით)
 @msg	no saved profiles	შენახული პროფილები არ არის
@@ -3970,6 +4006,7 @@ font-technology	Variable	ცვლადი
 @msg	not an EMF or WMF file	ეს არ არის EMF ან WMF ფაილი
 @msg	not found	ვერ მოიძებნა
 @msg	not in pattern editing mode	პატერნის რედაქტირების რეჟიმი არ არის ჩართული
+@msg	finish editing the pattern first	ჯერ დაასრულეთ პატერნის რედაქტირება
 @msg	nothing encoded	არაფერია კოდირებული
 @msg	nothing selected	არაფერია მონიშნული
 @msg	nothing selected is in a group	მონიშნულთაგან არაფერია ჯგუფში
@@ -4138,6 +4175,7 @@ font-technology	Variable	ცვლადი
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	უცნობი პრესეტი `{name}` (high, medium, low ან შენახული: იხ. flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	უცნობი პრესეტი `{name}` (იხ. flattener.presets.list)
 @msg	unknown preset `{name}` (see webExport.presets.list)	უცნობი პრესეტი `{name}` (იხ. webExport.presets.list)
+@msg	unknown preset `{name}`: not a built-in or saved preset (see imageTrace.presets)	უცნობი პრესეტი `{name}`: არც ჩაშენებულია და არც შენახული (იხ. imageTrace.presets)
 @msg	unknown side `{other}` (left|right|top|bottom)	უცნობი მხარე `{other}` (left|right|top|bottom)
 @msg	unknown tool `{tool}`	უცნობი ხელსაწყო `{tool}`
 @msg	unknown tool `{t}`	უცნობი ხელსაწყო `{t}`
@@ -4277,6 +4315,9 @@ font-technology	Variable	ცვლადი
 @msg	not a PSD file	PSD ფაილი არ არის
 @msg	the PSD file has an unknown colour mode ({m})	PSD ფაილს უცნობი ფერის რეჟიმი აქვს ({m})
 @msg	the PSD file's image data uses an unknown compression ({m})	PSD ფაილის გამოსახულების მონაცემები უცნობ შეკუმშვას იყენებს ({m})
+@msg	the PCX file is cut short	PCX ფაილი შეკვეცილია
+@msg	the PCX file's header is damaged	PCX ფაილის სათაური დაზიანებულია
+@msg	PCX files with {bits}-bit pixels in {planes} planes can't be read	{planes} სიბრტყეში {bits}-ბიტიანი პიქსელების მქონე PCX ფაილების წაკითხვა ვერ ხერხდება
 @msg	the PSD image is too large to read ({_1} × {_2} pixels)	PSD გამოსახულება ზედმეტად დიდია წასაკითხად ({_1} × {_2} პიქსელი)
 @msg	zipped 32-bit PSD image data with prediction can't be read	zip-ით შეკუმშული 32-ბიტიანი PSD გამოსახულების მონაცემების წაკითხვა პროგნოზირებით ვერ ხერხდება
 @msg	{depth}-bit PSD files in this colour mode can't be read	ამ ფერის რეჟიმში {depth}-ბიტიანი PSD ფაილების წაკითხვა ვერ ხერხდება
@@ -4897,6 +4938,9 @@ imageTrace	Outline	კონტური
 	The active document changed while the screen color sampler was open	აქტიური დოკუმენტი შეიცვალა, სანამ ეკრანიდან ფერის აღება ღია იყო
 	Keep selected	მონიშნულად დატოვება
 	Reset Tracking and Kerning	ტრეკინგისა და კერნინგის ჩამოყრა
+	Highlight Font Name	შრიფტის სახელის გამოკვეთა
+	Highlight Kerning	კერნინგის გამოკვეთა
+	Highlight Tracking	ტრეკინგის გამოკვეთა
 	Legacy (version 7)	ძველი (ვერსია 7)
 	Transparent Images:	გამჭვირვალე გამოსახულებები:
 	Flatten	გაბრტყელება
@@ -5549,6 +5593,8 @@ axis	Y Axis	Y ღერძი
 @msg	the document has no brushes to save	დოკუმენტში შესანახი ფუნჯები არ არის
 @msg	no empty artboards to delete	წასაშლელი ცარიელი სამუშაო დაფები არ არის
 	Scale Presets	მასშტაბის წინასწარ დაყენებული მნიშვნელობები
+# Object › Expand… dimmed until Expand Appearance (#3089).
+	Expand Appearance first (Object › Expand Appearance)	ჯერ გაშალეთ იერსახე (ობიექტი › იერსახის გაშლა)
 @msg	a {width}×{height} screenshot's byte count overflows	{width}×{height} ეკრანის ანაბეჭდის ბაიტების რაოდენობა გადაივსო
 @msg	the window's {what} ({points} points × {scale} DPI) cannot size a screenshot	ფანჯრის {what} ({points} პუნქტი × {scale} DPI) ეკრანის ანაბეჭდის ზომას ვერ განსაზღვრავს
 	Live preview	ცოცხალი წინასწარი ნახვა

@@ -354,9 +354,12 @@ fn canvas_input(app: &mut VectorcraftApp, ui: &Ui, resp: &egui::Response, rect: 
         handle_input(app, ui, resp, rect);
         // `hover_doc` is the document point under the pointer in the view `handle_input` left. The
         // wheel, a pan, a Rotate View drag, the Zoom tool and a Presentation Mode click move the view
-        // there.
+        // there. A dialog, floating panel or menu over the canvas hides it (Object Highlighting
+        // showed through them: #4518), unless a drag that began on the canvas goes on there.
         let moved = Xf::new(rect, app.view().unwrap_or(&View::default()));
-        app.hover_doc = ui.input(|i| i.pointer.hover_pos()).filter(|p| rect.contains(*p)).map(|p| moved.to_doc(p));
+        let dragging = ui.data(|d| d.get_temp::<Drag>(drag_id()).is_some());
+        app.hover_doc =
+            ui.input(|i| i.pointer.hover_pos()).filter(|p| rect.contains(*p) && (dragging || drag::on_canvas(ui, resp, *p))).map(|p| moved.to_doc(p));
     }
 }
 
@@ -370,9 +373,12 @@ fn canvas_cursor(app: &mut VectorcraftApp, ui: &Ui, view_info: vectorcraft_engin
     let space = ui.input(|i| i.key_down(egui::Key::Space));
     let drag = ui.data(|d| d.get_temp::<Drag>(drag_id()));
     let panning = matches!(drag, Some(Drag::Pan { .. }));
-    let zooming = if space { m.command } else { app.session.tool_id() == "zoom" };
+    // A zoom drag keeps its cursor when Space is pressed (with or without Shift) or Cmd is let go.
+    let zoom_drag = matches!(drag, Some(Drag::ZoomBox { .. } | Drag::ZoomScrub { .. }));
+    let zooming = zoom_drag || if space { m.command } else { app.session.tool_id() == "zoom" };
     // A rotating drag keeps its cursor when Shift is let go.
-    let rotating = matches!(drag, Some(Drag::RotateView { .. })) || if space { m.shift && !m.command } else { app.session.tool_id() == "rotateView" };
+    let rotating = matches!(drag, Some(Drag::RotateView { .. }))
+        || (!zoom_drag && if space { m.shift && !m.command } else { app.session.tool_id() == "rotateView" });
     // The hand and the magnifier are drawn like the tool cursors below: Windows has no
     // system cursor for them (winit shows the four-headed move cursor for Grab).
     let view_cursor = if panning {
@@ -707,11 +713,11 @@ fn reproject_frame(app: &VectorcraftApp, painter: &egui::Painter, xf: &Xf, rect:
 fn artboard_outlines(app: &VectorcraftApp, ui: &Ui, painter: &egui::Painter, xf: &Xf, t: &Tokens) {
     let Some(st) = app.session.active() else { return };
     let doc = &st.doc;
-    // Artboard edges and names. The Artboard tool labels its active artboard itself (following
-    // a move or resize): that one isn't named twice.
+    // Artboard edges and names. The Artboard tool labels its selected artboards itself (following
+    // a move or resize): those aren't named twice.
     let active_ab = crate::panels::artboards::selected(app, doc.artboards.len());
     let artboard_tool = app.session.tool_id() == "artboard";
-    let tool_labelled = artboard_tool.then(|| app.session.tool_options()["active"].as_u64()).flatten();
+    let tool_selected = artboards::tool_labelled(app);
     let editing_name = ui.data(|d| d.get_temp::<ArtboardNameEdit>(name_edit_id()).map(|e| e.index));
     for (i, ab) in doc.artboards.iter().enumerate() {
         let c = if i == active_ab { Color32::from_gray(0) } else { Color32::from_gray(120) };
@@ -723,7 +729,8 @@ fn artboard_outlines(app: &VectorcraftApp, ui: &Ui, painter: &egui::Painter, xf:
         // Show Center Mark, Show Cross Hairs and Show Video Safe Areas (Artboard Options). Only the
         // canvas draws them, as it does the edges: exports and print leave them out.
         artboard_marks(painter, xf, ab, t.artboard_mark);
-        if editing_name != Some(i) && (artboard_tool || doc.artboards.len() > 1) && tool_labelled != u64::try_from(i).ok() {
+        let labelled_by_tool = u64::try_from(i).ok().is_some_and(|idx| tool_selected.contains(&idx));
+        if editing_name != Some(i) && (artboard_tool || doc.artboards.len() > 1) && !labelled_by_tool {
             // At the artboard's own top-left corner, which a rotated view turns away from its
             // bounding box's (#1095).
             let corner = xf.to_screen(Point::new(ab.rect.x0, ab.rect.y0));
