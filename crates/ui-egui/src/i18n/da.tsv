@@ -3072,6 +3072,7 @@ theme	Appearance	Udseende
 	Make Envelope	Opret konvolut
 	Move Envelope Mesh Point	Flyt konvolut-meshpunkt
 	Move Mesh Point	Flyt meshpunkt
+	Move Mesh Points	Flyt meshpunkter
 	Move Spine Point	Flyt rygradpunkt
 	Reshape Spine Segment	Omform rygradsegment
 	Reset with Mesh	Nulstil med mesh
@@ -5587,3 +5588,19 @@ axis	Y Axis	Y-akse
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Udvid først udseendet (Objekt › Udvid udseende)
 	Live preview	Direkte forhåndsvisning
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punkttekst
+	Area Text	Områdetekst
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Vis indstillinger for fastgørelse til tegn
+	Hide Snap to Glyph Options	Skjul indstillinger for fastgørelse til tegn
+	Snap to Glyph Options	Indstillinger for fastgørelse til tegn
+	x-height	x-højde
+	Glyph Bounds	Glyfafgrænsning
+	Proximity Guides	Nærhedshjælpelinjer
+	Angular Guides	Vinkelhjælpelinjer
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Gennemsnit og forbind…
+	Average & Join	Gennemsnit og forbind
+anchor	Points:	Punkter:
+@msg	select two open path ends, or two open paths, to average and join	markér to ender af åbne stier eller to åbne stier, der skal udlignes til gennemsnit og forbindes

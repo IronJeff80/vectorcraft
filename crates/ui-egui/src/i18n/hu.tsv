@@ -2418,6 +2418,7 @@ file-filter	Templates	Sablonok
 	Move Library Item to Group	Könyvtárelem áthelyezése csoportba
 	Move Locked and Hidden Artwork with Artboard	Zárolt és rejtett grafika mozgatása a rajztáblával
 	Move Mesh Point	Hálópont áthelyezése
+	Move Mesh Points	Hálópontok áthelyezése
 	Move Panel	Panel áthelyezése
 	Move Plane	Sík áthelyezése
 	Move Plane to Match Object	Sík igazítása az objektumhoz
@@ -5668,3 +5669,19 @@ axis	Y Axis	Y tengely
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Előbb bontsd ki a megjelenést (Objektum › Megjelenés kibontása)
 	Live preview	Élő előnézet
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Pontszöveg
+	Area Text	Területszöveg
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Glifához illesztés beállításainak megjelenítése
+	Hide Snap to Glyph Options	Glifához illesztés beállításainak elrejtése
+	Snap to Glyph Options	Glifához illesztés beállításai
+	x-height	x-magasság
+	Glyph Bounds	Glifahatárok
+	Proximity Guides	Közelségi segédvonalak
+	Angular Guides	Szög-segédvonalak
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Átlagolás és összekapcsolás…
+	Average & Join	Átlagolás és összekapcsolás
+anchor	Points:	Pontok:
+@msg	select two open path ends, or two open paths, to average and join	jelölj ki két nyitott útvonalvéget vagy két nyitott útvonalat az átlagoláshoz és összekapcsoláshoz

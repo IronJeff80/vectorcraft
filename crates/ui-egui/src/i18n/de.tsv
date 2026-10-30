@@ -1915,6 +1915,7 @@ file-filter	Templates	Vorlagen
 	Move in Perspective	In Perspektive verschieben
 	Move Locked and Hidden Artwork with Artboard	Gesperrte und ausgeblendete Grafik mit Zeichenfläche verschieben
 	Move Mesh Point	Gitterpunkt verschieben
+	Move Mesh Points	Gitterpunkte verschieben
 	Move Plane	Perspektivebene verschieben
 	Move Plane to Match Object	Perspektivebene an Objekt ausrichten
 	Move Rows	Zeilen verschieben
@@ -5264,3 +5265,19 @@ axis	Y Axis	Y-Achse
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Wandeln Sie zuerst das Aussehen um (Objekt › Aussehen umwandeln)
 	Live preview	Live-Vorschau
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punkttext
+	Area Text	Flächentext
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Optionen für „An Glyphe ausrichten“ einblenden
+	Hide Snap to Glyph Options	Optionen für „An Glyphe ausrichten“ ausblenden
+	Snap to Glyph Options	Optionen für „An Glyphe ausrichten“
+	x-height	x-Höhe
+	Glyph Bounds	Glyphenbegrenzung
+	Proximity Guides	Näherungshilfslinien
+	Angular Guides	Winkelhilfslinien
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Durchschnitt berechnen und zusammenfügen…
+	Average & Join	Durchschnitt berechnen und zusammenfügen
+anchor	Points:	Punkte:
+@msg	select two open path ends, or two open paths, to average and join	wählen Sie zwei Enden offener Pfade oder zwei offene Pfade aus, um sie zu mitteln und zusammenzufügen

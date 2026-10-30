@@ -1757,6 +1757,7 @@ font-technology	Variable	Değişken
 	Move in Perspective	Perspektifte Hareket Et
 	Move Locked and Hidden Artwork with Artboard	Çalışma Yüzeyi ile Kilitli ve Gizli Resimleri Taşıma
 	Move Mesh Point	Mesh Noktasını Taşı
+	Move Mesh Points	Mesh Noktalarını Taşı
 	Move Plane	Düzlemi Taşı
 	Move Plane to Match Object	Nesneyi Eşleştirecek Düzlemi Taşı
 	Move Rows	Satırları Taşı
@@ -5640,3 +5641,19 @@ axis	Y Axis	Y ekseni
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Önce görünümü genişletin (Nesne › Görünümü Genişlet)
 	Live preview	Canlı önizleme
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Nokta Metni
+	Area Text	Alan Metni
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Glif'e Yapışma Seçeneklerini Göster
+	Hide Snap to Glyph Options	Glif'e Yapışma Seçeneklerini Gizle
+	Snap to Glyph Options	Glif'e Yapışma Seçenekleri
+	x-height	x Yüksekliği
+	Glyph Bounds	Glif Sınırları
+	Proximity Guides	Yakınlık Kılavuzları
+	Angular Guides	Açısal Kılavuzlar
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Ortalama ve katıl…
+	Average & Join	Ortalama ve katıl
+anchor	Points:	Noktalar:
+@msg	select two open path ends, or two open paths, to average and join	ortalaması alınıp katılmak için iki açık yol ucu veya iki açık yol seçin

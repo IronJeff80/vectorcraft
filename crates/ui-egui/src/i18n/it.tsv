@@ -1940,6 +1940,7 @@ file-filter	Templates	Modelli
 	Move in Perspective	Sposta in prospettiva
 	Move Locked and Hidden Artwork with Artboard	Sposta grafica bloccata e nascosta con la tavola da disegno
 	Move Mesh Point	Sposta punto trama
+	Move Mesh Points	Sposta punti trama
 	Move Plane	Sposta piano
 	Move Plane to Match Object	Sposta piano in base all'oggetto
 	Move Rows	Sposta righe
@@ -5298,3 +5299,19 @@ axis	Y Axis	Asse Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Espandi prima l’aspetto (Oggetto › Espandi aspetto)
 	Live preview	Anteprima dal vivo
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Testo per punti
+	Area Text	Testo in area
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Mostra opzioni di aggancio a glifo
+	Hide Snap to Glyph Options	Nascondi opzioni di aggancio a glifo
+	Snap to Glyph Options	Opzioni di aggancio a glifo
+	x-height	Altezza x
+	Glyph Bounds	Limiti del glifo
+	Proximity Guides	Guide di prossimità
+	Angular Guides	Guide angolari
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Media e unisci…
+	Average & Join	Media e unisci
+anchor	Points:	Punti:
+@msg	select two open path ends, or two open paths, to average and join	seleziona due estremità di tracciati aperti, o due tracciati aperti, da mediare e unire

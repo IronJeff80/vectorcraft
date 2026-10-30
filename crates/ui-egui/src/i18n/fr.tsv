@@ -1912,6 +1912,7 @@ font-technology	Variable	Variables
 	Move in Perspective	Déplacer en perspective
 	Move Locked and Hidden Artwork with Artboard	Déplacer les illustrations verrouillées et masquées avec le plan de travail
 	Move Mesh Point	Déplacer le point de filet
+	Move Mesh Points	Déplacer les points de filet
 	Move Plane	Déplacer le plan
 	Move Plane to Match Object	Déplacer le plan pour l’aligner sur l’objet
 	Move Rows	Déplacer les lignes
@@ -5681,3 +5682,19 @@ axis	Y Axis	Axe Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Décomposez d’abord l’aspect (Objet › Décomposer l’aspect)
 	Live preview	Aperçu en direct
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Texte de point
+	Area Text	Texte captif
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Afficher les options de magnétisme du glyphe
+	Hide Snap to Glyph Options	Masquer les options de magnétisme du glyphe
+	Snap to Glyph Options	Options de magnétisme du glyphe
+	x-height	Hauteur d’x
+	Glyph Bounds	Limites du glyphe
+	Proximity Guides	Repères de proximité
+	Angular Guides	Repères angulaires
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Alignement et jonction…
+	Average & Join	Alignement et jonction
+anchor	Points:	Points :
+@msg	select two open path ends, or two open paths, to average and join	sélectionnez deux extrémités de tracés ouverts, ou deux tracés ouverts, à aligner et joindre

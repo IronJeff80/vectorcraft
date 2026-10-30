@@ -15,6 +15,11 @@
 # Left in English on purpose (`MENU_KEEP_AS_IS` in the tests): the product name, language
 # names, OpenType, the built-in workspace names and the bracketed perspective grid preset names.
 	About VectorCraft	VectorCraft について
+	Check for Updates…	アップデートを確認…
+	Checking for updates…	アップデートを確認中…
+	Could not check for updates:\n{error}	アップデートを確認できませんでした:\n{error}
+	VectorCraft Updates	VectorCraft のアップデート
+	VectorCraft {version} is currently the newest version available.	VectorCraft {version} は最新バージョンです。
 	All Scripts	すべての文字
 	Anchors:	アンカー:
 	Any Kind	すべての種類
@@ -586,6 +591,8 @@ font-technology	Variable	バリアブル
 	Snap to Pixel	ピクセルにスナップ
 	Precise Cursors	精密カーソル
 	Image Trace Preview	画像トレースのプレビュー
+	Preparing the image…	画像を準備中…
+	Tracing the colors…	色をトレース中…
 	Snap to Point	ポイントにスナップ
 	Snap to Glyph	グリフにスナップ
 	New View…	新規表示…
@@ -2082,6 +2089,7 @@ font-technology	Variable	バリアブル
 	Move Guide	ガイドを移動
 	Move Locked and Hidden Artwork with Artboard	ロックおよび非表示のアートワークをアートボードと一緒に移動
 	Move Mesh Point	メッシュポイントを移動
+	Move Mesh Points	メッシュポイントを移動
 	Move Plane	面を移動
 	Move Rows	行を移動
 	Move Slices	スライスを移動
@@ -5360,3 +5368,19 @@ axis	Y Axis	Y 軸
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	先にアピアランスを分割してください（オブジェクト › アピアランスを分割）
 	Live preview	ライブプレビュー
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	ポイント文字
+	Area Text	エリア内文字
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	グリフにスナップのオプションを表示
+	Hide Snap to Glyph Options	グリフにスナップのオプションを隠す
+	Snap to Glyph Options	グリフにスナップのオプション
+	x-height	x ハイト
+	Glyph Bounds	字形の境界
+	Proximity Guides	近接ガイド
+	Angular Guides	角度ガイド
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	平均と連結…
+	Average & Join	平均と連結
+anchor	Points:	ポイント:
+@msg	select two open path ends, or two open paths, to average and join	平均と連結には、オープンパスの端点を 2 つ、またはオープンパスを 2 つ選択してください

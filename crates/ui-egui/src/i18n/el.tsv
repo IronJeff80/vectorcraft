@@ -2675,6 +2675,7 @@ theme	Appearance	Εμφάνιση
 	Move in Perspective	Μετακίνηση σε προοπτική
 	Move Locked and Hidden Artwork with Artboard	Μετακίνηση κλειδωμένων και κρυφών σχεδίων μαζί με τον πίνακα σχεδίασης
 	Move Mesh Point	Μετακίνηση σημείου πλέγματος
+	Move Mesh Points	Μετακίνηση σημείων πλέγματος
 	Move Plane	Μετακίνηση επιπέδου προοπτικής
 	Move Plane to Match Object	Μετακίνηση επιπέδου προοπτικής ώστε να ταιριάζει στο αντικείμενο
 	Move Rows	Μετακίνηση γραμμών
@@ -5634,3 +5635,19 @@ axis	Y Axis	Άξονας Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Επεκτείνετε πρώτα την εμφάνιση (Αντικείμενο › Επέκταση εμφάνισης)
 	Live preview	Ζωντανή προεπισκόπηση
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Κείμενο σημείου
+	Area Text	Κείμενο περιοχής
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Εμφάνιση επιλογών προσκόλλησης σε γλυφή
+	Hide Snap to Glyph Options	Απόκρυψη επιλογών προσκόλλησης σε γλυφή
+	Snap to Glyph Options	Επιλογές προσκόλλησης σε γλυφή
+	x-height	Ύψος x
+	Glyph Bounds	Όρια γλυφής
+	Proximity Guides	Οδηγοί εγγύτητας
+	Angular Guides	Γωνιακοί οδηγοί
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Μέσος όρος και ένωση…
+	Average & Join	Μέσος όρος και ένωση
+anchor	Points:	Σημεία:
+@msg	select two open path ends, or two open paths, to average and join	επιλέξτε δύο άκρα ανοιχτών διαδρομών ή δύο ανοιχτές διαδρομές για μέσο όρο και ένωση

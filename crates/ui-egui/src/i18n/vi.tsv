@@ -2227,6 +2227,7 @@ file-filter	Templates	Mẫu
 	Move Library Item to Group	Di chuyển mục thư viện vào nhóm
 	Move Locked and Hidden Artwork with Artboard	Di chuyển tác phẩm đã khóa và ẩn cùng bảng vẽ
 	Move Mesh Point	Di chuyển điểm lưới
+	Move Mesh Points	Di chuyển các điểm lưới
 	Move Panel	Di chuyển bảng
 	Move Plane	Di chuyển mặt phẳng
 	Move Plane to Match Object	Di chuyển mặt phẳng khớp với đối tượng
@@ -5280,3 +5281,19 @@ axis	Y Axis	Trục Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Hãy mở rộng diện mạo trước (Đối tượng › Mở rộng diện mạo)
 	Live preview	Xem trước trực tiếp
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Chữ điểm
+	Area Text	Chữ vùng
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Hiện tùy chọn hút vào glyph
+	Hide Snap to Glyph Options	Ẩn tùy chọn hút vào glyph
+	Snap to Glyph Options	Tùy chọn hút vào glyph
+	x-height	Chiều cao x
+	Glyph Bounds	Giới hạn glyph
+	Proximity Guides	Đường căn lân cận
+	Angular Guides	Đường căn góc
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Trung bình và nối…
+	Average & Join	Trung bình và nối
+anchor	Points:	Điểm:
+@msg	select two open path ends, or two open paths, to average and join	hãy chọn hai đầu của đường dẫn mở, hoặc hai đường dẫn mở, để lấy trung bình và nối

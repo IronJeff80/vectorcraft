@@ -1860,6 +1860,7 @@ font-technology	Variable	Променливи
 	Move in Perspective	Преместване в перспектива
 	Move Locked and Hidden Artwork with Artboard	Преместване на заключени и скрити обекти с работната област
 	Move Mesh Point	Преместване на точка от мрежата
+	Move Mesh Points	Преместване на точки от мрежата
 	Move Plane	Преместване на равнина
 	Move Plane to Match Object	Преместване на равнината според обекта
 	Move Rows	Преместване на редове
@@ -5572,3 +5573,19 @@ axis	Y Axis	Y ос
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Първо разширете външния вид (Обект › Разширяване на външния вид)
 	Live preview	Преглед на живо
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Точков текст
+	Area Text	Текст в зона
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Показване на опциите за прилепване към глиф
+	Hide Snap to Glyph Options	Скриване на опциите за прилепване към глиф
+	Snap to Glyph Options	Опции за прилепване към глиф
+	x-height	Височина на x
+	Glyph Bounds	Граници на глифа
+	Proximity Guides	Водачи за близост
+	Angular Guides	Ъглови водачи
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Усредняване и свързване…
+	Average & Join	Усредняване и свързване
+anchor	Points:	Точки:
+@msg	select two open path ends, or two open paths, to average and join	изберете два края на отворени пътища или два отворени пътя за усредняване и свързване

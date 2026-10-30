@@ -1938,6 +1938,7 @@ file-filter	Templates	Шаблоны
 	Move in Perspective	Переместить в перспективе
 	Move Locked and Hidden Artwork with Artboard	Перемещать заблокированный и скрытый рисунок вместе с монтажной областью
 	Move Mesh Point	Переместить точку сетки
+	Move Mesh Points	Переместить точки сетки
 	Move Plane	Переместить плоскость
 	Move Plane to Match Object	Переместить плоскость по объекту
 	Move Rows	Переместить строки
@@ -5660,3 +5661,19 @@ swatch	Yellow Green	Желто-зеленый
 swatch	[None]	[Нет]
 swatch	[Registration]	[Приводка]
 theme	Appearance	Оформление
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Точечный текст
+	Area Text	Текст в области
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Показать параметры привязки к глифу
+	Hide Snap to Glyph Options	Скрыть параметры привязки к глифу
+	Snap to Glyph Options	Параметры привязки к глифу
+	x-height	Высота x
+	Glyph Bounds	Границы глифа
+	Proximity Guides	Направляющие близости
+	Angular Guides	Угловые направляющие
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Усреднить и соединить…
+	Average & Join	Усреднить и соединить
+anchor	Points:	Точки:
+@msg	select two open path ends, or two open paths, to average and join	выделите два конца открытых контуров или два открытых контура для усреднения и соединения

@@ -3194,6 +3194,7 @@ theme	Appearance	Wygląd
 	Make Envelope	Utwórz kopertę
 	Move Envelope Mesh Point	Przesuń punkt siatki koperty
 	Move Mesh Point	Przesuń punkt siatki
+	Move Mesh Points	Przesuń punkty siatki
 	Move Spine Point	Przesuń punkt grzbietu
 	Reshape Spine Segment	Zmień kształt segmentu grzbietu
 	Reset with Mesh	Resetuj z siatką
@@ -5536,3 +5537,19 @@ axis	Y Axis	Oś Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Najpierw rozszerz wygląd (Obiekt › Rozszerz wygląd)
 	Live preview	Podgląd na żywo
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Tekst punktowy
+	Area Text	Tekst akapitowy
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Pokaż opcje przyciągania do glifów
+	Hide Snap to Glyph Options	Ukryj opcje przyciągania do glifów
+	Snap to Glyph Options	Opcje przyciągania do glifów
+	x-height	Wysokość x
+	Glyph Bounds	Granice glifów
+	Proximity Guides	Linie bliskości
+	Angular Guides	Linie kątowe
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Uśrednij i połącz…
+	Average & Join	Uśrednij i połącz
+anchor	Points:	Punkty:
+@msg	select two open path ends, or two open paths, to average and join	zaznacz dwa końce otwartych ścieżek lub dwie otwarte ścieżki do uśrednienia i połączenia

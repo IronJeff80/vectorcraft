@@ -1860,6 +1860,7 @@ font-technology	Variable	Variabla
 	Move in Perspective	Flytta i perspektiv
 	Move Locked and Hidden Artwork with Artboard	Flytta låst och dold grafik med ritytan
 	Move Mesh Point	Flytta nätpunkt
+	Move Mesh Points	Flytta nätpunkter
 	Move Plane	Flytta plan
 	Move Plane to Match Object	Flytta plan så att det matchar objekt
 	Move Rows	Flytta rader
@@ -5706,3 +5707,19 @@ axis	Y Axis	Y-axel
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Expandera utseendet först (Objekt › Expandera utseende)
 	Live preview	Direkt förhandsgranskning
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punkttext
+	Area Text	Områdestext
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Visa alternativ för fäst mot glyf
+	Hide Snap to Glyph Options	Dölj alternativ för fäst mot glyf
+	Snap to Glyph Options	Alternativ för fäst mot glyf
+	x-height	x-höjd
+	Glyph Bounds	Glyfgränser
+	Proximity Guides	Närhetsstödlinjer
+	Angular Guides	Vinkelstödlinjer
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Medelvärde och foga samman…
+	Average & Join	Medelvärde och foga samman
+anchor	Points:	Punkter:
+@msg	select two open path ends, or two open paths, to average and join	markera två ändar av öppna banor, eller två öppna banor, att medelvärdesberäkna och foga samman

@@ -1934,6 +1934,7 @@ file-filter	Templates	Шаблони
 	Move in Perspective	Перемістити у перспективі
 	Move Locked and Hidden Artwork with Artboard	Переміщати заблокований та прихований малюнок разом із монтажною областю
 	Move Mesh Point	Перемістити точку сітки
+	Move Mesh Points	Перемістити точки сітки
 	Move Plane	Перемістити площину
 	Move Plane to Match Object	Перемістити площину об’єктом
 	Move Rows	Перемістити рядки
@@ -5278,3 +5279,19 @@ axis	Y Axis	Вісь Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Спочатку розберіть оформлення (Об’єкт › Розібрати оформлення)
 	Live preview	Перегляд у реальному часі
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Точковий текст
+	Area Text	Текст в області
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Показати параметри прив’язки до гліфа
+	Hide Snap to Glyph Options	Приховати параметри прив’язки до гліфа
+	Snap to Glyph Options	Параметри прив’язки до гліфа
+	x-height	Висота x
+	Glyph Bounds	Межі гліфа
+	Proximity Guides	Напрямні близькості
+	Angular Guides	Кутові напрямні
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Усереднити і з’єднати…
+	Average & Join	Усереднити і з’єднати
+anchor	Points:	Точки:
+@msg	select two open path ends, or two open paths, to average and join	виділіть два кінці відкритих контурів або два відкриті контури для усереднення і з’єднання

@@ -3086,6 +3086,7 @@ theme	Appearance	Vormgeving
 	Make Envelope	Omtrek maken
 	Move Envelope Mesh Point	Maaspunt van omtrek verplaatsen
 	Move Mesh Point	Maaspunt verplaatsen
+	Move Mesh Points	Maaspunten verplaatsen
 	Move Spine Point	Aspunt verplaatsen
 	Reshape Spine Segment	Segment van de as opnieuw vormgeven
 	Reset with Mesh	Opnieuw instellen met maas
@@ -5631,3 +5632,19 @@ axis	Y Axis	Y-as
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Breid eerst het uiterlijk uit (Object › Uiterlijk uitbreiden)
 	Live preview	Live voorbeeld
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Punttekst
+	Area Text	Vlaktekst
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Opties voor uitlijnen op glyph tonen
+	Hide Snap to Glyph Options	Opties voor uitlijnen op glyph verbergen
+	Snap to Glyph Options	Opties voor uitlijnen op glyph
+	x-height	x-hoogte
+	Glyph Bounds	Glyphbegrenzing
+	Proximity Guides	Nabijheidshulplijnen
+	Angular Guides	Hoekhulplijnen
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Gemiddelde en verbinden…
+	Average & Join	Gemiddelde en verbinden
+anchor	Points:	Punten:
+@msg	select two open path ends, or two open paths, to average and join	selecteer twee uiteinden van open paden, of twee open paden, om te middelen en te verbinden

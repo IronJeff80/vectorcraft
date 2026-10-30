@@ -3253,6 +3253,7 @@ theme	Appearance	Ulkoasu
 	Make Envelope	Tee kuori
 	Move Envelope Mesh Point	Siirrä kuoren verkkopistettä
 	Move Mesh Point	Siirrä verkkopistettä
+	Move Mesh Points	Siirrä verkkopisteitä
 	Move Spine Point	Siirrä selkärangan pistettä
 	Reshape Spine Segment	Muotoile selkärangan segmentti uudelleen
 	Reset with Mesh	Palauta verkolla
@@ -5713,3 +5714,19 @@ axis	Y Axis	Y-akseli
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Laajenna ensin ulkoasu (Objekti › Laajenna ulkoasu)
 	Live preview	Reaaliaikainen esikatselu
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Pisteteksti
+	Area Text	Alueteksti
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Näytä merkkiin kohdistuksen asetukset
+	Hide Snap to Glyph Options	Piilota merkkiin kohdistuksen asetukset
+	Snap to Glyph Options	Merkkiin kohdistuksen asetukset
+	x-height	x-korkeus
+	Glyph Bounds	Merkin rajat
+	Proximity Guides	Läheisyysapuviivat
+	Angular Guides	Kulma-apuviivat
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Keskiarvota ja liitä…
+	Average & Join	Keskiarvota ja liitä
+anchor	Points:	Pisteet:
+@msg	select two open path ends, or two open paths, to average and join	valitse kaksi avoimen polun päätä tai kaksi avointa polkua keskiarvotettaviksi ja liitettäviksi

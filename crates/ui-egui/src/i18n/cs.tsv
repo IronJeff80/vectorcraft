@@ -3314,6 +3314,7 @@ theme	Appearance	Motiv
 	Make Envelope	Vytvořit obálku
 	Move Envelope Mesh Point	Přesunout bod sítě obálky
 	Move Mesh Point	Přesunout bod sítě
+	Move Mesh Points	Přesunout body sítě
 	Move Spine Point	Přesunout bod páteře
 	Reshape Spine Segment	Přetvarovat segment páteře
 	Reset with Mesh	Obnovit sítí
@@ -5682,3 +5683,19 @@ axis	Y Axis	osa Y
 # Object › Expand… dimmed until Expand Appearance (#3089).
 	Expand Appearance first (Object › Expand Appearance)	Nejprve rozložte vzhled (Objekt › Rozložit vzhled)
 	Live preview	Živý náhled
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Bodový text
+	Area Text	Text v oblasti
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Zobrazit možnosti přichytávání ke glyfům
+	Hide Snap to Glyph Options	Skrýt možnosti přichytávání ke glyfům
+	Snap to Glyph Options	Možnosti přichytávání ke glyfům
+	x-height	Výška x
+	Glyph Bounds	Hranice glyfů
+	Proximity Guides	Vodítka blízkosti
+	Angular Guides	Úhlová vodítka
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Zprůměrovat a spojit…
+	Average & Join	Zprůměrovat a spojit
+anchor	Points:	Body:
+@msg	select two open path ends, or two open paths, to average and join	vyberte dva konce otevřených cest nebo dvě otevřené cesty ke zprůměrování a spojení

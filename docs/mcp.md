@@ -1249,7 +1249,7 @@ the Transparency panel's values, with `null` where the objects differ. Making a 
 empty mask and enters mask editing: art drawn then becomes the mask, and the mask commands act on the masked object
 until `transparency.stopEditingOpacityMask`. While a mask is edited, `object.exitIsolation` (Esc, the isolation bar's
 back arrow, Exit Isolation Mode) leaves mask editing the same way, in one undo step. Saves and exports never include
-the editing layer.
+the editing layer. With gradient mesh points picked, `opacity` goes to those points (see Picking several mesh points).
 
 ```json
 {"name":"run_command","arguments":{"command":"transparency.set","params":{"ids":[12],"opacity":40,"blend":"Multiply"}}}
@@ -2582,7 +2582,10 @@ or pulls handles out in line with the neighbouring anchors (a smooth anchor keep
 on top of each other, and an open path becomes one path per piece. Each cut leaves one of its two anchors selected,
 so `path.moveAnchors {dx, dy}` (or a Direct Selection drag) pulls the path apart there; `path.join {}` (Connect
 Selected End Points) joins the ends again; `path.join {ids: [a, b], ends: ["last", "first"]}` joins the ends asked for
-(the Pen's join, #776: drawing on from one open path, a click on another's end makes them one path). `path.convertAnchor {id, subpath?, anchor, to, x?, y?}` and
+(the Pen's join, #776: drawing on from one open path, a click on another's end makes them one path). `path.averageJoin {to: "corner"|"smooth", ids?}`
+(Average & Join, Cmd+Alt+Shift+J) moves two ends to their midpoint and joins them there, the joined anchor a corner or a smooth point, in one
+undo step: the two direct-selected anchors when they are open path ends, else the nearest ends of the two open paths in `ids` or the
+selection (both ends of one, closing it); anything else is refused. `path.convertAnchor {id, subpath?, anchor, to, x?, y?}` and
 `path.split {id, subpath?, anchor}` do the same to one anchor (the Anchor Point and Scissors tools); the Pen with Alt
 held over a selected path's handle, anchor or segment works as the Anchor Point tool. `press_key` Escape between two
 `pointer_gesture` calls of an Anchor Point drag cancels it: the path goes back and no undo step is added. `path.reshapeSegment {id,
@@ -2606,8 +2609,8 @@ These commands refuse a string or another value that is not a number with `` `dy
 naming the key; the document does not change and no undo step is recorded: `t`, `dx` and `dy` in
 `path.reshapeSegment` and `object.blend.spine.reshapeSegment`; `x`, `y` and `t` in `path.curvatureEdit`; `x` and `y`
 in `path.convertAnchor`; `t` in `path.insertAnchor`; `fidelity` and the `within` of `redraw` in `path.freehand` (and in
-`brush.freehand`, which runs it); `size`, `angle` and `roundness` in `path.eraseRegion`;
-`size` and `fidelity` in `path.blob`; `width` in `path.eraseSegments`;
+`brush.freehand`, which runs it); `size`, `sizeVariation`, `angle` and `roundness` in `path.eraseRegion`;
+`size`, `sizeVariation` and `fidelity` in `path.blob`; `width` in `path.eraseSegments`;
 `radius` and `fidelity` in `path.smoothRegion`; `tolerance` in `path.joinScrub`; `dx` and `dy` in `path.moveAnchors`;
 and `dx`, `dy`, `tol` and `radius` in `path.reshape`. A null is read as a key left out. `path.convertAnchor` refuses
 an `x` without a `y`, or a `y` without an `x`, with "x and y must be given together". `path.freehand`,
@@ -2938,6 +2941,22 @@ that index, the step gets that document's last artboard. An action recorded in t
 {"name":"run_command","arguments":{"command":"select.allOnArtboard","params":{"artboard":1}}}
 ```
 
+## Align to Glyph Bounds
+
+Align and Distribute normally measure type by its em box (point type) or its frame (area type). With the preference
+`alignGlyphBoundsPoint` on (`prefs.set {key: "alignGlyphBoundsPoint", value: true}`; also the Align panel flyout's
+Align to Glyph Bounds › Point Text), `object.align`, `object.distribute` and `object.distributeSpacing` measure point
+type by the ink of its glyphs instead: lowercase "ace" aligned to the top of a rectangle lines up the tops of its
+letters, not the space above them that the em box keeps for capitals and ascenders. `alignGlyphBoundsArea` (Area Text)
+does the same for area type. The two are independent and off by default; type on a path, type that draws nothing and
+type inside a selected group are measured as before. With Use Preview Bounds on, the glyphs' ink takes in the
+characters' strokes. [Align text](https://helpx.adobe.com/illustrator/desktop/design-with-text/edit-format-text/align-text.html).
+
+```json
+{"name":"run_command","arguments":{"command":"prefs.set","params":{"values":{"alignGlyphBoundsPoint":true,"alignGlyphBoundsArea":true}}}}
+{"name":"run_command","arguments":{"command":"object.align","params":{"vertical":"top"}}}
+```
+
 ## Use Preview Bounds
 
 With the preference `usePreviewBounds` on (`prefs.set {key: "usePreviewBounds", value: true}`; also the Align panel
@@ -3084,6 +3103,18 @@ Guides change where a snapped point lands:
   object under the pointer (the gap between their facing edges on an axis on which they lie apart, else the offsets
   of their two edges on it) or, over no object, to the left, right, top and bottom edges of the artboard under the
   pointer: measured lines labelled in the General unit. Off, Alt-hovering shows none.
+
+The Snap to Glyph options (the desktop app's Character panel menu › Show Snap to Glyph Options; View › Snap to Glyph
+is the desktop app's): `view.snapToGlyph.options {baseline?, xHeight?, bounds?, proximity?, angular?, anchors?}` (or
+`prefs.get`/`prefs.set` with key `glyphSnap`, a partial object) reads and sets which guides Snap to Glyph gives, all on
+by default: the baseline and the x-height of a single line of type, the glyph bounds (each glyph's edges), the
+proximity guides at both edges of each character's width, the angular guides (along a glyph's slanted strokes, and
+every guide of rotated type, which runs at its angle) and the glyphs' anchor points. `{}` reads them; a key it doesn't
+know or a value that isn't a boolean is refused and changes nothing.
+
+```json
+{"name":"run_command","arguments":{"command":"view.snapToGlyph.options","params":{"angular":false,"anchors":false}}}
+```
 
 With Smart Guides on, a bounding-box handle dragged with the Selection or Free Transform tool (`mods.shift`
 proportional, `mods.alt` from the centre) lands on another object's anchor or centre (labelled "anchor" or
@@ -5569,6 +5600,29 @@ Envelope Options.
 ```json
 {"name":"run_command","arguments":{"command":"object.envelope.editContents","params":{"editing":true}}}
 {"name":"run_command","arguments":{"command":"object.mesh.movePoint","params":{"id":12,"index":4,"x":220,"y":140,"handle":0}}}
+```
+
+## Picking several mesh points
+
+The Mesh tool and Direct Selection pick mesh points on gradient meshes and mesh envelopes. A click picks one point
+(its handles show); Shift-click adds a point or takes a picked one away. Direct Selection's marquee picks the points
+inside it (Shift toggles them) and selects their meshes; its click on a gradient mesh's line picks the line's two
+ends, and a click inside a patch picks the four points around it. The picked points show filled. Dragging one of them
+moves them all as one undo step (`object.mesh.movePoints`), a click on one of several picked points picks it alone,
+and the arrow keys nudge them by the keyboard increment. The active tool lists them in its options
+(`tool.setOption {}` returns them as `meshPoints: [{id, index}…]`). On gradient meshes a solid fill colour (`paint.setFill`, from the
+Color panel, Swatches or the Eyedropper) recolours just the picked points, and when every target of
+`transparency.set` is a gradient mesh with points picked, its `opacity` fades those points instead of the objects
+(`transparency.info` then shows their opacity, `null` when it differs). Both are one undo step.
+
+`object.mesh.movePoints {id, points: [index…], dx, dy}` (or `{items: [{id, points}…], dx, dy}` over several meshes)
+moves points by (dx, dy), their handles with them; `object.mesh.setPointColor` takes `points` or `items` the same
+way to colour or fade several points at once. An index out of range, an index that is not a whole number ≥ 0, or a
+move past the coordinate range fails and changes nothing.
+
+```json
+{"name":"run_command","arguments":{"command":"object.mesh.movePoints","params":{"id":12,"points":[0,4],"dx":10,"dy":-5}}}
+{"name":"run_command","arguments":{"command":"object.mesh.setPointColor","params":{"id":12,"points":[0,4],"color":"#3366ff","opacity":0.5}}}
 ```
 
 ## Shortcut sets from other apps

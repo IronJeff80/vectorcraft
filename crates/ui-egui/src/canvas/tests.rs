@@ -1032,6 +1032,39 @@ fn a_drag_from_a_ruler_onto_the_canvas_makes_a_guide() {
     assert_eq!(app.session.active().unwrap().doc.art_bounds(), None, "the tool drew nothing");
 }
 
+/// #4646: a guide dragged out of a ruler shows as a line across the canvas while it is dragged,
+/// also with Preferences › Performance › Real-time Drawing and Editing off (only its position
+/// label showed then).
+#[test]
+fn a_guide_dragged_out_of_a_ruler_shows_while_dragged() {
+    for real_time in [true, false] {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+        app.session.execute("prefs.set", &json!({"key": "realTimeDrawing", "value": real_time})).unwrap();
+        app.ui.view.rulers = true;
+        app.ui.view.smart_guides = false;
+        app.ui.view.snap_to_point = false;
+        let ctx = egui::Context::default();
+        frame(&mut app, &ctx, vec![]);
+        let rect = app.canvas_rect.unwrap();
+        let zoom = app.view().unwrap().zoom as f32;
+        let from = pos2(rect.center().x, rect.top() - RULER / 2.0);
+        let at = pos2(rect.center().x, rect.top() + 120.0);
+        let button = |pos, pressed| egui::Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+        frame(&mut app, &ctx, vec![egui::Event::PointerMoved(from)]);
+        frame(&mut app, &ctx, vec![button(from, true)]);
+        frame(&mut app, &ctx, vec![egui::Event::PointerMoved(at)]);
+        // A horizontal line across the canvas at the pointer (snapped to a whole point at most).
+        let across = |s: &Shape| {
+            matches!(s, Shape::LineSegment { points, .. }
+                if (points[0].y - at.y).abs() <= zoom && points[0].y == points[1].y && (points[1].x - points[0].x).abs() >= rect.width() - 0.5)
+        };
+        assert!(shapes(&mut app, &ctx).iter().any(across), "real-time drawing {real_time}: the guide shows while dragged");
+        frame(&mut app, &ctx, vec![button(at, false)]);
+        assert_eq!(app.session.active().unwrap().doc.guides.len(), 1, "real-time drawing {real_time}: released, it is made");
+    }
+}
+
 #[test]
 fn new_ruler_guides_follow_alt_through_preview_release_and_undo() {
     use egui::{Event, Modifiers};
@@ -5296,6 +5329,71 @@ fn art_moved_off_the_canvas_waits_and_drops_on_the_panel() {
     assert!(st.interaction.is_none());
     assert_eq!(*st.doc, *before);
     assert_eq!(st.history.undo.len(), undo);
+}
+
+/// #4233: the Direct and Group Selection tools hand art they move whole to the panels too (Asset
+/// Export, Graphic Styles…), as the Selection tool does; the move waits and nothing is recorded.
+#[test]
+fn art_moved_whole_off_the_canvas_with_direct_selection_drops_on_the_panel() {
+    for tool in ["directSelection", "groupSelection"] {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+        let id = app.session.execute("shape.rectangle", &json!({"x": 50, "y": 50, "width": 100, "height": 100})).unwrap()["id"].as_u64().unwrap();
+        let id = vectorcraft_doc::NodeId(id);
+        app.session.execute("select.none", &json!({})).unwrap();
+        app.select_tool(tool);
+        let ctx = egui::Context::default();
+        frame(&mut app, &ctx, vec![]);
+        let xf = Xf::new(app.canvas_rect.unwrap(), app.view().unwrap());
+        let before = app.session.active().unwrap().doc.clone();
+        let undo = app.session.active().unwrap().history.undo.len();
+        let button = |pos: Pos2, pressed: bool| egui::Event::PointerButton {
+            pos,
+            button: egui::PointerButton::Primary,
+            pressed,
+            modifiers: Default::default(),
+        };
+        // Pressed on the fill: the rectangle is selected whole.
+        let start = xf.to_screen(Point::new(100.0, 100.0));
+        frame(&mut app, &ctx, vec![egui::Event::PointerMoved(start), button(start, true)]);
+        assert_eq!(app.session.active().unwrap().selection.whole(), [id], "{tool}: selected whole");
+        frame(&mut app, &ctx, vec![egui::Event::PointerMoved(start + vec2(40.0, 0.0))]);
+        assert!(app.session.active().unwrap().interaction.is_some(), "{tool}: the move is live");
+        frame(&mut app, &ctx, vec![egui::Event::PointerMoved(pos2(850.0, 100.0))]);
+        assert!(app.session.active().unwrap().interaction.is_some(), "{tool}: the move waits, not cancels");
+        assert_eq!(egui::DragAndDrop::payload::<widgets::PanelDrag>(&ctx).as_deref(), Some(&widgets::PanelDrag::Art(vec![id])), "{tool}");
+        frame(&mut app, &ctx, vec![button(pos2(850.0, 100.0), false)]);
+        let st = app.session.active().unwrap();
+        assert!(st.interaction.is_none(), "{tool}");
+        assert_eq!(*st.doc, *before, "{tool}: the move goes back");
+        assert_eq!(st.history.undo.len(), undo, "{tool}: nothing recorded");
+    }
+}
+
+/// An anchor point the Direct Selection tool drags off the canvas isn't art for the panels: the
+/// reshape goes on and no art drag starts (#4233).
+#[test]
+fn an_anchor_dragged_off_the_canvas_is_not_handed_to_the_panels() {
+    let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+    let id = app.session.execute("shape.rectangle", &json!({"x": 50, "y": 50, "width": 100, "height": 100})).unwrap()["id"].as_u64().unwrap();
+    app.select_tool("directSelection");
+    app.session.execute("select.anchors", &json!({"id": id, "anchors": [[0, 0]]})).unwrap();
+    let ctx = egui::Context::default();
+    frame(&mut app, &ctx, vec![]);
+    let xf = Xf::new(app.canvas_rect.unwrap(), app.view().unwrap());
+    let button =
+        |pos: Pos2, pressed: bool| egui::Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers: Default::default() };
+    let corner = xf.to_screen(Point::new(50.0, 50.0));
+    frame(&mut app, &ctx, vec![egui::Event::PointerMoved(corner), button(corner, true)]);
+    frame(&mut app, &ctx, vec![egui::Event::PointerMoved(corner + vec2(20.0, 0.0))]);
+    assert!(app.session.active().unwrap().selection.partial(vectorcraft_doc::NodeId(id)).is_some(), "an anchor is picked");
+    frame(&mut app, &ctx, vec![egui::Event::PointerMoved(pos2(850.0, 100.0))]);
+    assert!(
+        !matches!(egui::DragAndDrop::payload::<widgets::PanelDrag>(&ctx).as_deref(), Some(widgets::PanelDrag::Art(_))),
+        "no art drag for an anchor"
+    );
+    frame(&mut app, &ctx, vec![button(pos2(850.0, 100.0), false)]);
 }
 
 /// #2826: a move taken over a panel waits where it left the canvas, and goes on with the

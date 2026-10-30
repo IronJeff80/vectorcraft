@@ -2419,6 +2419,7 @@
 	Move Library Item to Group	Mou l’element de la biblioteca al grup
 	Move Locked and Hidden Artwork with Artboard	Mou la il·lustració bloquejada i oculta amb el tauler
 	Move Mesh Point	Mou el punt de malla
+	Move Mesh Points	Mou els punts de malla
 	Move Panel	Mou el panell
 	Move Plane	Mou el pla
 	Move Plane and Copy Objects	Mou el pla i copia els objectes
@@ -5673,3 +5674,19 @@ swatch	White, Black	Blanc, negre
 swatch	Yellow	Groc
 swatch	Yellow Green	Verd groc
 theme	Appearance	Aparença
+# Align panel menu › Align to Glyph Bounds (#4231).
+	Point Text	Text de punt
+	Area Text	Text d’àrea
+# Character panel menu › Show Snap to Glyph Options (#4232).
+	Show Snap to Glyph Options	Mostra les opcions d’ajust al glif
+	Hide Snap to Glyph Options	Amaga les opcions d’ajust al glif
+	Snap to Glyph Options	Opcions d’ajust al glif
+	x-height	Alçada x
+	Glyph Bounds	Límits del glif
+	Proximity Guides	Guies de proximitat
+	Angular Guides	Guies angulars
+# Average & Join (Object › Path, Cmd+Alt+Shift+J).
+	Average & Join…	Mitjana i unió…
+	Average & Join	Mitjana i unió
+anchor	Points:	Punts:
+@msg	select two open path ends, or two open paths, to average and join	selecciona dos extrems de traçats oberts, o dos traçats oberts, per fer-ne la mitjana i unir-los
