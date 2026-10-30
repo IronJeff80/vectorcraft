@@ -58,7 +58,7 @@ use outline::KEY_OUTLINE;
 use outline::{OVERLAY_MAX_ANCHORS, c32, node_outline, walk_drawn};
 #[cfg(test)]
 use overlays::selected_anchor;
-use overlays::{HandleLook, draw_overlays, hover_highlight, ime_geometry, selection_overlay};
+use overlays::{HandleLook, draw_inside_overlay, draw_overlays, hover_highlight, ime_geometry, selection_overlay};
 pub(crate) use raster::color_image;
 use raster::{changed_pixels, pixel_region, upload};
 use task_bar::task_bar;
@@ -329,7 +329,10 @@ pub fn show(app: &mut VectorcraftApp, ui: &mut Ui) {
     }
     // The task bar is not drawn while the Simplify or Smooth slider shows.
     let strip = crate::dialogs::simplify_slider::showing(app) || crate::dialogs::smooth_slider::showing(app);
-    if app.ui.task_bar && !revolve_edit && !app.session.tool_busy() && app.ui.screen_mode < 3 && !strip {
+    // It gives way to a drag, not to a click: hidden for the length of every press, it flashed as
+    // each click picked another object (#4681).
+    let dragging = app.session.tool_busy() && ui.input(|i| i.pointer.is_decidedly_dragging());
+    if app.ui.task_bar && !revolve_edit && !dragging && app.ui.screen_mode < 3 && !strip {
         task_bar(app, ui, &xf);
     }
     if app.ui.screen_mode < 3 {
@@ -646,7 +649,11 @@ fn paint_paper(app: &VectorcraftApp, ui: &Ui, painter: &egui::Painter, xf: &Xf, 
     // on, the canvas multiplies it with the paper color: each sRGB channel is artboard × paper / 255,
     // rounded. The transparency grid, while it shows, covers it as it covers the others.
     painter.rect_filled(rect, 0.0, t.pasteboard);
-    if app.ui.view.artboards && !app.ui.view.outline {
+    if !shows_artboards(app) {
+        // View › Hide Artboards: no edges and no pasteboard, the whole canvas paper (#4038).
+        let setup = &doc.setup;
+        painter.rect_filled(rect, 0.0, if setup.simulate_paper { crate::panels::c32(&setup.paper()) } else { Color32::WHITE });
+    } else if !app.ui.view.outline {
         let setup = &doc.setup;
         let grid = (st.transparency_grid && setup.background == vectorcraft_doc::Background::Transparent).then(|| checker_texture(ui.ctx(), setup));
         let paper = if setup.simulate_paper { crate::panels::c32(&setup.paper()) } else { Color32::WHITE };
@@ -709,8 +716,17 @@ fn reproject_frame(app: &VectorcraftApp, painter: &egui::Painter, xf: &Xf, rect:
     }
 }
 
+/// Do the artboards show? View › Hide Artboards hides them, except for the Artboard tool, which
+/// edits them.
+fn shows_artboards(app: &VectorcraftApp) -> bool {
+    app.ui.view.artboards || app.session.tool_id() == "artboard"
+}
+
 /// The artboards' edges, bleeds, marks and names.
 fn artboard_outlines(app: &VectorcraftApp, ui: &Ui, painter: &egui::Painter, xf: &Xf, t: &Tokens) {
+    if !shows_artboards(app) {
+        return;
+    }
     let Some(st) = app.session.active() else { return };
     let doc = &st.doc;
     // Artboard edges and names. The Artboard tool labels its selected artboards itself (following
@@ -792,6 +808,7 @@ fn selection_visuals(
             hover_highlight(app, painter, xf);
         }
         selection_overlay(app, painter, xf, overlays.iter().any(|o| matches!(o, Overlay::CurvePoint { .. })));
+        draw_inside_overlay(app, painter, xf);
         mirror_axis_overlay(app, painter, xf);
         grid_repeat_overlay(app, painter, xf);
         if app.ui.view.text_threads {

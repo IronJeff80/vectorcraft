@@ -103,6 +103,7 @@ impl VectorcraftApp {
             hover_doc: None,
             custom_titlebar: false,
             last_window_title: String::new(),
+            fullscreen_for_mode: false,
             graphics_adapter: None,
             place: Default::default(),
             system_paste: false,
@@ -337,6 +338,7 @@ impl VectorcraftApp {
         // The OS title bar (and the taskbar / Alt-Tab entry) follows the active file; with the
         // system title bar this is where the document name lives, as the in-app mark is hidden.
         crate::chrome::sync_window_title(self, ctx);
+        crate::chrome::sync_fullscreen(self, ctx);
         self.drain_control(ctx);
         // An egui `PasteImage` with a rich system clipboard: run the paste command now, once. It
         // goes through `run`, whose `edit.paste` branch calls `adopt_system_clipboard` (which clears
