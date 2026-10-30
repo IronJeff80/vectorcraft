@@ -87,3 +87,154 @@ fn bad_requests_are_refused() {
     s.execute("select.none", &json!({})).unwrap();
     assert!(s.execute("addon.color.filter", &json!({"effect": "addon.color.invert"})).is_err(), "nothing selected");
 }
+
+/// An embedded image object of `blob`, selected.
+fn image(s: &mut Session, key: &str, blob: vectorcraft_doc::ImageBlob, x: f64) -> NodeId {
+    s.edit("Place", |d, sel| {
+        d.images.insert(key.into(), blob);
+        let id = d.alloc_id();
+        let im = vectorcraft_doc::ImageObject {
+            key: key.into(),
+            width: 4,
+            height: 4,
+            xf: vectorcraft_geom::Affine::translate((x, 0.0)) * vectorcraft_geom::Affine::scale(10.0),
+            link: None,
+            placement: Default::default(),
+            pixels: None,
+        };
+        d.insert(d.default_layer(), 0, vectorcraft_doc::Node::new(id, vectorcraft_doc::NodeKind::Image(Box::new(im))))?;
+        sel.set([id]);
+        Ok(id)
+    })
+    .unwrap()
+}
+
+fn png(img: image::DynamicImage) -> vectorcraft_doc::ImageBlob {
+    let mut bytes = vec![];
+    img.write_to(&mut std::io::Cursor::new(&mut bytes), image::ImageFormat::Png).unwrap();
+    vectorcraft_doc::ImageBlob::png(bytes)
+}
+
+fn selected(s: &Session) -> Vec<NodeId> {
+    s.doc().unwrap().selection.objects.clone()
+}
+
+#[test]
+fn select_by_color_kind_finds_spot_colours_effects_and_image_models() {
+    let (mut s, plain) = red_rect();
+    // A spot colour, inside a group: the path is taken, not the group.
+    s.execute("swatch.new", &json!({"name": "Gold", "color": {"model": "cmyk", "c": 0.0, "m": 0.2, "y": 0.8, "k": 0.1}, "spot": true})).unwrap();
+    let spot = NodeId(s.execute("shape.rectangle", &json!({"x": 100, "y": 20, "width": 30, "height": 30})).unwrap()["id"].as_u64().unwrap());
+    s.execute("paint.setFill", &json!({"swatch": "Gold"})).unwrap();
+    s.execute("object.group", &json!({})).unwrap();
+    // A live colour adjustment.
+    let adjusted = NodeId(s.execute("shape.rectangle", &json!({"x": 140, "y": 20, "width": 30, "height": 30})).unwrap()["id"].as_u64().unwrap());
+    // Its own colour: setting the spot fill made it the default for new art too.
+    s.execute("paint.setFill", &json!({"color": "#00ff00"})).unwrap();
+    s.execute("effect.apply", &json!({"effect": "addon.color.invert"})).unwrap();
+    let rgb = image(&mut s, "rgb", png(image::DynamicImage::ImageRgb8(image::RgbImage::new(4, 4))), 0.0);
+    let gray = image(&mut s, "gray", png(image::DynamicImage::ImageLuma8(image::GrayImage::new(4, 4))), 50.0);
+    let inks = vectorcraft_doc::cmyk::Inks::new(4, 4, vec![0; 64]).unwrap();
+    let cmyk = image(&mut s, "cmyk", vectorcraft_doc::ImageBlob::cmyk_tiff(&inks).unwrap(), 100.0);
+    for (kind, ids) in [
+        ("spotColors", vec![spot]),
+        ("colorEffects", vec![adjusted]),
+        ("rgbImages", vec![rgb]),
+        ("grayImages", vec![gray]),
+        ("cmykImages", vec![cmyk]),
+    ] {
+        let v = s.execute("addon.color.select", &json!({"kind": kind})).unwrap();
+        assert_eq!((selected(&s), v["count"].clone()), (ids.clone(), json!(ids.len())), "{kind}");
+    }
+    // Locked objects are left out; none found selects nothing.
+    s.execute("select.set", &json!({"ids": [spot.0]})).unwrap();
+    s.execute("object.lock", &json!({})).unwrap();
+    assert_eq!(s.execute("addon.color.select", &json!({"kind": "spotColors"})).unwrap()["count"], 0);
+    assert!(!selected(&s).contains(&plain));
+    assert!(s.execute("addon.color.select", &json!({"kind": "pantone"})).is_err());
+    assert!(s.execute("addon.color.select", &json!({})).is_err());
+}
+
+/// Vector Halftone, the live effect.
+const HALFTONE: &str = "addon.color.halftone";
+
+/// The dots in group `g`: each path's geometry, ink and blend mode.
+fn dots(g: &vectorcraft_doc::Node) -> Vec<(vectorcraft_geom::PathData, String, vectorcraft_color::BlendMode)> {
+    let ink = |c: &vectorcraft_doc::Node| c.appearance.fill_paint().color().unwrap().to_hex();
+    g.children().unwrap().iter().map(|c| (c.path_data().unwrap().clone(), ink(c), c.blend)).collect()
+}
+
+/// `format` as `document.export` writes the active document.
+fn exported(s: &mut Session, format: &str) -> Vec<u8> {
+    let v = s.execute("document.export", &json!({"format": format})).unwrap();
+    vectorcraft_format::base64_decode(v["dataBase64"].as_str().unwrap()).unwrap()
+}
+
+/// How many subpaths the path data of `svg` starts.
+fn svg_moves(svg: &[u8]) -> usize {
+    let svg = String::from_utf8_lossy(svg);
+    svg.split(" d=\"").skip(1).map(|d| d.split('"').next().unwrap_or("").matches(['M', 'm']).count()).sum()
+}
+
+#[test]
+fn expand_appearance_gives_the_dots_object_vector_halftone_makes() {
+    for params in [
+        json!({"frequency": 18}),
+        json!({"frequency": 12, "mode": "cmyk", "shape": "square", "angle": 15}),
+        json!({"shape": "line", "invert": true, "clip": false}),
+        json!({"shape": "ellipse", "color": "#336699", "angle": -30}),
+    ] {
+        let (mut live, id) = red_rect();
+        live.execute("effect.apply", &json!({"effect": HALFTONE, "params": params})).unwrap();
+        assert_eq!(fill_hex(&live, id), "#ff0000", "the effect leaves the object as it is");
+        live.execute("effect.expandAppearance", &json!({})).unwrap();
+        let expanded = live.doc().unwrap().doc.node(id).cloned().unwrap();
+        assert!(expanded.appearance.effects.is_empty());
+        let (mut made, _) = red_rect();
+        let r = made.execute("object.vectorHalftone", &params).unwrap();
+        let g = made.doc().unwrap().doc.node(NodeId(r["id"].as_u64().unwrap())).cloned().unwrap();
+        assert!(!dots(&g).is_empty(), "{params}");
+        assert_eq!(dots(&expanded), dots(&g), "{params}");
+        // Ids of their own.
+        let ids: std::collections::HashSet<_> = expanded.children().unwrap().iter().map(|c| c.id).chain([id]).collect();
+        assert_eq!(ids.len(), expanded.children().unwrap().len() + 1);
+    }
+}
+
+#[test]
+fn exports_write_the_dots_as_paths() {
+    let (mut s, _) = red_rect();
+    let plain: Vec<usize> = ["pdf", "eps", "ai"].map(|f| exported(&mut s, f).len()).to_vec();
+    s.execute("effect.apply", &json!({"effect": HALFTONE, "params": {"frequency": 18}})).unwrap();
+    // The exporters' copy of the document has the dots in the object's place.
+    let baked = vectorcraft_render::effects::bake_document(&s.doc().unwrap().doc).unwrap();
+    let mut paths = 0;
+    baked.walk(|n| {
+        assert!(n.appearance.effects.iter().all(|e| e.id != HALFTONE));
+        paths += n.path_data().map_or(0, |p| p.subpaths.len());
+    });
+    assert!(paths > 100, "{paths} subpaths");
+    // SVG: path data of a subpath per dot.
+    let moves = svg_moves(&exported(&mut s, "svg"));
+    assert!(moves > 100, "{moves} subpaths");
+    // PDF, EPS and AI: the dots' paths make each file larger.
+    for (f, plain) in ["pdf", "eps", "ai"].into_iter().zip(plain) {
+        let with = exported(&mut s, f).len();
+        assert!(with > plain + 1000, "{f}: {with} bytes, {plain} without the effect");
+    }
+}
+
+#[test]
+fn a_halftone_past_the_caps_leaves_the_object_as_it_is() {
+    let mut s = Session::new();
+    s.execute("file.new", &json!({"width": 200, "height": 200})).unwrap();
+    let id = NodeId(s.execute("shape.rectangle", &json!({"x": 0, "y": 0, "width": 9000, "height": 9000})).unwrap()["id"].as_u64().unwrap());
+    s.execute("effect.apply", &json!({"effect": HALFTONE, "params": {"frequency": 300}})).unwrap();
+    // Drawn as it is, exported and expanded without dots and without a panic.
+    pixel(&s);
+    assert!(svg_moves(&exported(&mut s, "svg")) < 5);
+    let r = s.execute("effect.expandAppearance", &json!({}));
+    assert!(!matches!(r, Err(crate::EngineError::Internal { .. })), "{r:?}");
+    let n = s.doc().unwrap().doc.node(id).cloned().unwrap();
+    assert!(n.children().is_none_or(|c| c.len() < 5), "no dots");
+}
