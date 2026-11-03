@@ -64,6 +64,7 @@ digits	Malayalam	말라얄람어
 	Join Our Discord	Discord 참여하기
 	Line-end Punctuation Half Width	줄 끝 문장 부호 반각
 	Insert Kashidas	카시다 삽입
+	Kashidas	카시다
 	Long	길게
 	Stylistic	스타일
 	Mojikumi Set	모지쿠미 세트
@@ -1981,6 +1982,8 @@ digits	Malayalam	말라얄람어
 	Large	크게
 	Large Tabs	큰 탭
 	Lasso Tool	올가미 도구
+	Enclosing Lasso Tool	둘러싸기 올가미 도구
+	Enclosing Lasso	둘러싸기 올가미
 	Last Effect: {name}	마지막 효과: {name}
 	Last Page	마지막 페이지
 	Layer Options…	레이어 옵션…
@@ -5141,6 +5144,11 @@ lighting	Light	광원
 	Export Type:	내보내기 유형:
 	Movie Clip	무비 클립
 @msg	name is empty	이름이 비어 있습니다
+@msg	an action is already recording	이미 액션을 기록하고 있습니다
+@msg	no such function key	해당 기능 키가 없습니다
+@msg	no such color	해당 색상이 없습니다
+@msg	{_1} cannot be used on Windows	{_1}은(는) Windows에서 사용할 수 없습니다
+@msg	more than one action is named “{_1}”	“{_1}”(이)라는 이름의 액션이 둘 이상 있습니다
 @msg	no symbol named `{n}`	이름이 `{n}`인 심볼이 없습니다
 	Smudge Stick…	문지르기 막대…
 	Smudge Stick	문지르기 막대
@@ -5314,6 +5322,13 @@ axis	Y Axis	Y축
 	Action Options…	액션 옵션…
 	Action Options	액션 옵션
 	Rename Action	액션 이름 바꾸기
+	New Action…	새 액션…
+	New Action	새 액션
+	Create New Action	새 액션 만들기
+	Play Action	액션 재생
+	Action Set:	액션 세트:
+	Function Key:	기능 키:
+	Record	기록
 	Create New Set	새 세트 만들기
 	Stop Global Edit	전체 편집 중지
 	Global Edit Options	전체 편집 옵션
@@ -5841,3 +5856,14 @@ breakText	Glyphs	글리프
 	Create Swatch Legend	견본 범례 만들기
 	Create Swatch Legend…	견본 범례 만들기…
 	HEX	HEX
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	텍스트 도구
+	Text Tweaker…	텍스트 조정…
+	Text Tweaker	텍스트 조정
+	Attribute:	속성:
+	From:	시작:
+	To:	끝:
+	Bow	활 모양
+	Spike	뾰족한 모양
+	Skip Spaces	공백 건너뛰기
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	아트워크가 너무 커서 이미지로 복사할 수 없습니다: 다른 앱에는 PNG가 전달되지 않습니다

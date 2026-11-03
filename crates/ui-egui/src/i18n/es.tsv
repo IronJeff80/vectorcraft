@@ -1713,6 +1713,8 @@ font-technology	Variable	Variables
 	Large Thumbnail View	Vista de miniaturas grandes
 	Large Thumbnails	Miniaturas grandes
 	Lasso Tool	Herramienta Lazo
+	Enclosing Lasso Tool	Herramienta Lazo envolvente
+	Enclosing Lasso	Lazo envolvente
 	Last Effect: {name}	Último efecto: {name}
 	Last Effect: {}	Último efecto: {}
 	Last Effect…	Último efecto…
@@ -1927,6 +1929,7 @@ font-technology	Variable	Variables
 	Modify	Modificar
 	Mojikumi	Mojikumi
 	Insert Kashidas	Insertar kashidas
+	Kashidas	Kashidas
 	Long	Larga
 	Stylistic	Estilística
 	Mojikumi Set	Conjunto de mojikumi
@@ -5508,6 +5511,11 @@ mark-style	Japanese	Japonesas
 	Export Type:	Tipo de exportación:
 	Movie Clip	Clip de película
 @msg	name is empty	el nombre está vacío
+@msg	an action is already recording	ya se está grabando una acción
+@msg	no such function key	no existe esa tecla de función
+@msg	no such color	no existe ese color
+@msg	{_1} cannot be used on Windows	{_1} no se puede usar en Windows
+@msg	more than one action is named “{_1}”	más de una acción se llama “{_1}”
 @msg	no symbol named `{n}`	no hay ningún símbolo llamado `{n}`
 	Smudge Stick…	Difuminar con barra…
 	Smudge Stick	Difuminar con barra
@@ -5678,6 +5686,13 @@ axis	Y Axis	Eje Y
 	Action Options…	Opciones de acción…
 	Action Options	Opciones de acción
 	Rename Action	Cambiar nombre de acción
+	New Action…	Nueva acción…
+	New Action	Nueva acción
+	Create New Action	Crear nueva acción
+	Play Action	Reproducir acción
+	Action Set:	Conjunto de acciones:
+	Function Key:	Tecla de función:
+	Record	Grabar
 	Create New Set	Crear nuevo conjunto
 	Stop Global Edit	Detener edición global
 	Global Edit Options	Opciones de edición global
@@ -6202,3 +6217,14 @@ breakText	Glyphs	Glifos
 	Create Swatch Legend	Crear leyenda de muestras
 	Create Swatch Legend…	Crear leyenda de muestras…
 	HEX	HEX
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	Herramientas de texto
+	Text Tweaker…	Ajustador de texto…
+	Text Tweaker	Ajustador de texto
+	Attribute:	Atributo:
+	From:	Desde:
+	To:	Hasta:
+	Bow	Arco
+	Spike	Pico
+	Skip Spaces	Omitir espacios
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	La ilustración es demasiado grande para copiarla como imagen: las demás aplicaciones no reciben un PNG de ella

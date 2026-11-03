@@ -1990,6 +1990,8 @@ digits	Hindi	Hindi
 	Large Thumbnails	Hình thu nhỏ lớn
 	Largest:	Lớn nhất:
 	Lasso Tool	Công cụ Lasso
+	Enclosing Lasso Tool	Công cụ Lasso bao quanh
+	Enclosing Lasso	Lasso bao quanh
 	Last	Cuối cùng
 	Last commit	Commit cuối cùng
 	Last Effect: {name}	Hiệu ứng vừa dùng: {name}
@@ -2251,6 +2253,7 @@ digits	Hindi	Hindi
 	Modify	Sửa đổi
 	Mojikumi	Mojikumi
 	Insert Kashidas	Chèn kashida
+	Kashidas	Kashida
 	Long	Dài
 	Stylistic	Kiểu cách
 	Mojikumi Set	Bộ Mojikumi
@@ -5161,6 +5164,11 @@ theme	Appearance	Giao diện
 	Export Type:	Kiểu xuất:
 	Movie Clip	Clip phim
 @msg	name is empty	tên trống
+@msg	an action is already recording	đang ghi một hành động
+@msg	no such function key	không có phím chức năng như vậy
+@msg	no such color	không có màu như vậy
+@msg	{_1} cannot be used on Windows	không thể dùng {_1} trên Windows
+@msg	more than one action is named “{_1}”	có nhiều hành động tên là “{_1}”
 @msg	no symbol named `{n}`	không có biểu tượng nào tên `{n}`
 	Smudge Stick…	Bút chì xóa mờ…
 	Smudge Stick	Bút chì xóa mờ
@@ -5334,6 +5342,13 @@ axis	Y Axis	Trục Y
 	Action Options…	Tùy chọn hành động…
 	Action Options	Tùy chọn hành động
 	Rename Action	Đổi tên hành động
+	New Action…	Hành động mới…
+	New Action	Hành động mới
+	Create New Action	Tạo hành động mới
+	Play Action	Phát hành động
+	Action Set:	Bộ hành động:
+	Function Key:	Phím chức năng:
+	Record	Ghi
 	Create New Set	Tạo bộ mới
 	Stop Global Edit	Dừng chỉnh sửa toàn cục
 	Global Edit Options	Tùy chọn chỉnh sửa toàn cục
@@ -5861,3 +5876,14 @@ breakText	Glyphs	Glyph
 	Create Swatch Legend	Tạo chú giải mẫu màu
 	Create Swatch Legend…	Tạo chú giải mẫu màu…
 	HEX	HEX
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	Công cụ văn bản
+	Text Tweaker…	Tinh chỉnh văn bản…
+	Text Tweaker	Tinh chỉnh văn bản
+	Attribute:	Thuộc tính:
+	From:	Từ:
+	To:	Đến:
+	Bow	Cung
+	Spike	Đỉnh nhọn
+	Skip Spaces	Bỏ qua khoảng trắng
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	Hình vẽ quá lớn để sao chép dưới dạng ảnh: các ứng dụng khác không nhận được PNG của nó

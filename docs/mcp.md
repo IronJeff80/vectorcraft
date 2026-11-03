@@ -1757,9 +1757,32 @@ already walks Image Trace. Short agent entry points:
   refused, and no set is added. The Actions panel menu's Save Actions… and Load Actions… run these; Load Actions… is
   disabled where there is no open dialog (the web).
 - Actions: `ui.action.rename {set, action, name}` renames the Actions panel's action at `action` in set `set` (0 is
-  the top set) to `name` with spaces trimmed from both ends, keeps its steps, and returns `{name}`. An index past the
-  last set or action, or an empty name, is an error, and then nothing is renamed. The panel menu's Action Options…
-  runs this for the selected action.
+  the top set) to `name` with spaces trimmed from both ends, keeps its steps, function key and color, and returns
+  `{name}`. An index past the last set or action, or an empty name, is an error, and then nothing is renamed.
+- Actions: `ui.action.new {set, name, key?, cmd?, shift?, color?}` adds an action named `name` (spaces
+  trimmed) after the last action of set `set` (0 is the top set), starts recording into it and returns
+  `{set, action}`; Stop Playing/Recording (`ui.action.stop`) ends the recording. `key` 1 to 15 is the function key F1 to F15 that plays the
+  action (0 or null for none), with `cmd` (Ctrl, Command on macOS) and `shift`. `color` is its Button Mode color
+  (`red`, `yellow`, `green`, `blue` or `violet`; null or `""` for none), which the panel does not show. Action function
+  keys take priority over command shortcuts and preserve the command's binding. On Windows F1, Ctrl+F4 and Ctrl+F6
+  cannot be used. While an action is recording, and for an index past the last set,
+  an empty name, or a key or color that is not one of these, it is an error and nothing is added. The panel's Create
+  New Action button and menu's New Action… open the `actionNew` dialog, whose Record runs this.
+- Actions: `ui.action.options {set, action, name?, key?, cmd?, shift?, color?}` changes the action at
+  `action` in set `set` and keeps its steps: `name` renames it, `key` with `cmd` and `shift` sets its function key,
+  and `color` its Button Mode color, as `ui.action.new` takes them; a param left out keeps what the action has, and
+  `cmd` or `shift` alone changes that modifier of its key. It
+  returns `{name, key, color}`. The panel menu's Action Options… runs this for the selected action. A function key
+  plays its action from the keyboard; like command shortcuts, it does nothing while a dialog, the command palette or
+  a text field has the keyboard, or while a tool is busy. Editing command shortcuts (`shortcuts.set`, Keyboard Shortcuts), loading preferences and
+  `ui.actionSet.load` preserve action function keys. When several actions have the same key, the first in panel order
+  plays. A stored key reserved on the current platform does not play an action.
+- Actions: `ui.action.play {action, set?}` plays the action named `action` as one undoable batch; `set` names the set
+  to look in (default: every set), and a `set` that is not a string is an error. A name that no action has, or that
+  more than one action in the sets looked in has, is an error, and then nothing plays.
+- Actions: `ui.action.stop {}` ends the recording in progress and keeps its steps, in the action `ui.action.new` made
+  for it, else in a new action after the last action of its set, and returns `{stopped}`. With nothing recording it
+  changes nothing. The panel's Stop Playing/Recording button runs this.
 - Action sets: `ui.actionSet.delete {sets?: [index], ids?: [id]}` deletes the Actions panel's sets at these indexes
   (0 is the top set) with their actions, by default the current set, and returns `{deleted}`. An index past the last
   set is an error, and then no set is deleted. `ids` holds the panel's own set ids, which its question passes: the
@@ -1915,6 +1938,10 @@ it (Alt-drag). `appearance.duplicateItem {index, to?}` / `{indices}` and `appear
 act on several fills/strokes at once, and `appearance.showAllHidden` makes every hidden fill, stroke and effect
 visible again. In remote mode, `effect.dialog {effect, index, item}` opens an applied effect's dialog prefilled
 (`ui.dialog.confirm` runs `effect.setParams`); see the control protocol for the "already applied" question.
+
+Effect dialogs use the targeted object, group, or layer shown in Appearance. The Transform dialog previews valid
+numbers as they are typed, including Copies, distances with units, and rotation. With Preview off, changes apply
+on OK. Cancel restores the original artwork.
 
 ## Overprint
 
@@ -6150,7 +6177,8 @@ Envelope Options.
 
 The Mesh tool and Direct Selection pick mesh points on gradient meshes and mesh envelopes. A click picks one point
 (its handles show); Shift-click adds a point or takes a picked one away. Direct Selection's marquee picks the points
-inside it (Shift toggles them) and selects their meshes; its click on a gradient mesh's line picks the line's two
+inside it (Shift toggles them) and selects their meshes, as does a Lasso loop round them (Shift adds, Alt takes
+away); its click on a gradient mesh's line picks the line's two
 ends, and a click inside a patch picks the four points around it. The picked points show filled. Dragging one of them
 moves them all as one undo step (`object.mesh.movePoints`), a click on one of several picked points picks it alone,
 and the arrow keys nudge them by the keyboard increment. The active tool lists them in its options
@@ -6776,4 +6804,31 @@ there is no step. → `{symbols: [name…], ids: [instance id…], skipped: [{la
 
 ```json
 {"name":"run_command","arguments":{"command":"addon.document.symbolsFromLayers","params":{"replace":true}}}
+```
+
+## Type Tools add-on
+
+Type Tools is a built-in add-on for type: its command is `addon.type.textTweaker`, and in the desktop app it lives in
+Object › Plug-ins › Type Tools (#4924). Text Tweaker gives one character attribute to the characters letter by letter,
+from a start value to an end value along a shape, as one undo step; the text stays live and editable. Each value is set
+as `text.setRangeStyle` sets it (the Character panel), in its units and ranges, so on scaled type it is the size shown.
+It changes the range of `id` (`start`/`end` bytes), else all the text of the type objects in `ids`, else the text the
+Type tool has selected (at a caret: all of that object's text), else all the text of every selected type object; each
+object gets its own ramp, and at most 100000 characters change in one run. A run that changes nothing makes no step.
+
+| Parameter | Values (default) |
+|---|---|
+| `attribute` | `size` (pt 0.1…1296), `baselineShift` (pt −1296…1296), `rotation` (° −360…360), `hScale`, `vScale` (% 1…10000), `tracking` (1/1000 em −1000…10000), `leading` (pt 0.1…5000), `strokeWidth` (pt 0…1000; shows only on characters with a stroke) (`size`) |
+| `from`, `to` | the first and last character's values, in the attribute's units and range (size 12 → 36, baselineShift 0 → 12, rotation 0 → 30, hScale and vScale 100 → 150, tracking 0 → 200, leading 12 → 36, strokeWidth 0 → 2) |
+| `shape` | `straight` (an even ramp), `ease` (slow at both ends), `bow` (`from` at both ends, rising smoothly to `to` in the middle), `spike` (the same, in straight lines), `random` (each character anywhere from `from` to `to`) (`straight`) |
+| `seed` | whole number (0): `random` with the same seed and text gives the same values |
+| `skipSpaces` | true: spaces and line breaks keep their values and don't count |
+
+→ `{count (characters changed), ids}`. Text Tweaker… opens a dialog (`ui.menuDialog {command}`, dialog kind
+`textTweaker`) whose fields are the command's parameters, with Preview; another attribute starts from its own
+default values, and the seed starts new whenever the document has changed.
+
+```json
+{"name":"run_command","arguments":{"command":"addon.type.textTweaker","params":{"attribute":"baselineShift","from":0,"to":18,"shape":"bow"}}}
+{"name":"run_command","arguments":{"command":"addon.type.textTweaker","params":{"attribute":"rotation","from":-15,"to":15,"shape":"random","seed":4}}}
 ```

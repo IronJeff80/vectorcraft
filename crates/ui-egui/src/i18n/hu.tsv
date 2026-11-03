@@ -2156,6 +2156,8 @@ file-filter	Templates	Sablonok
 	Largest:	Legnagyobb:
 	Lasso	Lasszó
 	Lasso Tool	Lasszó
+	Enclosing Lasso Tool	Körülzáró lasszó
+	Enclosing Lasso	Körülzáró lasszó
 	Last	Utolsó
 	Last commit	Utolsó commit
 	Last Effect: {name}	Legutóbbi effektus: {name}
@@ -2438,6 +2440,7 @@ file-filter	Templates	Sablonok
 	Modify	Módosítás
 	Mojikumi	Mojikumi
 	Insert Kashidas	Kasidák beszúrása
+	Kashidas	Kasidák
 	Long	Hosszú
 	Stylistic	Stilisztikai
 	Mojikumi Set	Mojikumi-készlet
@@ -5550,6 +5553,11 @@ imageTrace	Outline	Körvonal
 	Export Type:	Exportálás típusa:
 	Movie Clip	Mozgóklip
 @msg	name is empty	a név üres
+@msg	an action is already recording	már folyik egy művelet felvétele
+@msg	no such function key	nincs ilyen funkcióbillentyű
+@msg	no such color	nincs ilyen szín
+@msg	{_1} cannot be used on Windows	A(z) {_1} nem használható Windows rendszeren
+@msg	more than one action is named “{_1}”	több művelet neve is „{_1}”
 @msg	no symbol named `{n}`	nincs `{n}` nevű szimbólum
 	Smudge Stick…	Elmosó rúd…
 	Smudge Stick	Elmosó rúd
@@ -5720,6 +5728,13 @@ axis	Y Axis	Y tengely
 	Action Options…	Művelet beállításai…
 	Action Options	Művelet beállításai
 	Rename Action	Művelet átnevezése
+	New Action…	Új művelet…
+	New Action	Új művelet
+	Create New Action	Új művelet létrehozása
+	Play Action	Művelet lejátszása
+	Action Set:	Műveletkészlet:
+	Function Key:	Funkcióbillentyű:
+	Record	Felvétel
 	Create New Set	Új készlet létrehozása
 	Stop Global Edit	Globális szerkesztés befejezése
 	Global Edit Options	Globális szerkesztés beállításai
@@ -6244,3 +6259,14 @@ breakText	Glyphs	Glifák
 	Create Swatch Legend	Színmintajelmagyarázat létrehozása
 	Create Swatch Legend…	Színmintajelmagyarázat létrehozása…
 	HEX	HEX
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	Szövegeszközök
+	Text Tweaker…	Szöveghangoló…
+	Text Tweaker	Szöveghangoló
+	Attribute:	Jellemző:
+	From:	Ettől:
+	To:	Eddig:
+	Bow	Ív
+	Spike	Csúcs
+	Skip Spaces	Szóközök kihagyása
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	A grafika túl nagy ahhoz, hogy képként másolható legyen: más alkalmazások nem kapnak róla PNG-t

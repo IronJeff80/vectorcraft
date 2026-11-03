@@ -1108,6 +1108,8 @@ lighting	Light	სინათლე
 	Hand Tool	ხელის ხელსაწყო
 	Join Tool	შეერთების ხელსაწყო
 	Lasso Tool	ლასოს ხელსაწყო
+	Enclosing Lasso Tool	შემომსაზღვრელი ლასოს ხელსაწყო
+	Enclosing Lasso	შემომსაზღვრელი ლასო
 	Line Cut Tool	ხაზით ჭრის ხელსაწყო
 	Line Graph Tool	ხაზოვანი დიაგრამის ხელსაწყო
 	Line Segment Tool	ხაზის სეგმენტის ხელსაწყო
@@ -1562,6 +1564,7 @@ digits	Malayalam	მალაიალამური
 	Left-to-Right Paragraph Direction	აბზაცის მიმართულება მარცხნიდან მარჯვნივ
 	Line-end Punctuation Half Width	სტრიქონის ბოლოს პუნქტუაცია ნახევარი სიგანით
 	Insert Kashidas	ქაშიდების ჩასმა
+	Kashidas	ქაშიდები
 	Long	გრძელი
 	Stylistic	სტილისტური
 	Mojikumi Set	Mojikumi-ის ნაკრები
@@ -5267,6 +5270,11 @@ imageTrace	Outline	კონტური
 	Export Type:	ექსპორტის ტიპი:
 	Movie Clip	ანიმაციური კლიპი
 @msg	name is empty	სახელი ცარიელია
+@msg	an action is already recording	მოქმედება უკვე იწერება
+@msg	no such function key	ასეთი ფუნქციური კლავიში არ არის
+@msg	no such color	ასეთი ფერი არ არის
+@msg	{_1} cannot be used on Windows	{_1} ვერ გამოიყენება Windows-ში
+@msg	more than one action is named “{_1}”	„{_1}“ ერთზე მეტი მოქმედების სახელია
 @msg	no symbol named `{n}`	სიმბოლო სახელით `{n}` არ არის
 @msg	no saved selection recalled	შენახული მონიშვნა გამოძახებული არ არის
 @msg	The last start of VectorCraft ended on {name} before its window appeared, so it started on {summary}. To try that graphics processor again, change Preferences › Performance › Graphics Processor or start with WGPU_BACKEND set	VectorCraft-ის ბოლო გაშვება ფანჯრის გამოჩენამდე შეწყდა (გრაფიკული პროცესორი: {name}), ამიტომ VectorCraft გაეშვა: {summary}. ამ გრაფიკული პროცესორის ხელახლა საცდელად შეცვალეთ პარამეტრები › წარმადობა › გრაფიკული პროცესორი ან გაუშვით WGPU_BACKEND ცვლადის მითითებით
@@ -5651,6 +5659,13 @@ axis	Y Axis	Y ღერძი
 	Action Options…	მოქმედების პარამეტრები…
 	Action Options	მოქმედების პარამეტრები
 	Rename Action	მოქმედების სახელის შეცვლა
+	New Action…	ახალი მოქმედება…
+	New Action	ახალი მოქმედება
+	Create New Action	ახალი მოქმედების შექმნა
+	Play Action	მოქმედების შესრულება
+	Action Set:	მოქმედებების ნაკრები:
+	Function Key:	ფუნქციური კლავიში:
+	Record	ჩაწერა
 	Create New Set	ახალი ნაკრების შექმნა
 	Stop Global Edit	გლობალური რედაქტირების დასრულება
 	Global Edit Options	გლობალური რედაქტირების პარამეტრები
@@ -6248,3 +6263,14 @@ breakText	Glyphs	გლიფები
 	Create Swatch Legend	ფერის ნიმუშების ლეგენდის შექმნა
 	Create Swatch Legend…	ფერის ნიმუშების ლეგენდის შექმნა…
 	HEX	HEX
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	ტექსტის ხელსაწყოები
+	Text Tweaker…	ტექსტის მორგება…
+	Text Tweaker	ტექსტის მორგება
+	Attribute:	ატრიბუტი:
+	From:	საწყისი:
+	To:	საბოლოო:
+	Bow	რკალი
+	Spike	პიკი
+	Skip Spaces	ჰარების გამოტოვება
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	ნახატი ზედმეტად დიდია სურათად დასაკოპირებლად: სხვა აპები მის PNG-ს ვერ მიიღებენ

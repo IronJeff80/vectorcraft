@@ -1668,6 +1668,8 @@ font-technology	Variable	Variabla
 	Large Thumbnail View	Stor miniatyrvy
 	Large Thumbnails	Stora miniatyrer
 	Lasso Tool	Lassoverktyg
+	Enclosing Lasso Tool	Omslutande lassoverktyg
+	Enclosing Lasso	Omslutande lasso
 	Last Effect: {name}	Senaste effekten: {name}
 	Last Effect: {}	Senaste effekten: {}
 	Last Effect…	Senaste effekten…
@@ -1868,6 +1870,7 @@ font-technology	Variable	Variabla
 	Modify	Ändra
 	Mojikumi	Mojikumi
 	Insert Kashidas	Infoga kashidor
+	Kashidas	Kashidor
 	Long	Lång
 	Stylistic	Stilistisk
 	Mojikumi Set	Mojikumi-uppsättning
@@ -5522,6 +5525,11 @@ theme	Appearance	Utseende
 	Export Type:	Exporttyp:
 	Movie Clip	Filmklipp
 @msg	name is empty	namnet är tomt
+@msg	an action is already recording	en åtgärd spelas redan in
+@msg	no such function key	funktionstangenten finns inte
+@msg	no such color	färgen finns inte
+@msg	{_1} cannot be used on Windows	{_1} kan inte användas i Windows
+@msg	more than one action is named “{_1}”	fler än en åtgärd heter ”{_1}”
 @msg	no symbol named `{n}`	ingen symbol med namnet `{n}`
 	Angular	Vinkelmått
 	Away from the Line	Bort från linjen
@@ -5760,6 +5768,13 @@ axis	Y Axis	Y-axel
 	Action Options…	Alternativ för åtgärd…
 	Action Options	Alternativ för åtgärd
 	Rename Action	Byt namn på åtgärd
+	New Action…	Ny åtgärd…
+	New Action	Ny åtgärd
+	Create New Action	Skapa ny åtgärd
+	Play Action	Spela upp åtgärd
+	Action Set:	Åtgärdsuppsättning:
+	Function Key:	Funktionstangent:
+	Record	Spela in
 	Create New Set	Skapa ny uppsättning
 	Stop Global Edit	Avsluta global redigering
 	Global Edit Options	Alternativ för global redigering
@@ -6316,3 +6331,14 @@ breakText	Glyphs	Glyfer
 # The strings the report listed as missing for sv.
 	Font Size:	Teckenstorlek:
 digits	Hindi	Hindi
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	Textverktyg
+	Text Tweaker…	Textjustering…
+	Text Tweaker	Textjustering
+	Attribute:	Attribut:
+	From:	Från:
+	To:	Till:
+	Bow	Båge
+	Spike	Spets
+	Skip Spaces	Hoppa över mellanslag
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	Teckningen är för stor för att kopieras som en bild: andra appar får ingen PNG av den

@@ -1739,6 +1739,8 @@ file-filter	Templates	Шаблоны
 	Large Thumbnail View	Крупные миниатюры
 	Large Thumbnails	Крупные миниатюры
 	Lasso Tool	Инструмент «Лассо»
+	Enclosing Lasso Tool	Инструмент «Охватывающее лассо»
+	Enclosing Lasso	Охватывающее лассо
 	Last Effect: {name}	Последний эффект: {name}
 	Last Effect: {}	Последний эффект: {}
 	Last Effect…	Последний эффект…
@@ -1953,6 +1955,7 @@ file-filter	Templates	Шаблоны
 	Modify	Изменить
 	Mojikumi	Mojikumi
 	Insert Kashidas	Вставлять кашиды
+	Kashidas	Кашиды
 	Long	Длинные
 	Stylistic	Стилистические
 	Mojikumi Set	Набор mojikumi
@@ -5175,6 +5178,11 @@ lighting	Light	Свет
 	Export Type:	Тип экспорта:
 	Movie Clip	Видеоклип
 @msg	name is empty	имя пустое
+@msg	an action is already recording	действие уже записывается
+@msg	no such function key	такой функциональной клавиши нет
+@msg	no such color	такого цвета нет
+@msg	{_1} cannot be used on Windows	Сочетание {_1} нельзя использовать в Windows
+@msg	more than one action is named “{_1}”	несколько действий называются «{_1}»
 @msg	no symbol named `{n}`	нет символа с именем `{n}`
 	Smudge Stick…	Растушёвка…
 	Smudge Stick	Растушёвка
@@ -5348,6 +5356,13 @@ axis	Y Axis	Ось Y
 	Action Options…	Параметры действия…
 	Action Options	Параметры действия
 	Rename Action	Переименовать действие
+	New Action…	Новое действие…
+	New Action	Новое действие
+	Create New Action	Создать новое действие
+	Play Action	Воспроизвести действие
+	Action Set:	Набор действий:
+	Function Key:	Функциональная клавиша:
+	Record	Записать
 	Create New Set	Создать новый набор
 	Stop Global Edit	Завершить глобальное редактирование
 	Global Edit Options	Параметры глобального редактирования
@@ -6349,3 +6364,14 @@ breakText	Glyphs	Глифы
 digits	Hindi	Хинди
 font-script	Japanese	Японский
 shape	Open	Открытый
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	Инструменты текста
+	Text Tweaker…	Настройка текста…
+	Text Tweaker	Настройка текста
+	Attribute:	Атрибут:
+	From:	От:
+	To:	До:
+	Bow	Дуга
+	Spike	Пик
+	Skip Spaces	Пропускать пробелы
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	Графика слишком велика для копирования в виде изображения: другие приложения не получат её PNG

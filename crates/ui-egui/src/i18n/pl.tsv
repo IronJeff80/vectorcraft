@@ -1190,6 +1190,8 @@ lighting	Light	Światło
 	Hand Tool	Narzędzie Rączka
 	Join Tool	Narzędzie Łączenie
 	Lasso Tool	Narzędzie Lasso
+	Enclosing Lasso Tool	Narzędzie lassa obejmującego
+	Enclosing Lasso	Lasso obejmujące
 	Line Cut Tool	Narzędzie Cięcie linią
 	Line Graph Tool	Narzędzie Wykres liniowy
 	Line Segment Tool	Narzędzie Odcinek
@@ -1774,6 +1776,7 @@ digits	Malayalam	Malajalam
 	Left-to-Right Paragraph Direction	Kierunek akapitu od lewej do prawej
 	Line-end Punctuation Half Width	Interpunkcja na końcu wiersza o połowie szerokości
 	Insert Kashidas	Wstaw kaszidy
+	Kashidas	Kaszidy
 	Long	Długi
 	Stylistic	Stylistyczny
 	Mojikumi Set	Zestaw mojikumi
@@ -5420,6 +5423,11 @@ mark-style	Japanese	Japońskie
 	Export Type:	Typ eksportu:
 	Movie Clip	Klip filmowy
 @msg	name is empty	nazwa jest pusta
+@msg	an action is already recording	operacja jest już nagrywana
+@msg	no such function key	brak takiego klawisza funkcyjnego
+@msg	no such color	brak takiego koloru
+@msg	{_1} cannot be used on Windows	Skrótu {_1} nie można używać w systemie Windows
+@msg	more than one action is named “{_1}”	więcej niż jedna operacja nazywa się „{_1}”
 @msg	no symbol named `{n}`	brak symbolu o nazwie `{n}`
 	Smudge Stick…	Rozmazywacz…
 	Smudge Stick	Rozmazywacz
@@ -5590,6 +5598,13 @@ axis	Y Axis	Oś Y
 	Action Options…	Opcje operacji…
 	Action Options	Opcje operacji
 	Rename Action	Zmień nazwę operacji
+	New Action…	Nowa operacja…
+	New Action	Nowa operacja
+	Create New Action	Utwórz nową operację
+	Play Action	Odtwórz operację
+	Action Set:	Zestaw operacji:
+	Function Key:	Klawisz funkcyjny:
+	Record	Nagraj
 	Create New Set	Utwórz nowy zestaw
 	Stop Global Edit	Zakończ edycję globalną
 	Global Edit Options	Opcje edycji globalnej
@@ -6115,3 +6130,14 @@ breakText	Glyphs	Glify
 	Create Swatch Legend	Utwórz legendę próbek
 	Create Swatch Legend…	Utwórz legendę próbek…
 	HEX	HEX
+# Type Tools add-on (Object › Plug-ins › Type Tools).
+	Type Tools	Narzędzia tekstu
+	Text Tweaker…	Strojenie tekstu…
+	Text Tweaker	Strojenie tekstu
+	Attribute:	Atrybut:
+	From:	Od:
+	To:	Do:
+	Bow	Łuk
+	Spike	Szpic
+	Skip Spaces	Pomiń spacje
+@msg	The art is too large to copy as a picture: other apps get no PNG of it	Grafika jest zbyt duża, aby skopiować ją jako obraz: inne aplikacje nie otrzymają jej w formacie PNG
