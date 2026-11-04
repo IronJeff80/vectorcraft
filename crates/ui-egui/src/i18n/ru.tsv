@@ -293,6 +293,9 @@ font-technology	Variable	Вариативные
 	Basic Latin	Основная латиница
 	Batch	Пакет
 	Begin Recording	Начать запись
+	Exclude from playback	Исключить из воспроизведения
+	Include in playback	Включить в воспроизведение
+	Include Action Steps	Включить шаги действия
 	Bend:	Изгиб:
 	Bevel Join	Скос соединения
 	Bitmap	Растровое изображение
@@ -1790,6 +1793,7 @@ file-filter	Templates	Шаблоны
 	Ligatures are off while the text is tracked.	Лигатуры отключены, пока для текста задан трекинг.
 	Light	Светлый
 	Light Blue	Голубой
+	Light Red	Светло-красный
 	Lighten	Замена светлым
 	Lightness	Светлота
 	Limit Color Guide to Library	Ограничить цветовой гид библиотекой
@@ -2008,6 +2012,8 @@ file-filter	Templates	Шаблоны
 	Name:	Имя:
 	Navigate	Навигация
 	Navigator	Навигатор
+	Navigator Panel Options	Параметры панели «Навигатор»
+	Draw Dashed Lines as Solid Lines	Рисовать штриховые линии сплошными
 	Needs the desktop app	Требуется настольное приложение
 	Neutral Gradients	Нейтральные градиенты
 	New	Создать
@@ -3617,6 +3623,7 @@ digits	Malayalam	Малаялам
 	Use Artboards	Использовать монтажные области
 	Use Black Point Compensation	Использовать компенсацию чёрной точки
 	Use Compression	Использовать сжатие
+	Include Editing Data for Other Apps	Включать данные редактирования для других приложений
 	Use document bleed settings	Использовать параметры вылета документа
 	Use Even-Odd Fill Rule	Использовать правило заливки «чёт-нечет»
 	Use Japanese Crop Marks	Использовать японские метки обрезки
@@ -4681,6 +4688,7 @@ axis	Both	Оба
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	в них есть {_1}, которые VectorCraft пока не читает
 @msg	its objects are nested too deeply	объекты в них вложены слишком глубоко
 @msg	its section ending with `%{end}` doesn't end	раздел, заканчивающийся на `%{end}`, не заканчивается
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	кисти, которые VectorCraft пока не умеет читать, не добавлены в панель «Кисти» ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	объекты с несколькими заливками или обводками, эффектами или кистями импортированы в нарисованном виде ({_1}): их оформление пока нельзя редактировать
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	градиент «{name}» не определён в файле: вместо него используется сплошной цвет
 @msg	an image VectorCraft can't read was left out	изображение, которое VectorCraft не может прочитать, пропущено
@@ -5157,6 +5165,10 @@ lighting	Light	Свет
 @msg	nothing in data set {name} was applied: no object is bound to a variable it has a value for	из набора данных {name} ничего не применено: ни один объект не привязан к переменной, для которой в нём есть значение
 @msg	no bound object reports a value (locked objects and embedded images report none)	ни один привязанный объект не сообщает значение (заблокированные объекты и внедрённые изображения не сообщают значений)
 @msg	the action has no steps	в действии нет шагов
+@msg	the action has no included steps	в действии нет включённых шагов
+@msg	no such action step	такого шага действия нет
+@msg	included must be true or false	included должно быть true или false
+@msg	others must be true or false	others должно быть true или false
 
 # User Interface › Accent Color
 	Accent Color	Цвет акцента
@@ -5270,6 +5282,7 @@ lighting	Light	Свет
 	Effect Gallery	Галерея эффектов
 	Filters	Фильтры
 	Select artwork to apply effects	Выберите графику, чтобы применить эффекты
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	прочитаны не все привязки переменных файла (пропущено привязок: {_1}): эти объекты не привязаны к своим переменным
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	библиотека переменных файла прочитана только частично (пропущено записей: {_1}): панель «Переменные» показывает остальные
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	не удалось прочитать библиотеку переменных файла: панель «Переменные» её не показывает
 @msg	a variable of unknown kind can't be bound to objects	переменную неизвестного вида нельзя связать с объектами
@@ -6006,6 +6019,7 @@ anchor	Points:	Точки:
 	Character Color	Цвет символов
 	OpenType Features	Функции OpenType
 	Stylistic Sets	Стилистические наборы
+	Set {n}	Набор {n}
 @msg	features lists at most {max} tags	features содержит не более {max} тегов
 @msg	unknown OpenType feature `{t}`	неизвестная функция OpenType `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} должно быть числом больше 0 и не более {max}

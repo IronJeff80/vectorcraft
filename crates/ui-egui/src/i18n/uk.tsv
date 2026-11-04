@@ -289,6 +289,9 @@ font-technology	Variable	Варіативні
 	Basic Latin	Основна латиниця
 	Batch	Пакет
 	Begin Recording	Почати запис
+	Exclude from playback	Виключити з відтворення
+	Include in playback	Включити до відтворення
+	Include Action Steps	Включити кроки дії
 	Bend:	Вигин:
 	Bevel Join	Скошене з’єднання
 	Bitmap	Растрове зображення
@@ -1787,6 +1790,7 @@ file-filter	Templates	Шаблони
 	Ligatures are off while the text is tracked.	Лігатури вимкнено, поки для тексту заданий трекінг.
 	Light	Світлий
 	Light Blue	Блакитний
+	Light Red	Світло-червоний
 	Lighten	Освітлення
 	Lightness	Світлота
 	Limit Color Guide to Library	Обмежити колірний гід бібліотекою
@@ -2005,6 +2009,8 @@ file-filter	Templates	Шаблони
 	Name:	Назва:
 	Navigate	Навігація
 	Navigator	Навігатор
+	Navigator Panel Options	Параметри панелі «Навігатор»
+	Draw Dashed Lines as Solid Lines	Малювати штрихові лінії суцільними
 	Needs the desktop app	Потрібен настільний додаток
 	Neutral Gradients	Нейтральні градієнти
 	New	Створити
@@ -3615,6 +3621,7 @@ effect	Points	Точки
 	Use Artboards	Використовувати монтажні області
 	Use Black Point Compensation	Використовувати компенсацію чорної точки
 	Use Compression	Використовувати стиск
+	Include Editing Data for Other Apps	Включати дані редагування для інших програм
 	Use document bleed settings	Використовувати параметри вильоту документа
 	Use Even-Odd Fill Rule	Використовувати правило заливки «парне–непарне»
 	Use Japanese Crop Marks	Використовувати японські мітки обрізання
@@ -4670,6 +4677,7 @@ axis	Both	Обидві
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	у них є {_1}, які VectorCraft поки не читає
 @msg	its objects are nested too deeply	об’єкти в них вкладені надто глибоко
 @msg	its section ending with `%{end}` doesn't end	розділ, що закінчується на `%{end}`, не закінчується
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	пензлі, які VectorCraft поки не вміє читати, не додано до панелі «Пензлі» ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	об’єкти з кількома заливками або обведеннями, ефектами або пензлями імпортовані в намальованому вигляді ({_1}): їх оформлення поки що не можна редагувати
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	градієнт «{name}» не визначено у файлі: замість нього використовується суцільний колір
 @msg	an image VectorCraft can't read was left out	зображення, яке VectorCraft не може прочитати, пропущено
@@ -5142,6 +5150,10 @@ lighting	Light	Світло
 @msg	nothing in data set {name} was applied: no object is bound to a variable it has a value for	з набору даних {name} нічого не застосовано: жоден об’єкт не прив’язано до змінної, для якої в ньому є значення
 @msg	no bound object reports a value (locked objects and embedded images report none)	жоден прив’язаний об’єкт не повідомляє значення (заблоковані об’єкти та вбудовані зображення не повідомляють значень)
 @msg	the action has no steps	у дії немає кроків
+@msg	the action has no included steps	у дії немає включених кроків
+@msg	no such action step	такого кроку дії немає
+@msg	included must be true or false	included має бути true або false
+@msg	others must be true or false	others має бути true або false
 
 # User Interface › Accent Color
 	Accent Color	Колір акценту
@@ -5255,6 +5267,7 @@ lighting	Light	Світло
 	Effect Gallery	Галерея ефектів
 	Filters	Фільтри
 	Select artwork to apply effects	Виберіть графіку, щоб застосувати ефекти
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	прочитано не всі прив’язки змінних файлу (пропущено прив’язок: {_1}): ці об’єкти не прив’язано до їхніх змінних
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	бібліотеку змінних файлу прочитано лише частково (пропущено записів: {_1}): панель «Змінні» показує решту
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	не вдалося прочитати бібліотеку змінних файлу: панель «Змінні» її не показує
 @msg	a variable of unknown kind can't be bound to objects	змінну невідомого виду не можна прив’язати до об’єктів
@@ -5628,6 +5641,7 @@ anchor	Points:	Точки:
 	Character Color	Колір символів
 	OpenType Features	Функції OpenType
 	Stylistic Sets	Стилістичні набори
+	Set {n}	Набір {n}
 @msg	features lists at most {max} tags	features містить не більше {max} тегів
 @msg	unknown OpenType feature `{t}`	невідома функція OpenType `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} має бути числом більше 0 і не більше {max}

@@ -640,6 +640,8 @@
 	Update Changed Links	Perbarui tautan yang berubah
 	Magic Wand	Tongkat ajaib
 	Navigator	Navigator
+	Navigator Panel Options	Opsi panel navigator
+	Draw Dashed Lines as Solid Lines	Gambar garis putus-putus sebagai garis utuh
 	Pattern Options	Opsi pola
 	Properties	Properti
 	Separations Preview	Pratinjau separasi
@@ -1259,6 +1261,9 @@ lighting	Light	Cahaya
 	Zoom Tool	Alat zoom
 	Action {n}	Aksi {n}
 	Begin Recording	Mulai merekam
+	Exclude from playback	Kecualikan dari pemutaran
+	Include in playback	Sertakan dalam pemutaran
+	Include Action Steps	Sertakan langkah aksi
 	Center on Artboard	Pusatkan di artboard
 	Default Actions	Aksi default
 	▾ Default Actions	▾ Aksi default
@@ -1653,6 +1658,7 @@ digits	Malayalam	Malayalam
 	Select text to set its OpenType features.	Pilih teks untuk mengatur fitur OpenType-nya.
 	Standard Ligatures	Ligatur standar
 	Stylistic Alternates	Alternatif gaya
+	Set {n}	Set {n}
 	Swash	Swash
 	Tabular Lining	Lining tabular
 	Tabular Oldstyle	Oldstyle tabular
@@ -2210,6 +2216,7 @@ digits	Malayalam	Malayalam
 	“{file}” is protected by a password.	“{file}” dilindungi kata sandi.
 	Dim Images to:	Redupkan gambar menjadi:
 	Light Blue	Biru muda
+	Light Red	Merah terang
 	Layers Panel Options	Opsi panel lapisan
 	Row Size:	Ukuran baris:
 	Show Layers Only	Tampilkan lapisan saja
@@ -3404,6 +3411,7 @@ theme	Appearance	Tampilan
 	Type Object Selection by Path Only	Pemilihan objek teks hanya berdasarkan jalur
 	UI Scaling	Penskalaan UI
 	Use Compression	Gunakan kompresi
+	Include Editing Data for Other Apps	Sertakan data penyuntingan untuk aplikasi lain
 	Use Japanese Crop Marks	Gunakan tanda potong Jepang
 	Use Low Resolution Proxy for Linked EPS	Gunakan proksi resolusi rendah untuk EPS tertaut
 	Use Precise Cursors	Gunakan kursor presisi
@@ -4582,6 +4590,7 @@ imageTrace	Outline	Kontur
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	memiliki {_1}, yang belum dibaca VectorCraft dari berkas tersebut
 @msg	its objects are nested too deeply	objeknya bersarang terlalu dalam
 @msg	its section ending with `%{end}` doesn't end	bagian yang berakhir dengan `%{end}` tidak berakhir
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	kuas yang belum dapat dibaca VectorCraft tidak dimasukkan ke panel Kuas ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	objek dengan beberapa isian atau goresan, efek, atau kuas masuk sebagai tampilan gambarnya ({_1}): penampilannya belum dapat diedit
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	gradien “{name}” tidak didefinisikan dalam berkas: warna polos dipakai sebagai pengganti
 @msg	an image VectorCraft can't read was left out	gambar yang tidak dapat dibaca VectorCraft tidak disertakan
@@ -5205,6 +5214,10 @@ mark-style	Japanese	Jepang
 @msg	choose a source folder	pilih folder sumber
 @msg	open a document with data sets	buka dokumen dengan himpunan data
 @msg	the action has no steps	action tidak memiliki langkah
+@msg	the action has no included steps	aksi tidak memiliki langkah yang disertakan
+@msg	no such action step	tidak ada langkah aksi seperti itu
+@msg	included must be true or false	included harus true atau false
+@msg	others must be true or false	others harus true atau false
 	Registration:	Registrasi:
 	By Layer	Per lapisan
 	By Object	Per objek
@@ -5233,6 +5246,7 @@ mark-style	Japanese	Jepang
 	Path Length	Panjang jalur
 @msg	the file's layers weren't read ({_1}): it comes in as its page, in one layer	lapisan file tidak terbaca ({_1}): file masuk sebagai halamannya, dalam satu lapisan
 @msg	the file's layers weren't read from its editing data ({_1}): they come from its PDF part	lapisan file tidak terbaca dari data pengeditannya ({_1}): lapisannya berasal dari bagian PDF file
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	tidak semua ikatan variabel file terbaca (ikatan yang dilewati: {_1}): objek-objek itu tidak terikat ke variabelnya
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	pustaka variabel file hanya terbaca sebagian (entri yang dilewati: {_1}): panel Variabel menampilkan sisanya
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	pustaka variabel file tidak dapat dibaca: panel Variabel tidak menampilkannya
 @msg	a variable of unknown kind can't be bound to objects	variabel bertipe tidak dikenal tidak dapat diikat ke objek

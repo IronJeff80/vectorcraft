@@ -280,6 +280,9 @@ font-technology	Variable	Değişken
 	Basic Latin	Temel Latince
 	Batch	Toplu
 	Begin Recording	Kaydı Başlat
+	Exclude from playback	Oynatmadan hariç tut
+	Include in playback	Oynatmaya dahil et
+	Include Action Steps	Eylem Adımlarını Dahil Et
 	Bend:	Bükülme:
 	Bevel Join	Eğimli Birleştirme
 	Bitmap	Bit eşlem
@@ -1601,6 +1604,7 @@ font-technology	Variable	Değişken
 	Ligatures are off while the text is tracked.	Metin izlenirken bitişik harfler kapalıdır.
 	Light	Işık
 	Light Blue	Açık Mavi
+	Light Red	Açık Kırmızı
 	Lighten	hafifletmek
 	Lightness	hafiflik
 	Limit Color Guide to Library	Renk Kılavuzunu Kitaplıkla Sınırlandır
@@ -1812,6 +1816,8 @@ font-technology	Variable	Değişken
 	Name:	İsim:
 	Navigate	Gezin
 	Navigator	Gezgin
+	Navigator Panel Options	Gezgin Paneli Seçenekleri
+	Draw Dashed Lines as Solid Lines	Kesikli Çizgileri Düz Çizgi Olarak Çiz
 	Needs the desktop app	Masaüstü uygulaması gerekiyor
 	Neutral Gradients	Nötr Degradeler
 	New	Yeni
@@ -3397,6 +3403,7 @@ digits	Malayalam	Malayalam
 	Use Artboards	Çalışma Yüzeylerini Kullan
 	Use Black Point Compensation	Siyah Nokta Telafisi Kullan
 	Use Compression	Sıkıştırmayı Kullan
+	Include Editing Data for Other Apps	Diğer Uygulamalar İçin Düzenleme Verilerini Ekle
 	Use document bleed settings	Belge taşma payı ayarlarını kullan
 	Use Even-Odd Fill Rule	Çift-Tek Doldurma Kuralını Kullan
 	Use Japanese Crop Marks	Japonca Kırpma İşaretlerini Kullan
@@ -4380,6 +4387,7 @@ axis	Both	Her İkisi
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	VectorCraft'ın henüz okumadığı {_1} var
 @msg	its objects are nested too deeply	nesneleri çok derin bir şekilde iç içe geçmiş
 @msg	its section ending with `%{end}` doesn't end	`%{end}` ile biten bölümü bitmiyor
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	VectorCraft'ın henüz okuyamadığı fırçalar Fırçalar panelinin dışında bırakıldı ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	çeşitli dolgulara veya konturlara, efektlere veya fırçalara sahip nesneler çizilmiş görünümleri olarak geldi ({_1}): görünümleri henüz düzenlenemez
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	“{name}” degradesi dosyada tanımlı değil: onun yerine düz bir renk geliyor
 @msg	an image VectorCraft can't read was left out	VectorCraft'ın okuyamadığı bir resim dışarıda bırakıldı
@@ -5225,6 +5233,10 @@ theme	Appearance	Görünüm
 @msg	choose a source folder	bir kaynak klasör seçin
 @msg	open a document with data sets	veri kümeleri içeren bir belge açın
 @msg	the action has no steps	eylemin hiçbir adımı yok
+@msg	the action has no included steps	eylemin dahil edilmiş adımı yok
+@msg	no such action step	öyle bir eylem adımı yok
+@msg	included must be true or false	"included" true veya false olmalıdır
+@msg	others must be true or false	"others" true veya false olmalıdır
 	Accent Color	Vurgu Rengi
 	Amber	kehribar
 	Coral	Mercan
@@ -5427,6 +5439,7 @@ theme	Appearance	Görünüm
 @msg	its zlib compression is damaged	zlib sıkıştırması hasarlı
 @msg	its Zstandard compression is damaged	Zstandard sıkıştırması hasarlı
 @msg	it decompresses to more than {_1} MB	açıldığında {_1} MB'tan fazla alan kaplıyor
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	dosyanın değişken bağlantılarının tümü okunmadı (atlanan bağlantılar: {_1}): bu nesneler değişkenlerine bağlı değil
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	dosyanın değişken kitaplığı yalnızca kısmen okundu (atlanan girdiler: {_1}): Değişkenler paneli kalanları listeliyor
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	dosyanın değişken kitaplığı okunamadı: Değişkenler paneli onu listelemiyor
 @msg	a variable of unknown kind can't be bound to objects	türü bilinmeyen bir değişken nesnelere bağlanamaz
@@ -5986,6 +5999,7 @@ anchor	Points:	Noktalar:
 	Character Color	Karakter Rengi
 	OpenType Features	OpenType Özellikleri
 	Stylistic Sets	Stilistik Setler
+	Set {n}	Set {n}
 @msg	features lists at most {max} tags	features en fazla {max} etiket içerebilir
 @msg	unknown OpenType feature `{t}`	bilinmeyen OpenType özelliği `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} 0'ın üzerinde ve en fazla {max} olan bir sayı olmalıdır

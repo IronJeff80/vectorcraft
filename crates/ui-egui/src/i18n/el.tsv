@@ -273,6 +273,9 @@ font-technology	Variable	Μεταβλητές
 	Basic Latin	Βασικά λατινικά
 	Batch	Μαζική επεξεργασία
 	Begin Recording	Έναρξη καταγραφής
+	Exclude from playback	Εξαίρεση από την αναπαραγωγή
+	Include in playback	Συμπερίληψη στην αναπαραγωγή
+	Include Action Steps	Συμπερίληψη βημάτων ενέργειας
 	Bend:	Καμπυλότητα:
 	Bevel Join	Λοξότμητη ένωση
 	Bitmap	Ασπρόμαυρο bitmap
@@ -1649,6 +1652,7 @@ font-technology	Variable	Μεταβλητές
 	Libraries	Βιβλιοθήκες
 	Light	Ανοιχτό
 	Light Blue	Ανοιχτό μπλε
+	Light Red	Ανοιχτό κόκκινο
 	Lighten	Φώτισμα
 	Lightness	Φωτεινότητα
 	Line	Γραμμή
@@ -1693,6 +1697,8 @@ font-technology	Variable	Μεταβλητές
 	Name	Όνομα
 	Name:	Όνομα:
 	Navigator	Πλοήγηση
+	Navigator Panel Options	Επιλογές πίνακα πλοήγησης
+	Draw Dashed Lines as Solid Lines	Σχεδίαση διακεκομμένων γραμμών ως συνεχών
 	New	Νέο
 	Scatter:	Διασπορά:
 	Rotation:	Περιστροφή:
@@ -3871,6 +3877,7 @@ digits	Malayalam	Μαλαγιάλαμ
 	Use Artboards	Χρήση πινάκων σχεδίασης
 	Use Black Point Compensation	Χρήση αντιστάθμισης μαύρου σημείου
 	Use Compression	Χρήση συμπίεσης
+	Include Editing Data for Other Apps	Συμπερίληψη δεδομένων επεξεργασίας για άλλες εφαρμογές
 	Use document bleed settings	Χρήση ρυθμίσεων ξακρίσματος εγγράφου
 	Use Even-Odd Fill Rule	Χρήση κανόνα γεμίσματος άρτιου-περιττού
 	Use Japanese Crop Marks	Χρήση ιαπωνικών σημαδιών περικοπής
@@ -4593,6 +4600,7 @@ digits	Malayalam	Μαλαγιάλαμ
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	περιέχει {_1}, τα οποία το VectorCraft δεν μπορεί ακόμη να διαβάσει
 @msg	its objects are nested too deeply	τα αντικείμενά του έχουν υπερβολικά βαθιά ένθεση
 @msg	its section ending with `%{end}` doesn't end	η ενότητά του που τελειώνει σε `%{end}` δεν τερματίζεται
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	τα πινέλα που το VectorCraft δεν μπορεί ακόμη να διαβάσει παραλείφθηκαν από τον πίνακα Πινέλα ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	τα αντικείμενα με πολλαπλά γεμίσματα, περιγράμματα, εφέ ή πινέλα εισήχθησαν ως απεικονίσεις ({_1}): η εμφάνισή τους δεν είναι ακόμη επεξεργάσιμη
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	το ντεγκραντέ «{name}» δεν ορίζεται στο αρχείο: χρησιμοποιείται στη θέση του ένα συμπαγές χρώμα
 @msg	an image VectorCraft can't read was left out	παραλείφθηκε εικόνα που δεν μπορεί να διαβάσει το VectorCraft
@@ -5495,6 +5503,10 @@ effect	Points	Σημεία
 @msg	the Simplify slider is not open	ο ρυθμιστής Απλοποίησης δεν είναι ανοιχτός
 @msg	the Smooth slider is not open	ο ρυθμιστής Εξομάλυνσης δεν είναι ανοιχτός
 @msg	the action has no steps	η ενέργεια δεν έχει βήματα
+@msg	the action has no included steps	η ενέργεια δεν έχει βήματα που συμπεριλαμβάνονται
+@msg	no such action step	δεν υπάρχει τέτοιο βήμα ενέργειας
+@msg	included must be true or false	Το included πρέπει να είναι true ή false
+@msg	others must be true or false	Το others πρέπει να είναι true ή false
 @msg	the file's layers weren't read ({_1}): it comes in as its page, in one layer	τα επίπεδα του αρχείου δεν διαβάστηκαν ({_1}): εισάγεται ως η σελίδα του, σε ένα επίπεδο
 @msg	the file's layers weren't read from its editing data ({_1}): they come from its PDF part	τα επίπεδα του αρχείου δεν διαβάστηκαν από τα δεδομένα επεξεργασίας του ({_1}): προέρχονται από το τμήμα PDF του
 @msg	the screen color sampler is already open	η δειγματοληψία χρώματος από την οθόνη είναι ήδη ανοιχτή
@@ -5612,6 +5624,7 @@ effect	Points	Σημεία
 	Effect Gallery	Συλλογή εφέ
 	Filters	Φίλτρα
 	Select artwork to apply effects	Επιλέξτε γραφικά για να εφαρμόσετε εφέ
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	δεν διαβάστηκαν όλες οι συνδέσεις μεταβλητών του αρχείου (συνδέσεις που παραλείφθηκαν: {_1}): αυτά τα αντικείμενα δεν είναι συνδεδεμένα με τις μεταβλητές τους
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	η βιβλιοθήκη μεταβλητών του αρχείου διαβάστηκε μόνο εν μέρει (καταχωρίσεις που παραλείφθηκαν: {_1}): ο πίνακας Μεταβλητές εμφανίζει τις υπόλοιπες
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	δεν ήταν δυνατή η ανάγνωση της βιβλιοθήκης μεταβλητών του αρχείου: ο πίνακας Μεταβλητές δεν την εμφανίζει
 @msg	a variable of unknown kind can't be bound to objects	μια μεταβλητή άγνωστου είδους δεν μπορεί να συνδεθεί με αντικείμενα
@@ -5980,6 +5993,7 @@ anchor	Points:	Σημεία:
 	Character Color	Χρώμα χαρακτήρων
 	OpenType Features	Χαρακτηριστικά OpenType
 	Stylistic Sets	Στιλιστικά σύνολα
+	Set {n}	Σύνολο {n}
 @msg	features lists at most {max} tags	Το features περιέχει έως {max} ετικέτες
 @msg	unknown OpenType feature `{t}`	άγνωστο χαρακτηριστικό OpenType `{t}`
 @msg	{label} must be a number above 0 and at most {max}	Το {label} πρέπει να είναι αριθμός μεγαλύτερος από 0 και έως {max}

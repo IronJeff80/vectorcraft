@@ -320,6 +320,7 @@ The User Defined libraries are `window.userBrushLibrary1`…`10` in Window → B
 Tile Edge Color: Object → Pattern → Tile Edge Color… (`ui.tileEdgeColor`) opens the `tileEdgeColor` dialog (field
 `color`: `#rrggbb` or a preset name such as "Light Blue"); `ui.dialog.confirm` sets the preference
 `patternTileEdgeColor` (`prefs.set`), the colour pattern editing mode draws the tile edge and the swatch bounds in.
+A `color` with an alpha part (`#rrggbbaa` or `#rgba`) is an error, and the preference does not change.
 
 Window title bar: on Windows and Linux the window has no OS decorations and the app bar is the title bar. Its
 caption buttons (Minimize, Maximize/Restore, Close) sit at the bar's right end, 46 pt each; they are window chrome,
@@ -455,7 +456,9 @@ changed since); its preview greys the art and paints the highlighted objects or 
 
 Expand: Object → Expand… (`ui.expandDialog`, or `object.expand` without params from the menus, palette and shortcuts)
 opens the `expand` dialog for the selection. Fields: `object`, `fill`, `stroke` (all on; `__object`, `__fill`,
-`__stroke` say which the selection has something for, as `object.expand.info` does, and the others are disabled),
+`__stroke` say which the selection has something for, as `object.expand.info` does, and the others are disabled;
+`__fill_symbol`, `__stroke_symbol` and `__gradient_symbol` say that only the art of symbol instances holds it, and
+those options are enabled only while `object` is on),
 `gradient` (`objects` or `mesh`) and `steps` (1–1000, default 255), which are enabled when `fill` is on and
 `__gradient` says the selection has a gradient fill (`object.expand.info`'s `gradient`). `ui.dialog.confirm` runs `object.expand` with them as
 one undo step. While the selection has an appearance Expand Appearance expands (effects, several fills or strokes, a

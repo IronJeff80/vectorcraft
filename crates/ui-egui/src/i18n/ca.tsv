@@ -437,6 +437,9 @@
 	Bearing	Orientació
 	Before Last:	Abans de l’últim:
 	Begin Recording	Comença a enregistrar
+	Exclude from playback	Exclou de la reproducció
+	Include in playback	Inclou a la reproducció
+	Include Action Steps	Inclou passos de l’acció
 	Begin Undo Group	Inicia el grup de desfets
 	Bend:	Corba:
 	Best	Millor
@@ -2163,6 +2166,7 @@ digits	Malayalam	Malaiàlam
 	Light	Clar
 	Light behind the object	Llum darrere de l’objecte
 	Light Blue	Blau clar
+	Light Red	Vermell clar
 	Light Direction	Direcció de la llum
 	Light Gray	Gris clar
 	Light Intensity	Intensitat de la llum
@@ -2492,6 +2496,8 @@ digits	Malayalam	Malaiàlam
 	Names the script builds as it runs: {count}	Noms que l’script crea mentre s’executa: {count}
 	Navigate	Navega
 	Navigator	Navegador
+	Navigator Panel Options	Opcions del panell Navegador
+	Draw Dashed Lines as Solid Lines	Dibuixa les línies discontínues com a contínues
 	Needs a choice	Necessita una tria
 	Needs a key	Necessita una clau
 	Needs Attention Only	Només necessita atenció
@@ -4508,6 +4514,7 @@ digits	Malayalam	Malaiàlam
 	Use Artboards	Utilitza els taulers
 	Use Black Point Compensation	Utilitza la compensació del punt negre
 	Use Compression	Utilitza la compressió
+	Include Editing Data for Other Apps	Inclou les dades d’edició per a altres aplicacions
 	Use Default	Utilitza el valor per defecte
 	Use document bleed settings	Utilitza la configuració de sangrat del document
 	Use Document Raster Effects Resolution	Utilitza la resolució dels efectes de ràster del document
@@ -5347,6 +5354,7 @@ digits	Malayalam	Malaiàlam
 @msg	object {id} is not a selected top-level object	l’objecte {id} no és un objecte de nivell superior seleccionat
 @msg	objects can't be nested more than 32 deep	els objectes no es poden niar més de 32 nivells
 @msg	objects inside a blend, envelope, repeat or Intertwine group can't be attached to a path	els objectes dins d’una fusió, un embolcall, una repetició o un grup Intertwine no es poden adjuntar a un traçat
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	els pinzells que VectorCraft encara no pot llegir s'han deixat fora del tauler Pinzells ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	els objectes amb diversos farciments o traços, efectes o pinzells han arribat amb el seu aspecte dibuixat ({_1}): la seva aparença encara no és editable
 @msg	Offset Path: select paths	Desplaça el traçat: selecciona traçats
 @msg	Offset Path: the offset leaves nothing of the selected paths (an inset larger than the shapes)	Desplaça el traçat: el desplaçament no deixa res dels traçats seleccionats (una retracció més gran que les formes)
@@ -5512,6 +5520,10 @@ digits	Malayalam	Malaiàlam
 @msg	that document is no longer open	aquest document ja no està obert
 @msg	The 3D surface is too complex; simplify the shape	La superfície 3D és massa complexa; simplifica la forma
 @msg	the action has no steps	l’acció no té cap pas
+@msg	the action has no included steps	l’acció no té cap pas inclòs
+@msg	no such action step	no existeix aquest pas d’acció
+@msg	included must be true or false	included ha de ser true o false
+@msg	others must be true or false	others ha de ser true o false
 @msg	the art could not be sampled	no s’ha pogut mostrejar la il·lustració
 @msg	the art has no bounds	la il·lustració no té límits
 @msg	the art is too light for any dots	la il·lustració és massa clara per a cap punt
@@ -5547,6 +5559,7 @@ digits	Malayalam	Malaiàlam
 @msg	the file's layers weren't read ({_1}): it comes in as its page, in one layer	no s’han llegit les capes del fitxer ({_1}): arriba com la seva pàgina, en una sola capa
 @msg	the file's layers weren't read from its editing data ({_1}): they come from its PDF part	no s’han llegit les capes del fitxer a partir de les seves dades d’edició ({_1}): provenen de la seva part PDF
 @msg	the file's preview header points outside the file	la capçalera de previsualització del fitxer apunta fora del fitxer
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	no s’han llegit totes les vinculacions de variables del fitxer (vinculacions omeses: {_1}): aquests objectes no estan vinculats a les seves variables
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	la biblioteca de variables del fitxer s’ha llegit només en part (entrades omeses: {_1}): el panell Variables llista la resta
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	no s’ha pogut llegir la biblioteca de variables del fitxer: el panell Variables no la llista
 @msg	a variable of unknown kind can't be bound to objects	una variable de tipus desconegut no es pot vincular a objectes
@@ -6013,6 +6026,7 @@ anchor	Points:	Punts:
 	Character Color	Color del caràcter
 	OpenType Features	Funcions OpenType
 	Stylistic Sets	Jocs estilístics
+	Set {n}	Joc {n}
 @msg	features lists at most {max} tags	features admet com a màxim {max} etiquetes
 @msg	unknown OpenType feature `{t}`	funció OpenType desconeguda `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} ha de ser un nombre superior a 0 i com a màxim {max}

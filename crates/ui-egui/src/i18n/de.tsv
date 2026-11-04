@@ -270,6 +270,9 @@ font-technology	Variable	Variabel
 	Basic Latin	Lateinisch (Basis)
 	Batch	Stapelverarbeitung
 	Begin Recording	Aufzeichnung beginnen
+	Exclude from playback	Von der Wiedergabe ausschließen
+	Include in playback	In die Wiedergabe einbeziehen
+	Include Action Steps	Aktionsschritte einbeziehen
 	Bend:	Biegung:
 	Bevel Join	Abgeflachte Ecke
 	Bitmap	Bitmap
@@ -1761,6 +1764,7 @@ file-filter	Templates	Vorlagen
 	Ligatures are off while the text is tracked.	Ligaturen sind aus, solange für den Text eine Laufweite eingestellt ist.
 	Light	Hell
 	Light Blue	Hellblau
+	Light Red	Hellrot
 	Lighten	Aufhellen
 	Lightness	Helligkeit
 	Limit Color Guide to Library	Farbhilfe auf Bibliothek beschränken
@@ -1979,6 +1983,8 @@ file-filter	Templates	Vorlagen
 	Name:	Name:
 	Navigate	Navigieren
 	Navigator	Navigator
+	Navigator Panel Options	Optionen für das Navigatorbedienfeld
+	Draw Dashed Lines as Solid Lines	Gestrichelte Linien als durchgezogene Linien zeichnen
 	Needs the desktop app	Erfordert die Desktop-App
 	Neutral Gradients	Neutrale Verläufe
 	New	Neu
@@ -3529,6 +3535,7 @@ effect	Points	Punkte
 	Use Artboards	Zeichenflächen verwenden
 	Use Black Point Compensation	Tiefenkompensierung verwenden
 	Use Compression	Komprimierung verwenden
+	Include Editing Data for Other Apps	Bearbeitungsdaten für andere Apps einschließen
 	Use document bleed settings	Anschnitteinstellungen des Dokuments verwenden
 	Use Even-Odd Fill Rule	Gerade-Ungerade-Füllregel verwenden
 	Use Japanese Crop Marks	Japanische Schnittmarken verwenden
@@ -4560,6 +4567,7 @@ theme	Appearance	Erscheinungsbild
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	es enthält {_1}, was VectorCraft daraus noch nicht liest
 @msg	its objects are nested too deeply	seine Objekte sind zu tief verschachtelt
 @msg	its section ending with `%{end}` doesn't end	sein Abschnitt, der mit `%{end}` enden soll, endet nicht
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	Pinsel, die VectorCraft noch nicht lesen kann, wurden im Bedienfeld „Pinsel“ ausgelassen ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	Objekte mit mehreren Flächen oder Konturen, Effekten oder Pinseln wurden so übernommen, wie sie gezeichnet aussehen ({_1}): Ihr Aussehen ist noch nicht bearbeitbar
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	der Verlauf „{name}“ ist in der Datei nicht definiert: Eine einfache Farbe steht an seiner Stelle
 @msg	an image VectorCraft can't read was left out	ein Bild, das VectorCraft nicht lesen kann, wurde ausgelassen
@@ -5127,6 +5135,10 @@ effect	Soft	Weich
 @msg	nothing in data set {name} was applied: no object is bound to a variable it has a value for	aus dem Datensatz {name} wurde nichts angewendet: kein Objekt ist an eine Variable gebunden, für die er einen Wert hat
 @msg	no bound object reports a value (locked objects and embedded images report none)	kein gebundenes Objekt liefert einen Wert (gesperrte Objekte und eingebettete Bilder liefern keinen)
 @msg	the action has no steps	die Aktion hat keine Schritte
+@msg	the action has no included steps	die Aktion hat keine einbezogenen Schritte
+@msg	no such action step	kein solcher Aktionsschritt
+@msg	included must be true or false	included muss true oder false sein
+@msg	others must be true or false	others muss true oder false sein
 
 # User Interface › Accent Color
 	Accent Color	Akzentfarbe
@@ -5241,6 +5253,7 @@ effect	Soft	Weich
 	Effect Gallery	Effekt-Galerie
 	Filters	Filter
 	Select artwork to apply effects	Wählen Sie Grafik aus, um Effekte anzuwenden
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	nicht alle Variablenbindungen der Datei wurden gelesen (übersprungene Bindungen: {_1}): Diese Objekte sind nicht an ihre Variablen gebunden
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	die Variablenbibliothek der Datei wurde nur teilweise gelesen (übersprungene Einträge: {_1}): Das Bedienfeld „Variablen“ listet den Rest auf
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	die Variablenbibliothek der Datei konnte nicht gelesen werden: Das Bedienfeld „Variablen“ listet sie nicht auf
 @msg	a variable of unknown kind can't be bound to objects	eine Variable unbekannter Art kann nicht an Objekte gebunden werden
@@ -5614,6 +5627,7 @@ anchor	Points:	Punkte:
 	Character Color	Zeichenfarbe
 	OpenType Features	OpenType-Funktionen
 	Stylistic Sets	Stilsätze
+	Set {n}	Satz {n}
 @msg	features lists at most {max} tags	features enthält höchstens {max} Tags
 @msg	unknown OpenType feature `{t}`	unbekannte OpenType-Funktion `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} muss eine Zahl über 0 und höchstens {max} sein

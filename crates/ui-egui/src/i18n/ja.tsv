@@ -692,6 +692,8 @@ digits	Malayalam	マラヤーラム数字
 	Links	リンク
 	Magic Wand	自動選択
 	Navigator	ナビゲーター
+	Navigator Panel Options	ナビゲーターパネルオプション
+	Draw Dashed Lines as Solid Lines	破線を実線で表示
 	Pattern Options	パターンオプション
 	Properties	プロパティ
 	Separations Preview	分版プレビュー
@@ -1035,6 +1037,9 @@ digits	Malayalam	マラヤーラム数字
 	Baseline Shift	ベースラインシフト
 	Batch	バッチ
 	Begin Recording	記録を開始
+	Exclude from playback	再生から除外
+	Include in playback	再生に含める
+	Include Action Steps	アクションステップを含める
 	Bend:	カーブ:
 	Bevel Join	ベベル結合
 	Bitmap	ビットマップ
@@ -3280,6 +3285,7 @@ mark-style	Japanese	日本式
 	Use Artboards	アートボードを使用
 	Use Black Point Compensation	ブラックポイントの補正を使用
 	Use Compression	圧縮を使用
+	Include Editing Data for Other Apps	他のアプリ用の編集データを含める
 	Use Even-Odd Fill Rule	奇偶規則を使用
 	Use Japanese Crop Marks	日本式トンボを使用
 	Use Low Resolution Proxy for Linked EPS	リンク EPS に低解像度プロキシを使用
@@ -3613,6 +3619,7 @@ file-filter	Templates	テンプレート
 	Left-Justified Tab	左揃えタブ
 	Letter	レター
 	Light Blue	ライトブルー
+	Light Red	ライトレッド
 	Lightness	明度
 	Link	リンク
 	Low	低
@@ -4382,6 +4389,7 @@ swatch	Bright Violet	ビビッドバイオレット
 @msg	linked pictures show the low-resolution preview saved in the file until their files are found: relink them in the Links panel	リンク画像は、元のファイルが見つかるまで、ファイルに保存された低解像度のプレビューで表示されます：リンクパネルで再リンクしてください
 @msg	area type in frames too short for a line of the font it shows in got taller frames ({_1}): their type wouldn't show otherwise	表示に使われるフォントの 1 行に対して低すぎるフレーム内のエリア内文字は、フレームを高くしました ({_1}): そうしないと文字が表示されません
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	グラデーション「{name}」はファイル内で定義されていません: 代わりに単色を使用しています
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	VectorCraft がまだ読み込めないブラシ {_1} 個はブラシパネルに追加されませんでした
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	塗りや線が複数ある、または効果やブラシを適用したオブジェクト {_1} 個は見た目のまま読み込まれました: アピアランスはまだ編集できません
 @msg	patterns nested too deeply are filled with mid-grey	入れ子が深すぎるパターンは中間のグレーで塗りつぶされています
 @msg	shadings of an unknown type were left out	種類が不明なシェーディングは除外されました
@@ -5205,6 +5213,10 @@ lighting	Light	ライト
 @msg	nothing in data set {name} was applied: no object is bound to a variable it has a value for	データセット {name} から何も適用されませんでした: 値のある変数にバインドされたオブジェクトがありません
 @msg	no bound object reports a value (locked objects and embedded images report none)	値を返すバインドされたオブジェクトがありません (ロックされたオブジェクトと埋め込み画像は値を返しません)
 @msg	the action has no steps	アクションにステップがありません
+@msg	the action has no included steps	アクションに含まれるステップがありません
+@msg	no such action step	指定されたアクションステップが見つかりません
+@msg	included must be true or false	included には true または false を指定してください
+@msg	others must be true or false	others には true または false を指定してください
 
 # User Interface › Accent Color
 	Accent Color	アクセントカラー
@@ -5318,6 +5330,7 @@ lighting	Light	ライト
 	Effect Gallery	効果ギャラリー
 	Filters	フィルター
 	Select artwork to apply effects	効果を適用するグラフィックを選択してください
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	ファイルの変数のバインドの一部が読み込まれませんでした (スキップしたバインド: {_1})。それらのオブジェクトは変数にバインドされていません
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	ファイルの変数ライブラリは一部だけ読み込まれました (スキップした項目: {_1})。残りは変数パネルに表示されます
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	ファイルの変数ライブラリを読み込めませんでした。変数パネルには表示されません
 @msg	a variable of unknown kind can't be bound to objects	種類が不明な変数はオブジェクトにバインドできません
@@ -5713,6 +5726,7 @@ anchor	Points:	ポイント:
 	Character Color	文字カラー
 	OpenType Features	OpenType 機能
 	Stylistic Sets	スタイルセット
+	Set {n}	セット {n}
 @msg	features lists at most {max} tags	features に指定できるタグは {max} 個までです
 @msg	unknown OpenType feature `{t}`	不明な OpenType 機能 `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} には 0 より大きく {max} 以下の数値を指定してください

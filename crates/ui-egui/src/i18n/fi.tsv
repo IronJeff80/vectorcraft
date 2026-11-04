@@ -682,6 +682,8 @@
 	Update Changed Links	Päivitä muuttuneet linkit
 	Magic Wand	Taikasauva
 	Navigator	Navigaattori
+	Navigator Panel Options	Navigaattori-paneelin asetukset
+	Draw Dashed Lines as Solid Lines	Piirrä katkoviivat yhtenäisinä viivoina
 	Pattern Options	Kuvion asetukset
 	Properties	Ominaisuudet
 	Separations Preview	Erottelujen esikatselu
@@ -1322,6 +1324,9 @@ lighting	Light	Valo
 	Zoom Tool	Zoomaustyökalu
 	Action {n}	Toiminto {n}
 	Begin Recording	Aloita tallennus
+	Exclude from playback	Jätä pois toistosta
+	Include in playback	Sisällytä toistoon
+	Include Action Steps	Sisällytä toiminnon vaiheet
 	Center on Artboard	Keskitä piirtoalustalle
 	Default Actions	Oletustoiminnot
 	▾ Default Actions	▾ Oletustoiminnot
@@ -2367,6 +2372,7 @@ digits	Malayalam	Malajalam
 	“{file}” is protected by a password.	”{file}” on suojattu salasanalla.
 	Dim Images to:	Himmennä kuvat:
 	Light Blue	Vaaleansininen
+	Light Red	Vaalea punainen
 	Layers Panel Options	Tasot-paneelin asetukset
 	Row Size:	Rivin koko:
 	Show Layers Only	Näytä vain tasot
@@ -3601,6 +3607,7 @@ theme	Appearance	Ulkoasu
 	Type Object Selection by Path Only	Tekstiobjektin valinta vain polusta
 	UI Scaling	Käyttöliittymän skaalaus
 	Use Compression	Käytä pakkausta
+	Include Editing Data for Other Apps	Sisällytä muokkaustiedot muille sovelluksille
 	Use Japanese Crop Marks	Käytä japanilaisia rajausmerkkejä
 	Use Low Resolution Proxy for Linked EPS	Käytä matalan tarkkuuden välityskuvaa linkitetyille EPS-tiedostoille
 	Use Precise Cursors	Käytä tarkkoja kohdistimia
@@ -4852,6 +4859,7 @@ imageTrace	Outline	Ääriviiva
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	siinä on {_1}, jota VectorCraft ei vielä lue siitä
 @msg	its objects are nested too deeply	sen objektit ovat liian syvällä sisäkkäin
 @msg	its section ending with `%{end}` doesn't end	sen `%{end}`-merkintään päättyvä osio ei pääty
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	siveltimet, joita VectorCraft ei vielä osaa lukea, jätettiin pois Siveltimet-paneelista ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	objektit, joilla on useita täyttöjä tai viivoja, tehosteita tai siveltimiä, tuotiin piirretyn näköisinä ({_1}): niiden ulkoasua ei voi vielä muokata
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	liukuväriä “{name}” ei ole määritetty tiedostossa: sen tilalla on tasaväri
 @msg	an image VectorCraft can't read was left out	kuva, jota VectorCraft ei voi lukea, jätettiin pois
@@ -5507,6 +5515,10 @@ mark-style	Japanese	Japanilainen
 @msg	the Simplify slider is not open	Yksinkertaista-liukusäädin ei ole auki
 @msg	the Smooth slider is not open	Tasoita-liukusäädin ei ole auki
 @msg	the action has no steps	toiminnossa ei ole vaiheita
+@msg	the action has no included steps	toiminnossa ei ole sisällytettyjä vaiheita
+@msg	no such action step	toiminnon vaihetta ei ole
+@msg	included must be true or false	included on oltava true tai false
+@msg	others must be true or false	others on oltava true tai false
 @msg	the file's layers weren't read ({_1}): it comes in as its page, in one layer	tiedoston tasoja ei luettu ({_1}): se tuodaan sivunaan yhdelle tasolle
 @msg	the file's layers weren't read from its editing data ({_1}): they come from its PDF part	tiedoston tasoja ei luettu sen muokkaustiedoista ({_1}): ne tulevat sen PDF-osasta
 @msg	the screen color sampler is already open	värin poiminta näytöltä on jo auki
@@ -5624,6 +5636,7 @@ mark-style	Japanese	Japanilainen
 	Effect Gallery	Tehostegalleria
 	Filters	Suodattimet
 	Select artwork to apply effects	Valitse kuvitus, johon tehosteet lisätään
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	kaikkia tiedoston muuttujasidoksia ei luettu (ohitettuja sidoksia: {_1}): niitä objekteja ei ole sidottu muuttujiinsa
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	tiedoston muuttujakirjasto luettiin vain osittain (ohitettuja kohtia: {_1}): Muuttujat-paneeli näyttää loput
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	tiedoston muuttujakirjastoa ei voitu lukea: Muuttujat-paneeli ei näytä sitä
 @msg	a variable of unknown kind can't be bound to objects	tuntemattoman tyyppistä muuttujaa ei voi sitoa objekteihin
@@ -6059,6 +6072,7 @@ anchor	Points:	Pisteet:
 	Character Color	Merkin väri
 	OpenType Features	OpenType-ominaisuudet
 	Stylistic Sets	Tyylisarjat
+	Set {n}	Sarja {n}
 @msg	features lists at most {max} tags	features sisältää enintään {max} tunnistetta
 @msg	unknown OpenType feature `{t}`	tuntematon OpenType-ominaisuus `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} on oltava luku, joka on yli 0 ja enintään {max}

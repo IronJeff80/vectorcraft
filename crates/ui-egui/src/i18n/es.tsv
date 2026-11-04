@@ -295,6 +295,9 @@ font-technology	Variable	Variables
 	Basic Latin	Latín básico
 	Batch	Lote
 	Begin Recording	Iniciar grabación
+	Exclude from playback	Excluir de la reproducción
+	Include in playback	Incluir en la reproducción
+	Include Action Steps	Incluir pasos de acción
 	Bend:	Curvatura:
 	Bevel Join	Unión biselada
 	Bitmap	Mapa de bits
@@ -1764,6 +1767,7 @@ font-technology	Variable	Variables
 	Ligatures are off while the text is tracked.	Las ligaduras se desactivan mientras el texto tiene espaciado.
 	Light	Claro
 	Light Blue	Azul claro
+	Light Red	Rojo claro
 	Lighten	Aclarar
 	Lightness	Luminosidad
 	Limit Color Guide to Library	Limitar guía de color a la biblioteca
@@ -1982,6 +1986,8 @@ font-technology	Variable	Variables
 	Name:	Nombre:
 	Navigate	Navegar
 	Navigator	Navegador
+	Navigator Panel Options	Opciones del panel Navegador
+	Draw Dashed Lines as Solid Lines	Dibujar líneas discontinuas como continuas
 	Needs the desktop app	Requiere la aplicación de escritorio
 	Neutral Gradients	Degradados neutros
 	New	Nuevo
@@ -3585,6 +3591,7 @@ digits	Malayalam	Malayálam
 	Use Artboards	Usar mesas de trabajo
 	Use Black Point Compensation	Usar compensación de punto negro
 	Use Compression	Usar compresión
+	Include Editing Data for Other Apps	Incluir datos de edición para otras aplicaciones
 	Use document bleed settings	Usar los ajustes de sangrado del documento
 	Use Even-Odd Fill Rule	Usar regla de relleno par-impar
 	Use Japanese Crop Marks	Usar marcas de corte japonesas
@@ -4644,6 +4651,7 @@ axis	Both	Ambos
 @msg	it has {_1}, which VectorCraft doesn't read from it yet	tienen {_1}, que VectorCraft aún no lee de ellos
 @msg	its objects are nested too deeply	sus objetos están anidados a demasiada profundidad
 @msg	its section ending with `%{end}` doesn't end	su sección que termina con `%{end}` no termina
+@msg	brushes VectorCraft can't read yet were left out of the Brushes panel ({_1})	los pinceles que VectorCraft aún no puede leer se omitieron del panel Pinceles ({_1})
 @msg	objects with several fills or strokes, effects or brushes came in as their drawn look ({_1}): their appearance isn't editable yet	los objetos con varios rellenos o trazos, efectos o pinceles se importaron con su aspecto dibujado ({_1}): su aspecto aún no se puede editar
 @msg	gradient “{name}” isn't defined in the file: a plain colour stands in for it	el degradado “{name}” no está definido en el archivo: lo sustituye un color sólido
 @msg	an image VectorCraft can't read was left out	se omitió una imagen que VectorCraft no puede leer
@@ -5491,6 +5499,10 @@ mark-style	Japanese	Japonesas
 @msg	nothing in data set {name} was applied: no object is bound to a variable it has a value for	no se aplicó nada del conjunto de datos {name}: ningún objeto está vinculado a una variable para la que tenga un valor
 @msg	no bound object reports a value (locked objects and embedded images report none)	ningún objeto vinculado informa de un valor (los objetos bloqueados y las imágenes incrustadas no informan de ninguno)
 @msg	the action has no steps	la acción no tiene pasos
+@msg	the action has no included steps	la acción no tiene pasos incluidos
+@msg	no such action step	no existe ese paso de acción
+@msg	included must be true or false	included debe ser true o false
+@msg	others must be true or false	others debe ser true o false
 
 # User Interface › Accent Color
 	Accent Color	Color de acento
@@ -5602,6 +5614,7 @@ mark-style	Japanese	Japonesas
 	Effect Gallery	Galería de efectos
 	Filters	Filtros
 	Select artwork to apply effects	Seleccione gráficos para aplicar efectos
+@msg	the file's variable bindings weren't all read (bindings skipped: {_1}): those objects aren't bound to their variables	no se leyeron todos los vínculos de variables del archivo (vínculos omitidos: {_1}): esos objetos no están vinculados a sus variables
 @msg	the file's variable library was partly read (entries skipped: {_1}): the Variables panel lists the rest	la biblioteca de variables del archivo se leyó solo en parte (entradas omitidas: {_1}): el panel Variables muestra el resto
 @msg	the file's variable library couldn't be read: the Variables panel doesn't list it	no se pudo leer la biblioteca de variables del archivo: el panel Variables no la muestra
 @msg	a variable of unknown kind can't be bound to objects	una variable de tipo desconocido no se puede vincular a objetos
@@ -5971,6 +5984,7 @@ anchor	Points:	Puntos:
 	Character Color	Color de los caracteres
 	OpenType Features	Funciones OpenType
 	Stylistic Sets	Conjuntos estilísticos
+	Set {n}	Conjunto {n}
 @msg	features lists at most {max} tags	features admite como máximo {max} etiquetas
 @msg	unknown OpenType feature `{t}`	función OpenType desconocida `{t}`
 @msg	{label} must be a number above 0 and at most {max}	{label} debe ser un número mayor que 0 y como máximo {max}
