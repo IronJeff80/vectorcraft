@@ -52,9 +52,9 @@ pub use labels::{dim_label, dim_name, divider, field_label, label_row, link_labe
 pub(crate) use labels::{label_field, take_previous_label};
 pub(crate) use numeric::{ANY, round_to, set_bare_numbers_are_points, typed_unit};
 pub use numeric::{
-    SpinPick, mixed_field, mixed_field_named, num_field, num_field_live, num_field_named, num_field_within, opt_field, opt_field_named,
-    plain_field_live, range_field, range_field_live, range_field_named, range_field_stepped, size_field, size_field_named, slider, spin_field,
-    spin_field_auto, spin_field_auto_named, spin_field_named, spin_field_stops_named, spin_kerning, spin_plain, spin_plain_named,
+    SpinPick, mixed_field, mixed_field_named, num_field, num_field_live, num_field_named, num_field_within, num_field_within_empty, opt_field,
+    opt_field_named, plain_field_live, range_field, range_field_live, range_field_named, range_field_stepped, size_field, size_field_named, slider,
+    spin_field, spin_field_auto, spin_field_auto_named, spin_field_named, spin_field_stops_named, spin_kerning, spin_plain, spin_plain_named,
 };
 #[cfg(test)]
 use numeric::{decimal_point, field_number, share_of, spinner_step, step_through, step_to_multiple, within_a_millionth};
@@ -460,7 +460,8 @@ mod decimal_point_tests {
             let got = mm(text).unwrap_or(f64::NAN);
             assert!((got - want).abs() < 1e-9, "{text} is a decimal: {got}");
         }
-        assert_eq!(share_of(&decimal_point("12,5%"), 200.0), Some(25.0));
+        assert_eq!(share_of("12,5%", 200.0), Some(25.0));
+        assert_eq!(share_of("1,000%", 200.0), None, "1,000% reads as thousands: refused, not 1%");
     }
 }
 
@@ -485,6 +486,20 @@ mod field_number_tests {
         }
         assert_eq!(field_number("45*2°", "°", false), Some(90.0));
         assert_eq!(field_number("50% / 2", "%", false), Some(25.0));
+    }
+
+    /// A thousands comma is refused inside Kerning's pair of parentheses and before `%` or the
+    /// suffix, as it is in plain text, rather than read as a decimal comma (`(1,000)` as 1).
+    #[test]
+    fn a_thousands_comma_is_refused_inside_parentheses_and_before_a_suffix() {
+        for text in ["(1,000)", " (-1,000) ", "(12,500)"] {
+            assert_eq!(field_number(text, "", true), None, "{text}");
+        }
+        assert_eq!(field_number("1,000%", "%", false), None);
+        assert_eq!(field_number("1,000°", "°", false), None);
+        assert_eq!(field_number("(1,5)", "", true), Some(1.5));
+        assert_eq!(field_number("(0,125)", "", true), Some(0.125));
+        assert_eq!(field_number("12,5%", "%", false), Some(12.5));
     }
 }
 
