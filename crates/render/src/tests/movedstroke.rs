@@ -1,14 +1,16 @@
-//! A moved object draws its stroke from the outline made for it before it moved, moved by the same
+//! A moved object draws its stroke from the outline made for it before it moved, and a gradient
+//! along or across its stroke from the slices made for it before it moved, moved by the same
 //! offset, with the pixels a new renderer draws. A change other than a move outlines the stroke
-//! again.
+//! and makes the slices again.
 
-use vectorcraft_color::{Color, Gradient, GradientPaint, Paint};
+use vectorcraft_color::{Color, Gradient, GradientGeom, GradientKind, GradientPaint, GradientStop, Paint};
 use vectorcraft_doc::{
-    Appearance, AppearanceItem, ArrowAlign, Arrowhead, Dash, FillLayer, LineCap, LineJoin, Node, NodeId, NodeKind, StrokeLayer, WidthProfile,
+    Appearance, AppearanceItem, ArrowAlign, Arrowhead, Dash, FillLayer, LineCap, LineJoin, Node, NodeId, NodeKind, StrokeGradientMode, StrokeLayer,
+    WidthProfile,
 };
 use vectorcraft_geom::{PathData, Point, Vec2};
 
-use crate::renderer::{STROKES_OUTLINED, offset_between};
+use crate::renderer::{SLICES_MADE, STROKES_OUTLINED, anchors_moved, offset_between};
 use crate::*;
 
 const SIZE: u32 = 200;
@@ -246,16 +248,208 @@ fn another_width_profile_outlines_the_stroke_again() {
 
 #[test]
 fn a_small_edit_far_from_the_origin_is_not_taken_for_a_move() {
-    let far = Affine::translate((1e9, -1e9));
-    let was = far * zigzag(20);
+    for (far, edits) in [(1e9, &[0.5, 0.0005][..]), (1e15, &[0.5][..])] {
+        let was = Affine::translate((far, -far)) * zigzag(20);
+        let by = Vec2::new(0.25, 3.0);
+        let moved = Affine::translate(by) * was.clone();
+        assert_eq!(
+            offset_between(&was, &moved),
+            Some(moved.elements()[0].end_point().unwrap() - was.elements()[0].end_point().unwrap()),
+            "at {far}: moved"
+        );
+        let node = |bp: &BezPath| Node::path(NodeId(1), PathData::from_bezpath(bp), Appearance::default());
+        let mut moved_node = node(&was);
+        moved_node.transform(Affine::translate(by), true);
+        assert!(anchors_moved(&node(&was), &moved_node), "at {far}: anchors moved");
+        for &edit in edits {
+            let mut els = moved.elements().to_vec();
+            if let Some(kurbo::PathEl::LineTo(p)) = els.get_mut(2) {
+                p.y += edit;
+            }
+            let edited = BezPath::from_vec(els);
+            assert_eq!(offset_between(&was, &edited), None, "at {far}: an anchor moved by {edit} pt");
+            assert!(!anchors_moved(&node(&was), &node(&edited)), "at {far}: an anchor moved by {edit} pt, read from the anchors");
+            // The third segment is a curve: its first handle.
+            let mut els = moved.elements().to_vec();
+            if let Some(kurbo::PathEl::CurveTo(h, _, _)) = els.get_mut(3) {
+                h.x += edit;
+            }
+            assert!(!anchors_moved(&node(&was), &node(&BezPath::from_vec(els))), "at {far}: a handle moved by {edit} pt");
+        }
+    }
+}
+
+#[test]
+fn an_edit_near_the_origin_is_not_taken_for_a_move_when_the_path_starts_far_from_it() {
+    // A subpath at 1e16 pt, where coordinates step by 2 pt, then one near the origin.
+    let mut was = BezPath::new();
+    was.move_to((1e16, 1e16));
+    was.line_to((1e16 + 64.0, 1e16));
+    was.extend(zigzag(20));
     let by = Vec2::new(0.25, 3.0);
     let moved = Affine::translate(by) * was.clone();
-    assert_eq!(offset_between(&was, &moved), Some(moved.elements()[0].end_point().unwrap() - was.elements()[0].end_point().unwrap()));
-    let mut els = moved.elements().to_vec();
-    if let Some(kurbo::PathEl::LineTo(p)) = els.get_mut(2) {
-        p.y += 0.0005;
+    assert_eq!(offset_between(&was, &moved), Some(by), "moved: the offset of the subpath near the origin");
+    let node = |bp: &BezPath| Node::path(NodeId(1), PathData::from_bezpath(bp), Appearance::default());
+    let mut moved_node = node(&was);
+    moved_node.transform(Affine::translate(by), true);
+    assert!(anchors_moved(&node(&was), &moved_node), "anchors moved");
+    // The first and the third anchor of the subpath near the origin.
+    for at in [2, 4] {
+        for edit in [1.0, 0.5] {
+            let mut els = moved.elements().to_vec();
+            if let Some(kurbo::PathEl::MoveTo(p) | kurbo::PathEl::LineTo(p)) = els.get_mut(at) {
+                p.y += edit;
+            }
+            let edited = BezPath::from_vec(els);
+            assert_eq!(offset_between(&was, &edited), None, "element {at} moved by {edit} pt");
+            assert!(!anchors_moved(&node(&was), &node(&edited)), "element {at} moved by {edit} pt, read from the anchors");
+        }
     }
-    assert_eq!(offset_between(&was, &BezPath::from_vec(els)), None, "an anchor moved by 0.0005 pt");
+}
+
+#[test]
+fn points_each_near_the_one_before_are_checked_against_one_offset() {
+    let path = |xs: [f64; 3]| {
+        let mut bp = BezPath::new();
+        bp.move_to((xs[0], 0.0));
+        bp.line_to((xs[1], 0.0));
+        bp.line_to((xs[2], 0.0));
+        bp
+    };
+    let node = |bp: &BezPath| Node::path(NodeId(1), PathData::from_bezpath(bp), Appearance::default());
+    let was = path([1e16, 1e15, 1e14]);
+    // Coordinates step by 2, 0.125 and 0.015625 pt there.
+    let moved = Affine::translate((6.25, 0.0)) * was.clone();
+    assert_eq!(offset_between(&was, &moved), Some(Vec2::new(6.25, 0.0)), "moved");
+    assert!(anchors_moved(&node(&was), &node(&moved)), "anchors moved");
+    // Each point is within rounding of the one before it, but the first did not move.
+    let edited = path([1e16, 1e15 + 6.0, 1e14 + 6.25]);
+    assert_eq!(offset_between(&was, &edited), None);
+    assert!(!anchors_moved(&node(&was), &node(&edited)));
+}
+
+/// How many sets of gradient stroke slices the renderers on this thread have made.
+fn sliced() -> usize {
+    SLICES_MADE.with(std::cell::Cell::get)
+}
+
+/// A stroke of `width` whose black to blue gradient runs `mode` (along or across the path).
+fn gradient_stroke(width: f64, mode: StrokeGradientMode) -> StrokeLayer {
+    let g = Gradient::new(GradientKind::Linear, vec![GradientStop::new(0.0, Color::BLACK), GradientStop::new(1.0, Color::rgb(0.0, 0.0, 1.0))]);
+    let mut st = stroke(width, LineJoin::Round, LineCap::Butt);
+    st.paint = Paint::Gradient(Box::new(GradientPaint::new(g)));
+    st.gradient_mode = mode;
+    st
+}
+
+/// The documents of the gradient cases: open and closed paths, short and long (their line outlined
+/// near the view), each with a gradient along and across the stroke, with the point the view is
+/// centered on.
+fn gradient_cases() -> Vec<(String, (Document, NodeId), Point)> {
+    let mut out = vec![];
+    for mode in [StrokeGradientMode::Along, StrokeGradientMode::Across] {
+        let only = || vec![AppearanceItem::Stroke(gradient_stroke(12.0, mode))];
+        out.push((format!("a short open path, {mode:?}"), doc(&zigzag(20), only()), Point::new(70.0, 15.0)));
+        out.push((format!("a short closed path, {mode:?}"), doc(&ring(40, 80.0), only()), Point::new(80.0, 0.0)));
+        out.push((format!("a long open path, {mode:?}"), doc(&zigzag(3000), only()), Point::new(12_000.0, 15.0)));
+        out.push((format!("a long closed path, {mode:?}"), doc(&ring(4000, 5000.0), only()), Point::new(0.0, 5000.0)));
+        // A placed gradient, whose start and end a move moves too.
+        let mut st = gradient_stroke(12.0, mode);
+        if let Paint::Gradient(g) = &mut st.paint {
+            g.geom = Some(GradientGeom { start: Point::new(0.0, 0.0), end: Point::new(140.0, 30.0), aspect: 1.0, focal: None });
+            g.angle = 12.0;
+        }
+        out.push((
+            format!("a short open path with a placed gradient, {mode:?}"),
+            doc(&zigzag(20), vec![AppearanceItem::Stroke(st)]),
+            Point::new(70.0, 15.0),
+        ));
+    }
+    out
+}
+
+/// Draws `d` after `change` with `r` and with a new renderer, checks that the two draw the same
+/// pixels, and returns how many sets of slices `r` made.
+fn after_sliced(r: &mut Renderer, d: &mut Document, id: NodeId, at: Point, change: impl FnOnce(&mut Node)) -> usize {
+    change(d.node_mut(id).unwrap());
+    let before = sliced();
+    let img = render(r, d, at);
+    let made = sliced() - before;
+    assert!(img.pixels == render(&mut Renderer::new(), d, at).pixels, "the same pixels as a new renderer");
+    assert!(img.pixels.chunks(4).any(|p| p[0] < 128), "the stroke shows");
+    made
+}
+
+/// Sets the color of the last stop of each stroke's gradient in `n`.
+fn recolor(n: &mut Node, color: Color) {
+    restroke(n, |s| {
+        if let Paint::Gradient(g) = &mut s.paint
+            && let Some(stop) = g.gradient.stops.last_mut()
+        {
+            stop.color = color;
+        }
+    })
+}
+
+#[test]
+fn a_moved_path_draws_its_gradient_stroke_from_the_slices_made_before() {
+    for (what, (mut d, id), at) in gradient_cases() {
+        let mut r = Renderer::new();
+        render(&mut r, &d, at);
+        for by in [Vec2::new(1.0, 0.0), Vec2::new(0.25, -0.5), Vec2::new(-3.0, 2.0), Vec2::new(0.1, 0.0)] {
+            let made = after_sliced(&mut r, &mut d, id, at, |n| n.transform(Affine::translate(by), true));
+            assert_eq!(made, 0, "{what}, moved by {by:?}: no new slices");
+        }
+        assert_eq!(after_sliced(&mut r, &mut d, id, at, |_| {}), 0, "{what}: drawn again after the moves");
+    }
+}
+
+#[test]
+fn a_path_changed_otherwise_makes_its_gradient_stroke_slices_again() {
+    let edit_anchor = |n: &mut Node| {
+        let NodeKind::Path { path, .. } = &mut n.kind else {
+            panic!("not a path");
+        };
+        let mut els = path.to_bezpath().elements().to_vec();
+        if let Some(kurbo::PathEl::LineTo(p)) = els.get_mut(2) {
+            *p += Vec2::new(0.0, 3.0);
+        }
+        *path = PathData::from_bezpath(&BezPath::from_vec(els));
+    };
+    for (what, (mut d, id), at) in gradient_cases() {
+        let mut r = Renderer::new();
+        render(&mut r, &d, at);
+        let nudge = |n: &mut Node| n.transform(Affine::translate((0.5, 0.0)), true);
+        assert_eq!(after_sliced(&mut r, &mut d, id, at, nudge), 0, "{what}: moved");
+        assert_eq!(after_sliced(&mut r, &mut d, id, at, edit_anchor), 1, "{what}: an anchor moved");
+        // A move after the edit uses the slices made for the edited path.
+        assert_eq!(after_sliced(&mut r, &mut d, id, at, nudge), 0, "{what}: moved after the edit");
+        // Scaled and rotated about the view's center, stroke weights kept.
+        assert_eq!(after_sliced(&mut r, &mut d, id, at, |n| n.transform(Affine::scale_about(1.001, at), false)), 1, "{what}: scaled");
+        assert_eq!(after_sliced(&mut r, &mut d, id, at, |n| n.transform(Affine::rotate_about(0.001, at), false)), 1, "{what}: rotated");
+        assert_eq!(after_sliced(&mut r, &mut d, id, at, |n| recolor(n, Color::rgb(0.0, 0.5, 0.0))), 1, "{what}: another gradient");
+        // Moved with the gradient changed back: the slices of that gradient made before are not used.
+        assert_eq!(
+            after_sliced(&mut r, &mut d, id, at, |n| {
+                recolor(n, Color::rgb(0.0, 0.0, 1.0));
+                nudge(n);
+            }),
+            1,
+            "{what}: the gradient changed back and moved"
+        );
+        // Moved with the gradient laid the other way.
+        let turn = |s: &mut StrokeLayer| {
+            s.gradient_mode = if s.gradient_mode == StrokeGradientMode::Along { StrokeGradientMode::Across } else { StrokeGradientMode::Along }
+        };
+        assert_eq!(
+            after_sliced(&mut r, &mut d, id, at, |n| {
+                restroke(n, turn);
+                nudge(n);
+            }),
+            1,
+            "{what}: the gradient laid the other way and moved"
+        );
+    }
 }
 
 #[test]

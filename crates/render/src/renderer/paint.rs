@@ -3,7 +3,7 @@ use super::{
     Slices, StrokeAlign, StrokeEntry, StrokeLayer, TextGeom, blend_mode, drawable, effects, fill_rule, fx, kurbo, lru, owns_stroke, peniko,
     rects_overlap,
 };
-use crate::frame::{MovedKey, StrokeKey};
+use crate::frame::{MovedKey, MovedSliceKey, StrokeKey};
 use crate::paint;
 
 impl Renderer {
@@ -136,7 +136,7 @@ impl Renderer {
             ctx.set_fill_rule(peniko::Fill::NonZero);
             match self.cached_stroke(f, chars, bp, &pieces.line, st, width) {
                 Some(o) => ctx.fill_path(&o),
-                None => ctx.fill_path(&effects::stroke::line_outline(&pieces.line, st, width, f.px * 0.25)),
+                None => ctx.fill_path(&crate::stroke::outline(&pieces.line, st, width, f.px * 0.25)),
             }
             for head in &pieces.heads {
                 ctx.fill_path(&head.outline);
@@ -164,7 +164,9 @@ impl Renderer {
     /// Paint the line and arrowheads (`pieces`) of stroke `st` of `bp` (filled with `rule`) with
     /// its gradient `g` laid along or across the path ([`effects::stroke::gradient_slices`]). Each
     /// piece clips the slices, grown a pixel into each other and each replacing what it covers, so
-    /// neighbours meet without seams and translucent colours paint once.
+    /// neighbours meet without seams and translucent colours paint once. The slices of a stroke
+    /// of `self.cur` are kept in `stroke_slices`, and a moved copy of the object draws the slices
+    /// made before it moved, moved by the same offset ([`Self::moved_slices`]).
     #[allow(clippy::too_many_arguments)]
     fn fill_path_gradient(
         &mut self,
@@ -180,6 +182,8 @@ impl Renderer {
     ) {
         let level = (f.px * 0.25).log2().floor() as i32;
         let make = || -> Slices {
+            #[cfg(test)]
+            SLICES_MADE.with(|n| n.set(n.get() + 1));
             let tol = 2f64.powi(level);
             // Reach a pixel past the stroke, so its antialiased edge has colour under it.
             let slices = effects::stroke::gradient_slices(bp, rule, st, tol, f.px + tol, f.px);
@@ -193,26 +197,41 @@ impl Renderer {
                     .collect(),
             )
         };
-        let slices = match self.cur.clone().filter(|n| owns_stroke(n, st)) {
+        let (slices, by) = match self.cur.clone().filter(|n| owns_stroke(n, st)) {
             Some(node) => {
                 let key = (self.stroke_owner(Arc::as_ptr(&node) as usize), st as *const StrokeLayer as usize, level);
                 match self.stroke_slices.get_mut(&key) {
                     Some(e) if Arc::ptr_eq(&e.node, &node) => {
                         e.stamp = self.stamp;
-                        e.slices.clone()
+                        (e.slices.clone(), e.by)
                     }
                     _ => {
-                        let slices = make();
-                        self.stroke_slices.insert(key, SliceEntry { node, slices: slices.clone(), stamp: self.stamp });
-                        slices
+                        // Under its object's id, the stroke's place and the tolerance level, the key
+                        // of the stroke's latest slices is kept, except for art made again in every
+                        // frame.
+                        let place = node.appearance.items.iter().position(|i| matches!(i, AppearanceItem::Stroke(s) if std::ptr::eq(s, st)));
+                        let moved = place.filter(|_| !self.made_again).map(|place| (node.id.0, place, level));
+                        let kept = moved.and_then(|mk| self.moved_slices(mk, &node, st, rule, bp));
+                        let (made, slices, by, own) = match kept {
+                            Some((made, slices, by)) => (made, slices, by, true),
+                            None => {
+                                let own = moved.is_some() && self.own_path(&node, bp);
+                                (node.clone(), make(), kurbo::Vec2::ZERO, own)
+                            }
+                        };
+                        self.stroke_slices.insert(key, SliceEntry { node, made, slices: slices.clone(), by, rule, own, stamp: self.stamp });
+                        if let Some(mk) = moved {
+                            self.moved_slices.insert(mk, key);
+                        }
+                        (slices, by)
                     }
                 }
             }
-            None => make(),
+            None => (make(), kurbo::Vec2::ZERO),
         };
         let line = match self.cached_stroke(f, chars, bp, &pieces.line, st, width) {
             Some(o) => o,
-            None => Arc::new(effects::stroke::line_outline(&pieces.line, st, width, f.px * 0.25)),
+            None => Arc::new(crate::stroke::outline(&pieces.line, st, width, f.px * 0.25)),
         };
         ctx.set_fill_rule(peniko::Fill::NonZero);
         for clip in std::iter::once(&*line).chain(pieces.heads.iter().map(|h| &h.outline)) {
@@ -223,8 +242,18 @@ impl Renderer {
             ctx.push_clip_layer(clip);
             ctx.set_blend_mode(BlendMode::new(Mix::Normal, Compose::Copy));
             for (shape, paint, b) in slices.iter() {
-                if rects_overlap(*b, cb) && paint::set_paint(ctx, paint, *b, f) {
-                    ctx.fill_path(shape);
+                let b = *b + by;
+                if !rects_overlap(b, cb) {
+                    continue;
+                }
+                if by == kurbo::Vec2::ZERO {
+                    if paint::set_paint(ctx, paint, b, f) {
+                        ctx.fill_path(shape);
+                    }
+                } else if paint::set_paint(ctx, &moved_paint(paint, by), b, f) {
+                    let mut shape = shape.clone();
+                    shape.apply_affine(Affine::translate(by));
+                    ctx.fill_path(&shape);
                 }
             }
             ctx.set_blend_mode(BlendMode::default());
@@ -248,7 +277,7 @@ impl Renderer {
         width: f64,
     ) -> Option<Arc<BezPath>> {
         let level = (f.px * 0.25).log2().floor() as i32;
-        let expand = || Arc::new(effects::stroke::line_outline(line, st, width, 2f64.powi(level)));
+        let expand = || Arc::new(crate::stroke::outline(line, st, width, 2f64.powi(level)));
         if let Some((g, run)) = chars {
             let key = (self.stroke_owner(Arc::as_ptr(g) as usize), run, width.to_bits(), level);
             if let Some((kept, outline)) = self.char_strokes.get(&key, self.stamp)
@@ -303,7 +332,7 @@ impl Renderer {
             .then(|| crop_line(line, region, crop_reach(st, width, f.px, tol), width))
             .flatten();
         let (outline, crop) = match cropped {
-            Some(part) => (Arc::new(effects::stroke::line_outline(&part, st, width, tol)), Some(region)),
+            Some(part) => (Arc::new(crate::stroke::outline(&part, st, width, tol)), Some(region)),
             None => (expand(), None),
         };
         self.keep_stroke(key, StrokeEntry { node, outline: outline.clone(), stamp: self.stamp, crop, own }, moved);
@@ -364,6 +393,49 @@ impl Renderer {
         Some((Arc::new(outline), crop))
     }
 
+    /// The slices of stroke `st` of `node` along `bp` (filled with `rule`), made from the latest
+    /// slices kept under `mk` ([`MovedSliceKey`]) when those were made along their object's own
+    /// path, their object is `node` changed, its stroke there differs from `st` at most in where
+    /// its gradient is placed, its fill rule is `rule`, and `bp` is its path moved (to within
+    /// rounding): the node they were made from, those slices, and the offset from that node to
+    /// `bp`, which the slices are drawn moved by. The anchors of the two objects are compared first
+    /// ([`anchors_moved`]), and the earlier path is made again from its object only when they
+    /// match. `None` when there are no such slices.
+    fn moved_slices(
+        &self,
+        mk: MovedSliceKey,
+        node: &Node,
+        st: &StrokeLayer,
+        rule: FillRule,
+        bp: &BezPath,
+    ) -> Option<(Arc<Node>, Slices, kurbo::Vec2)> {
+        let e = self.stroke_slices.get(self.moved_slices.get(&mk)?)?;
+        if !e.own || e.rule != rule || e.made.id != node.id {
+            return None;
+        }
+        let Some(AppearanceItem::Stroke(old)) = e.made.appearance.items.get(mk.1) else {
+            return None;
+        };
+        // The slices take only the gradient's stops and kind, not where it is placed, which a move
+        // moves too.
+        let unplaced = |s: &StrokeLayer| {
+            let mut s = s.clone();
+            if let vectorcraft_color::Paint::Gradient(g) = &mut s.paint {
+                g.geom = None;
+                g.angle = 0.0;
+            }
+            s
+        };
+        if !std::ptr::eq(old, st) && unplaced(old) != unplaced(st) {
+            return None;
+        }
+        if !anchors_moved(&e.made, node) {
+            return None;
+        }
+        let by = offset_between(&e.made.stroke_path()?, bp)?;
+        Some((e.made.clone(), e.slices.clone(), by))
+    }
+
     /// What the `strokes`, `char_strokes` and `stroke_slices` keys hold for a stroke owner at
     /// `address` (`self.cur` or kept glyph geometry): the address, or 0 while art made again in
     /// every frame is drawn ([`Self::made_again`]).
@@ -382,73 +454,119 @@ thread_local! {
     pub(crate) static CROP_STROKES: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
     /// How many stroke outlines of nodes [`Renderer::cached_stroke`] has made on this thread.
     pub(crate) static STROKES_OUTLINED: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+    /// How many sets of gradient stroke slices [`Renderer::fill_path_gradient`] has made on this
+    /// thread.
+    pub(crate) static SLICES_MADE: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
 }
 
-/// The offset that moves path `was` onto path `now`, when `now` is `was` moved (each coordinate
-/// within a few units in the last place of the moved one, the error that adding the offset and
-/// measuring it from the first points can make). `None` otherwise, and for an empty path.
+/// Paint `p` of a slice ([`Slices`]) moved by `by`: a gradient's start, end and focal point moved.
+fn moved_paint(p: &vectorcraft_color::Paint, by: kurbo::Vec2) -> vectorcraft_color::Paint {
+    let mut p = p.clone();
+    if let vectorcraft_color::Paint::Gradient(g) = &mut p
+        && let Some(geom) = &mut g.geom
+    {
+        geom.start += by;
+        geom.end += by;
+        if let Some(focal) = &mut geom.focal {
+            *focal += by;
+        }
+    }
+    p
+}
+
+/// The offset that moves path `was` onto path `now`, when `now` is `was` moved (each point within
+/// the rounding that [`Offset::holds`] allows). `None` otherwise, and for an empty path.
 pub(crate) fn offset_between(was: &BezPath, now: &BezPath) -> Option<kurbo::Vec2> {
-    use kurbo::PathEl;
-    let (was, now) = (was.elements(), now.elements());
-    if was.len() != now.len() {
+    if !matches!(was.elements().first(), Some(kurbo::PathEl::MoveTo(_))) {
         return None;
     }
-    let (by, first) = match (was.first()?, now.first()?) {
-        (PathEl::MoveTo(a), PathEl::MoveTo(b)) => first_offset(*a, *b)?,
-        _ => return None,
-    };
-    let near = |a: &kurbo::Point, b: &kurbo::Point| moved_by(*a, *b, by, first);
-    let moved = was.iter().zip(now).all(|pair| match pair {
-        (PathEl::MoveTo(a), PathEl::MoveTo(b)) | (PathEl::LineTo(a), PathEl::LineTo(b)) => near(a, b),
-        (PathEl::QuadTo(a0, a1), PathEl::QuadTo(b0, b1)) => near(a0, b0) && near(a1, b1),
-        (PathEl::CurveTo(a0, a1, a2), PathEl::CurveTo(b0, b1, b2)) => near(a0, b0) && near(a1, b1) && near(a2, b2),
-        (PathEl::ClosePath, PathEl::ClosePath) => true,
-        _ => false,
-    });
-    moved.then_some(by)
+    let mut offset = Offset::new();
+    (path_pairs(was, now, |a, b| offset.takes(a, b)) && path_pairs(was, now, |a, b| offset.holds(a, b))).then(|| offset.by())
 }
 
-/// The offset from first point `a` to first point `b` and the largest size of their coordinates,
-/// which [`moved_by`] measures its tolerance with. `None` when the offset is not finite.
-fn first_offset(a: kurbo::Point, b: kurbo::Point) -> Option<(kurbo::Vec2, f64)> {
-    let by = b - a;
-    by.is_finite().then(|| (by, a.x.abs().max(b.x.abs()).max(a.y.abs()).max(b.y.abs())))
+/// Whether `was` and `now` have the same elements, and `f` holds for each pair of their points.
+/// Stops at the first pair for which `f` does not hold.
+fn path_pairs(was: &BezPath, now: &BezPath, mut f: impl FnMut(kurbo::Point, kurbo::Point) -> bool) -> bool {
+    use kurbo::PathEl;
+    let (was, now) = (was.elements(), now.elements());
+    was.len() == now.len()
+        && was.iter().zip(now).all(|pair| match pair {
+            (PathEl::MoveTo(a), PathEl::MoveTo(b)) | (PathEl::LineTo(a), PathEl::LineTo(b)) => f(*a, *b),
+            (PathEl::QuadTo(a0, a1), PathEl::QuadTo(b0, b1)) => f(*a0, *b0) && f(*a1, *b1),
+            (PathEl::CurveTo(a0, a1, a2), PathEl::CurveTo(b0, b1, b2)) => f(*a0, *b0) && f(*a1, *b1) && f(*a2, *b2),
+            (PathEl::ClosePath, PathEl::ClosePath) => true,
+            _ => false,
+        })
 }
 
-/// Whether `b` is `a` moved by `by`, each coordinate within a few units in the last place (see
-/// [`offset_between`]; `first` from [`first_offset`]).
-fn moved_by(a: kurbo::Point, b: kurbo::Point, by: kurbo::Vec2, first: f64) -> bool {
-    let close = |a: f64, by: f64, b: f64| (a + by - b).abs() <= 4.0 * f64::EPSILON * (a.abs() + b.abs() + first);
-    close(a.x, by.x, b.x) && close(a.y, by.y, b.y)
+/// One offset between pairs of points. Pairs are read once with [`Offset::takes`], which measures
+/// the offset on each axis at the pair with the smallest coordinates on that axis, and once more
+/// with [`Offset::holds`], which checks every pair against that offset.
+struct Offset {
+    by: [f64; 2],
+    size: [f64; 2],
+}
+
+impl Offset {
+    fn new() -> Self {
+        Self { by: [0.0; 2], size: [f64::INFINITY; 2] }
+    }
+
+    /// Whether `b` is `a` moved by the offset measured so far, on each axis within 3 units in the
+    /// last place of the larger of the pair's coordinates and those of the pair the offset was
+    /// measured at. A pair with smaller coordinates than any before it on an axis then measures the
+    /// offset on that axis.
+    fn takes(&mut self, a: kurbo::Point, b: kurbo::Point) -> bool {
+        [(a.x, b.x), (a.y, b.y)].into_iter().zip(self.by.iter_mut().zip(&mut self.size)).all(|((a, b), (by, size))| {
+            let at = a.abs().max(b.abs());
+            if at.is_nan() || at >= *size {
+                return (b - a - *by).abs() <= 3.0 * ulp(at);
+            }
+            let near = size.is_infinite() || (b - a - *by).abs() <= 3.0 * ulp(*size);
+            (*by, *size) = (b - a, at);
+            near && by.is_finite()
+        })
+    }
+
+    /// Whether `b` is `a` moved by the offset, on each axis within 3 units in the last place of the
+    /// larger of the pair's coordinates: the most that rounding `b`, the pair the offset was measured
+    /// at (whose coordinates are no larger), and the two offsets can make together.
+    fn holds(&self, a: kurbo::Point, b: kurbo::Point) -> bool {
+        let near = |a: f64, b: f64, by: f64| (b - a - by).abs() <= 3.0 * ulp(a.abs().max(b.abs()));
+        near(a.x, b.x, self.by[0]) && near(a.y, b.y, self.by[1])
+    }
+
+    fn by(&self) -> kurbo::Vec2 {
+        kurbo::Vec2::new(self.by[0], self.by[1])
+    }
+}
+
+/// The distance from `x`, which is 0 or more, to the next larger `f64`.
+fn ulp(x: f64) -> f64 {
+    f64::from_bits(x.to_bits() + 1) - x
 }
 
 /// Whether the anchors and handles of path `now` are those of path `was` moved by one offset,
 /// measured as [`offset_between`] measures it, with the same subpaths, anchor counts and closed
 /// subpaths. It reads the anchors without making either path ([`Node::stroke_path`]), and stops at
 /// the first anchor that differs. `false` for objects other than paths.
-fn anchors_moved(was: &Node, now: &Node) -> bool {
+pub(crate) fn anchors_moved(was: &Node, now: &Node) -> bool {
     let (vectorcraft_doc::NodeKind::Path { path: was, .. }, vectorcraft_doc::NodeKind::Path { path: now, .. }) = (&was.kind, &now.kind) else {
         return false;
     };
-    if was.subpaths.len() != now.subpaths.len() {
-        return false;
-    }
-    let mut offset = None;
-    for (a, b) in was.subpaths.iter().zip(&now.subpaths) {
-        if a.closed != b.closed || a.anchors.len() != b.anchors.len() {
-            return false;
-        }
-        for (a, b) in a.anchors.iter().zip(&b.anchors) {
-            if offset.is_none() {
-                offset = first_offset(a.p, b.p);
-            }
-            let Some((by, first)) = offset else { return false };
-            if !(moved_by(a.p, b.p, by, first) && moved_by(a.h_in, b.h_in, by, first) && moved_by(a.h_out, b.h_out, by, first)) {
-                return false;
-            }
-        }
-    }
-    true
+    let mut offset = Offset::new();
+    anchor_pairs(was, now, |a, b| offset.takes(a, b)) && anchor_pairs(was, now, |a, b| offset.holds(a, b))
+}
+
+/// Whether `was` and `now` have the same subpaths, anchor counts and closed subpaths, and `f` holds
+/// for each pair of their anchors and handles. Stops at the first pair for which `f` does not hold.
+fn anchor_pairs(was: &vectorcraft_geom::PathData, now: &vectorcraft_geom::PathData, mut f: impl FnMut(kurbo::Point, kurbo::Point) -> bool) -> bool {
+    was.subpaths.len() == now.subpaths.len()
+        && was.subpaths.iter().zip(&now.subpaths).all(|(a, b)| {
+            a.closed == b.closed
+                && a.anchors.len() == b.anchors.len()
+                && a.anchors.iter().zip(&b.anchors).all(|(a, b)| f(a.p, b.p) && f(a.h_in, b.h_in) && f(a.h_out, b.h_out))
+        })
 }
 
 fn crops() -> bool {
