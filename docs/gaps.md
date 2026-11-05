@@ -1,6 +1,6 @@
 # Gaps
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-11-05 · **Change:** minor (Compound Shapes add-on, beyond Illustrator; scores and estimates unchanged; Contour add-on, beyond Illustrator; scores and estimates unchanged; a slow first frame is waited for instead of restarting without the graphics adapter, and the menu bar no longer waits for the installed fonts' scan; scores and estimates unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
+> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-11-05 · **Change:** minor (a document's first frame renders on the render worker, so opening a heavy file no longer freezes the window; scores and estimates unchanged; large images in CMYK documents are shrunk before they are separated into ink planes (#4155); scores and estimates unchanged; `.ai` paths with a Calligraphic brush open brushed, with the 6D Art Pen's channels, and Windows reads the pen's tilt and barrel rotation, #372; scores and estimates unchanged; Compound Shapes add-on, beyond Illustrator; scores and estimates unchanged; Contour add-on, beyond Illustrator; scores and estimates unchanged; a slow first frame is waited for instead of restarting without the graphics adapter, and the menu bar no longer waits for the installed fonts' scan; scores and estimates unchanged) · **Target:** Adobe Illustrator 2026 (30.x)
 
 ## Feature submission evidence
 
@@ -36,6 +36,7 @@ Artboard Options forwards the active Artboard tool's Scale Artwork with Artboard
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-05 | minor | G9, G14: `.ai` paths with a Calligraphic brush open brushed (the brush on the stroke, at its weight) where the object's settings are the brush's own, and the brush's Tilt, Bearing and Rotation codes come in as those channels; Windows reads the pen's tilt and barrel rotation from Windows Ink (#372). Checked against a user's file of 6D Art Pen strokes, used locally; not tried with a pen. Scores and estimates unchanged. |
 | 2026-11-04 | minor | Contour add-on (beyond Illustrator): drag away from a selected shape's edge to grow a live copy of it, or toward the inside to shrink it; the copy carries a live Offset Path effect, so it stays editable until Bake (Expand Appearance), a second drag changes the same Contour instead of nesting one, and a floating bar sets the distance and the Sharp, Round or Square corners. `addon.contour.set` is the command behind it. It is a built-in add-on: Object › Plug-ins › Contour, and its own heading in All Tools, with no default shortcut or toolbar slot. A VectorCraft design built on Offset Path; no other application was inspected. Scores and estimates unchanged. |
 | 2026-11-04 | minor | Contour tool (beyond Illustrator): drag away from a selected shape's edge to grow a live copy of it, or toward the inside to shrink it; the copy carries a live Offset Path effect, so it stays editable until Bake (Expand Appearance), a second drag changes the same Contour instead of nesting one, and a floating bar sets the distance and the Sharp, Round or Square corners. `object.contour` is the command behind it. A VectorCraft design built on Offset Path; no other application was inspected. Scores and estimates unchanged. |
 | 2026-11-05 | minor | G12: Hyphenation › Default Language sets the language of new type unless Document Setup chose one, stored as a tag; each run hyphenates in its own language, English only so far, so 2 Preferences options stay unused (#394) |
@@ -182,8 +183,14 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 - **Done (2026-10-16):** EPS legacy mesh corners and vector opacity masks retained; winding-declared compound member groups keep shared paint. Raster print-page minification no longer causes a false editing-data fallback; comparison limits remain unchanged. Synthetic regressions cover damage and missing artwork. This narrows G9; scores and estimates unchanged.
 
+- **Done (2026-11-05):** paths with a Calligraphic brush open as paths with the brush on their stroke, at their
+  weight, where the object's brush settings are the brush's own and its angle is on the page (#372, from a
+  user's file of 6D Art Pen strokes: all 455 of its brushed styles), and a Calligraphic brush's Tilt, Bearing and
+  Rotation (codes 4, 5 and 6) come in as those channels instead of Random. Others keep their drawn look.
+
 - **Missing:** faithful layer and group structure from the editing data in real files (#951: 109 layers instead
-  of 14), open speed on large files (#758), live effects, brushes and symbols as live objects (#637; plain art styles read Drop Shadow, Outer Glow and Feather as live effects; pattern fills and global colours are read since #1025, placed (linked) files since #1264). Writing Illustrator's own editing data is out of scope
+  of 14), open speed on large files (#758), live effects, Scatter, Art, Pattern and Bristle brushes on paths, a
+  path's own Calligraphic brush settings, and symbols as live objects (#637; plain art styles read Drop Shadow, Outer Glow and Feather as live effects; pattern fills and global colours are read since #1025, placed (linked) files since #1264). Writing Illustrator's own editing data is out of scope
   (undocumented): a PDF-compatible `.ai` opens in Illustrator 2018 without its layers and groups (#868). Save As
   `.ai` › Version: Legacy (version 7) writes the PostScript form from the published version 7 specification
   instead, keeping layers (names, order, visibility, lock), groups, compound paths, clipping groups, gradients and
@@ -548,9 +555,11 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
   The pen's eraser end on Windows with Windows Ink, read from the pen's pointer messages; not yet tried with a
   pen. On Linux under X11 and XWayland and on macOS, the Paintbrush records a pen's tilt, bearing and barrel
   rotation, and Calligraphic and Scatter brushes vary with them (#764; not yet tried on a Mac with a tablet).
+  On Windows with Windows Ink, the pen's tilt and barrel rotation where the pen reports them (#372; not yet
+  tried with a pen).
 - **Missing:** pen pressure on native Wayland (#491, #764) — winit 0.30 reports none there; tilt, bearing and
-  barrel rotation on Windows, native Wayland and the web, and for Art, Pattern and Bristle brushes (6D Art Pen,
-  #372); the eraser end on native Wayland.
+  barrel rotation on native Wayland and the web, and for Art, Pattern and Bristle brushes (6D Art Pen, #372);
+  the eraser end on native Wayland.
 - **Estimate:** 4–10 h, partly waiting on winit 0.31; needs pen hardware to verify.
 
 ## G5 Brushes, symbols and libraries
@@ -640,6 +649,14 @@ from G14 and the budget run of G15: **~170–270 h** one agent, ~50–80 h wall 
 
 ## G15 Performance budgets and a GPU renderer
 
+- **Improved (#4155):** a document's first frame renders on the render worker, not the UI thread: opening the file
+  of #4155 kept the UI thread busy for 8.7 s at a stretch, now at most 64 ms, and a 50,000-path SVG 1.4 s, now
+  62 ms (measured in the app, M3 Pro, one run each). A light document's frame, ready within 16 ms, still shows at once.
+- **Improved (#4155):** the canvas shrinks a reduced image to the mip it draws before separating it into ink planes,
+  colorizing it or proofing it, so that work is done at the size the image shows, not at its own. On the
+  141-megapixel image of #4155 the first frame went from 9.2 s to 1.6 s and the sharp frame after a pan from 3.9 s
+  to 8 ms (measured in the app, M3 Pro, one run each). Still to do: at 100% zoom or more an image is still separated
+  whole; tiles would bound that by the view.
 - **Improved (2026-11-02):** the renderer keeps a compound path's assembled path with the node, as it keeps a plain
   path's, instead of assembling its members again in every frame; the path is assembled into a buffer sized up front.
   Unused geometry entries are dropped after a few frames however few there are (before, only past 1,024 entries), so
@@ -750,6 +767,8 @@ trap, and the defaults (0.25 pt, 100%, 40%) are VectorCraft's own, the pages giv
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-11-05 | minor | G15: a document's first frame renders on the render worker (#4155); the longest UI-thread stall opening that file went from 8.7 s to 64 ms. Estimate unchanged. |
+| 2026-11-05 | minor | G15: a reduced image is shrunk before it is separated into ink planes (#4155); first frame 9.2 s → 1.6 s, sharp frame after a pan 3.9 s → 8 ms on that file. Estimate unchanged. |
 | 2026-11-05 | minor | G7: document tabs are dragged along the tab strip to reorder them (`document.move`, #5663). Estimate unchanged. |
 | 2026-11-02 | minor | G15: the renderer keeps a compound path's assembled path between frames and drops unused geometry entries after a few frames however few there are. Estimate unchanged. |
 | 2026-11-02 | minor | G15: hit testing culls paths and compound paths by their control points' box and tests a compound path's outline and fill against only its members near the click; the same objects are hit. Estimate unchanged. |

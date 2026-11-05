@@ -2338,7 +2338,8 @@ its bounds.
 the styles unlinked from swatches, with their opacity, blend mode, isolate and knockout, and the patterns they paint
 with); without `path` it returns `{data}`, and `user: true` saves into the user library folder of the desktop app
 (category `user`, User Defined). `graphicStyle.loadLibrary {path? | data? | dataBase64?, name?}` loads a `.vcstyles`
-file, or another document's graphic styles, as a library to add from; a file in the user library folder, or a file
+file, or another document's graphic styles, as a library to add from (a `.ai` or EPS whose editing data holds graphic
+styles and no layers gives the styles of its style list, in that order); a file in the user library folder, or a file
 with the same extension and bytes as one there, loads as that User Defined library.
 
 ## Symbol libraries
@@ -4163,16 +4164,21 @@ comes back to the front, following the same preference. `links.check` reports ev
 another file (or each at the file of its name in a folder); images keep their bounds, one undo step each. A PNG, JPEG,
 GIF or WebP file whose pixels can't be read is not shown: `links.relink` fails with "the image's pixels can't be
 read", and `links.update`, or `document.open` when it reads the file, lists it as missing, its images keeping what they
-showed. Without a file system (the web), linked images show their previews.
+showed. Without a file system (the web), linked images show their previews. A link whose path has a colon and no `/`
+or `\` is read as a classic Mac OS path (`Disk:Folder:file.tif`), a form that older `.ai` files can hold. The link
+keeps that path and is named by its last part. `links.info` gives that part as `fileName` and the rest as `location`,
+and `links.relink {folder}`, the search of the document's folder and `links.findFiles` look for a file of that name.
 
 `links.findFiles {folder}` looks in an absolute folder and its subfolders, on separate threads, for the files of the
 active document's missing links, or of the images and placed documents `ids` whatever their status, and returns at once
 with an `id` and the search's `state` (`searching` while it runs). It finds the files with each linked file's name, in
 any letter case, and lists them best first as `{path, size, match, caseDiffers?}`: `same` when the file has the size and
-hash saved with the link, `size` when it has the saved size and the link saved no hash (or the file is larger than 1 GB,
+hash saved with the link, `size` when it has the saved size and the link saved no hash (or the file is larger than 1 GiB,
 which a search doesn't hash), else `name`. Within each kind, a file whose name has the link's letter case comes first.
 Then each file's folder names are compared with the saved path's, from the innermost outward up to the first one that
-differs, and a file with more matching names comes first; files that still tie are listed by path. `links.findFiles {}`
+differs, and a file with more matching names comes first; files that still tie are listed by path. Before the
+comparison, the saved path's parent-folder steps (`..`, or the empty components of a classic Mac `::` run) are resolved,
+and `.` components in a slash path are skipped. `links.findFiles {}`
 returns the last search's state, and `{stop: true}` stops it. A search looks for at most 1,000 linked files, keeps the
 first 10 files of each one's name and up to 10 that are the same file, and ends once every linked file has its same
 file; it searches only the folders `text.findFontFiles` may search, with the same `maxSeconds`, depth and count limits.
