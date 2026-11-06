@@ -2879,6 +2879,7 @@ fn pixel_grid_shows_in_pixel_preview_from_600_percent() {
 #[test]
 fn grid_and_guides_take_their_preferences() {
     let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.canvas.worker_started = true; // render on this thread
     app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
     app.session.execute("guide.add", &json!({"vertical": true, "pos": 100})).unwrap();
     app.ui.view.grid = true;
@@ -9223,7 +9224,9 @@ fn a_documents_first_frame_renders_on_the_worker() {
     let job = jobs.try_recv().expect("the first frame is queued on the worker");
     assert!(app.canvas.texture.is_none(), "not rendered on the UI thread");
     frame(&mut app);
-    assert!(jobs.try_recv().is_err(), "not queued again while it renders");
+    // A placed document of a test running beside this one moves the process-wide generation in
+    // the key: that makes a new frame, not this one again.
+    assert!(jobs.try_iter().all(|j| j.key.placed != job.key.placed), "not queued again while it renders");
     assert!(app.canvas.texture.is_none());
 
     done_tx.send(finished(&job)).unwrap();
@@ -9265,4 +9268,39 @@ fn the_render_worker_waits_for_a_frame_only_as_long_as_asked() {
     });
     assert!(w.wait(std::time::Duration::from_secs(5)).is_some(), "finished during the wait");
     sender.join().unwrap();
+}
+
+/// #3901: with Direct Selection, the Selection tool's bounding box shows while Cmd/Ctrl is held
+/// (a press then takes its handles), and not otherwise.
+#[test]
+fn direct_selection_shows_the_bounding_box_while_cmd_is_held() {
+    let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.run("file.new", json!({"width": 400, "height": 300})).unwrap();
+    let id = app.run("shape.rectangle", json!({"x": 100, "y": 100, "width": 100, "height": 50})).unwrap()["id"].as_u64().unwrap();
+    app.run("select.set", json!({"ids": [id]})).unwrap();
+    app.select_tool("directSelection");
+    let ctx = egui::Context::default();
+    frame(&mut app, &ctx, vec![]);
+    let xf = Xf::new(app.canvas_rect.unwrap(), app.view().unwrap());
+    let corner = xf.to_screen(Point::new(200.0, 150.0));
+    // A frame with `modifiers` held → is a white box handle drawn at the bottom-right corner?
+    let handle_drawn = |app: &mut VectorcraftApp, modifiers: egui::Modifiers| {
+        let screen = Some(egui::Rect::from_min_size(Pos2::ZERO, vec2(800.0, 600.0)));
+        let raw = egui::RawInput { screen_rect: screen, events: vec![egui::Event::ModifiersChanged(modifiers)], ..Default::default() };
+        let mut out = ctx.run_ui(raw, |ui| show(app, ui));
+        out.textures_delta.clear(); // the render worker's frame can land in any of these
+        fn flat(s: Shape, out: &mut Vec<Shape>) {
+            match s {
+                Shape::Vec(v) => v.into_iter().for_each(|s| flat(s, out)),
+                s => out.push(s),
+            }
+        }
+        let mut v = vec![];
+        out.shapes.into_iter().for_each(|c| flat(c.shape, &mut v));
+        v.iter().any(|s| matches!(s, Shape::Rect(r) if r.fill == Color32::WHITE && (r.rect.width() - 6.0).abs() < 1.0 && r.rect.center().distance(corner) < 0.5))
+    };
+    assert!(!handle_drawn(&mut app, egui::Modifiers::NONE), "Direct Selection alone shows no box");
+    assert!(handle_drawn(&mut app, egui::Modifiers::COMMAND), "Cmd held shows the Selection tool's box");
+    assert!(!handle_drawn(&mut app, egui::Modifiers::NONE), "gone once Cmd is released");
+    assert!(app.ui.view.bounding_box, "View › Show Bounding Box is unchanged");
 }
