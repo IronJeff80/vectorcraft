@@ -50,7 +50,7 @@ use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 
 use serde_json::{Value, json};
-use vectorcraft_doc::hit::{HitKind, compound_part_at, hit_test, selected_hidden_at};
+use vectorcraft_doc::hit::{Hit, HitKind, compound_part_at, hit_test, selected_hidden_at};
 use vectorcraft_doc::{AnchorRef, Node, NodeId, NodeKind, Selection};
 use vectorcraft_geom::{Anchor, PathData, PathSeg, Point, Rect, Vec2};
 
@@ -396,8 +396,13 @@ fn hit_spine_handle(cx: &ToolContext, sel: (NodeId, usize), p: Point, tol: f64) 
 
 /// Anchor `sel.1` of blend `sel.0`'s spine.
 fn spine_anchor(cx: &ToolContext, (id, ai): (NodeId, usize)) -> Option<vectorcraft_geom::Anchor> {
+    spine_path(cx, id)?.subpaths.first()?.anchors.get(ai).copied()
+}
+
+/// Blend `id`'s spine, built once for callers that look up several of its points.
+fn spine_path(cx: &ToolContext, id: NodeId) -> Option<PathData> {
     match &cx.doc.node(id)?.kind {
-        NodeKind::Blend { children, spec } => vectorcraft_doc::live::blend_spine(children, spec)?.0.subpaths.first()?.anchors.get(ai).copied(),
+        NodeKind::Blend { children, spec } => Some(vectorcraft_doc::live::blend_spine(children, spec)?.0),
         _ => None,
     }
 }
@@ -897,7 +902,9 @@ impl Tool for DirectSelectionTool {
                 }
                 let q = from + move_delta(start, p, ev.mods.shift, cx.constrain_angle);
                 let mut params = json!({"id": id.0, "anchor": anchor, "x": q.x, "y": q.y});
-                let with: Vec<usize> = self.spine_more.iter().copied().filter(|a| spine_anchor(cx, (id, *a)).is_some()).collect();
+                let spine = spine_path(cx, id);
+                let count = spine.as_ref().and_then(|sp| sp.subpaths.first()).map_or(0, |sp| sp.anchors.len());
+                let with: Vec<usize> = self.spine_more.iter().copied().filter(|a| *a < count).collect();
                 if !with.is_empty() {
                     params["with"] = json!(with);
                 }
@@ -1061,7 +1068,8 @@ impl DirectSelectionTool {
         }
         // A selected path's anchors or the anchors of the path under the pointer, as Highlight
         // anchors on mouse over finds them: walking every path on each hover is too slow.
-        if let Some((id, _)) = hovered_anchor(cx, p) {
+        let hit = hit_test(cx.doc, p, cx.selection_hit_options());
+        if let Some((id, _)) = hovered_anchor_with_hit(cx, p, hit.as_ref()) {
             return Some(if cx.selection.contains(id) { Cursor::DirectAnchorSelected } else { Cursor::DirectAnchor });
         }
         if hit_frame_edge(cx, p, tol).is_some() {
@@ -1073,7 +1081,7 @@ impl DirectSelectionTool {
         if m.shift || self.guide.cursor(cx, p).is_some() {
             return None;
         }
-        let h = hit_test(cx.doc, p, cx.selection_hit_options())?;
+        let h = hit?;
         let whole = cx.selection.contains(h.leaf) && cx.selection.partial(h.leaf).is_none();
         let curved = matches!(h.kind, HitKind::Stroke | HitKind::Outline) && segment_at(cx, h.leaf, p).is_some_and(|s| s.curved);
         (!whole && curved).then_some(Cursor::ReshapeSegment)
@@ -1083,9 +1091,13 @@ impl DirectSelectionTool {
 /// The anchor within a press's reach of `p` ([`ToolContext::point_tol`]), of a selected path or the
 /// path under `p`: what Highlight anchors on mouse over marks (a press there picks it).
 fn hovered_anchor(cx: &ToolContext, p: Point) -> Option<(NodeId, Point)> {
+    let hit = hit_test(cx.doc, p, cx.selection_hit_options());
+    hovered_anchor_with_hit(cx, p, hit.as_ref())
+}
+
+fn hovered_anchor_with_hit(cx: &ToolContext, p: Point, hit: Option<&Hit>) -> Option<(NodeId, Point)> {
     let tol = cx.point_tol();
-    let under =
-        hit_test(cx.doc, p, cx.selection_hit_options()).map(|h| cx.doc.node(h.leaf).and_then(|n| compound_part_at(n, p, tol)).unwrap_or(h.leaf));
+    let under = hit.map(|h| cx.doc.node(h.leaf).and_then(|n| compound_part_at(n, p, tol)).unwrap_or(h.leaf));
     cx.selection.objects.iter().copied().filter(|id| in_scope(cx.doc, cx.isolation, *id)).chain(under).find_map(|id| {
         let path = cx.doc.node(id).and_then(editable_path)?;
         nearest_anchor(&path, p, tol).map(|(.., a)| (id, a))
@@ -1159,7 +1171,9 @@ impl DirectSelectionTool {
     /// The clicked spine point, filled, with its handles.
     fn spine_overlays(&self, cx: &ToolContext) -> Vec<Overlay> {
         let Some(sel) = self.spine.filter(|(id, _)| cx.selection.contains(*id)) else { return vec![] };
-        let Some(a) = spine_anchor(cx, sel) else { return vec![] };
+        let Some(spine) = spine_path(cx, sel.0) else { return vec![] };
+        let Some(points) = spine.subpaths.first().map(|sp| &sp.anchors) else { return vec![] };
+        let Some(a) = points.get(sel.1).copied() else { return vec![] };
         let color = cx.doc.layer_color(sel.0);
         let mut out = vec![];
         for h in [a.h_in, a.h_out].into_iter().filter(|h| h.distance(a.p) > 1e-6) {
@@ -1167,12 +1181,7 @@ impl DirectSelectionTool {
             out.push(Overlay::Handle { p: h, color });
         }
         out.push(Overlay::Anchor { p: a.p, color, filled: true, size: 5.0 });
-        out.extend(self.spine_more.iter().filter_map(|i| spine_anchor(cx, (sel.0, *i))).map(|m| Overlay::Anchor {
-            p: m.p,
-            color,
-            filled: true,
-            size: 5.0,
-        }));
+        out.extend(self.spine_more.iter().filter_map(|i| points.get(*i)).map(|m| Overlay::Anchor { p: m.p, color, filled: true, size: 5.0 }));
         out
     }
 }
