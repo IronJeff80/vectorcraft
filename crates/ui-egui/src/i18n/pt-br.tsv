@@ -4505,6 +4505,11 @@ axis	Both	Ambos
 @msg	unknown parameter `{key}`; did you mean `{near}`?	parâmetro desconhecido `{key}`; você quis dizer `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	parâmetro desconhecido `{key}`; o comando não tem parâmetros
 @msg	unknown parameter `{key}`; the command takes: {keys}	parâmetro desconhecido `{key}`; o comando aceita: {keys}
+@msg	the params must be an object, not {got}	os parâmetros devem ser um objeto, não {got}
+@msg	unknown parameter `{path}`; the object takes no keys	parâmetro desconhecido `{path}`; o objeto não aceita chaves
+@msg	unknown parameter `{path}`; it takes: {keys}	parâmetro desconhecido `{path}`; aceita: {keys}
+@msg	missing `{path}`	falta `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` deve ser {expected}, não {got}
 	Load EPS into Clipboard	Carregar EPS na Área de Transferência
 	Drawer menu	Menu da gaveta
 	Toolbar: Show Controls	Barra de ferramentas: Mostrar controles
@@ -5937,6 +5942,9 @@ axis	Y Axis	Eixo Y
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all ou um intervalo como 1, 3-5, não {v}
 	Add to Symbols	Adicionar aos Símbolos
 	Basic Shapes	Formas Básicas
+	Button	Botão
+	Panel	Painel
+	UI Frames	Molduras de IU
 	Open Symbol Library	Abrir Biblioteca de Símbolos
 	Save Symbol Library	Salvar Biblioteca de Símbolos
 	Save Symbol Library…	Salvar Biblioteca de Símbolos…
@@ -6427,7 +6435,7 @@ breakText	Glyphs	Glifos
 	Reset Symbol Instance	Redefinir instância de símbolo
 @msg	type must be static or dynamic, not {v}	type deve ser static ou dynamic, não {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` é um símbolo estático: defina primeiro o tipo de símbolo como Dinâmico
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	De um caminho, caminho composto ou texto selecionado em uma instância de símbolo só é possível alterar a cor sólida do preenchimento e do traçado
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	De um caminho, caminho composto ou texto selecionado em uma instância de símbolo só é possível alterar o preenchimento, o traçado, a opacidade e a mesclagem
 @msg	path must be a list of child indices	path deve ser uma lista de índices de filhos
 @msg	no object at path {shown} in the symbol's art	nenhum objeto no caminho {shown} na arte do símbolo
 @msg	give fill, stroke, opacity and/or blend	informe fill, stroke, opacity e/ou blend

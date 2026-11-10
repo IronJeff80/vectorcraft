@@ -5166,6 +5166,11 @@ lighting	Light	Lumière
 @msg	unknown parameter `{key}`; did you mean `{near}`?	paramètre inconnu `{key}` ; vouliez-vous dire `{near}` ?
 @msg	unknown parameter `{key}`; the command takes no parameters	paramètre inconnu `{key}` ; la commande n’a aucun paramètre
 @msg	unknown parameter `{key}`; the command takes: {keys}	paramètre inconnu `{key}` ; la commande accepte : {keys}
+@msg	the params must be an object, not {got}	les paramètres doivent être un objet, pas {got}
+@msg	unknown parameter `{path}`; the object takes no keys	paramètre inconnu `{path}` ; l’objet n’accepte aucune clé
+@msg	unknown parameter `{path}`; it takes: {keys}	paramètre inconnu `{path}` ; il accepte : {keys}
+@msg	missing `{path}`	`{path}` manquant
+@msg	`{path}` must be {expected}, not {got}	`{path}` doit être {expected}, pas {got}
 	1 Layer	1 calque
 	1 bit	1 bit
 	16 Colors	16 couleurs
@@ -6017,6 +6022,9 @@ axis	Y Axis	Axe Y
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards` : all ou une plage telle que 1, 3-5, et non {v}
 	Add to Symbols	Ajouter aux symboles
 	Basic Shapes	Formes de base
+	Button	Bouton
+	Panel	Panneau
+	UI Frames	Cadres d’IU
 	Open Symbol Library	Ouvrir une bibliothèque de symboles
 	Save Symbol Library	Enregistrer la bibliothèque de symboles
 	Save Symbol Library…	Enregistrer la bibliothèque de symboles…
@@ -6504,7 +6512,7 @@ breakText	Glyphs	Glyphes
 	Reset Symbol Instance	Réinitialiser l'instance de symbole
 @msg	type must be static or dynamic, not {v}	type doit être static ou dynamic, et non {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` est un symbole statique : définissez d'abord son type de symbole sur Dynamique
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	Seules les couleurs unies du fond et du contour d'un tracé, d'un tracé transparent ou d'un texte sélectionné dans une instance de symbole peuvent changer
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	Seul le fond, le contour, l’opacité et le mode de fusion d’un tracé, tracé composé ou texte sélectionné dans une occurrence de symbole peuvent être modifiés
 @msg	path must be a list of child indices	path doit être une liste d'indices d'enfants
 @msg	no object at path {shown} in the symbol's art	aucun objet au chemin {shown} dans l'illustration du symbole
 @msg	give fill, stroke, opacity and/or blend	indiquez fill, stroke, opacity et/ou blend

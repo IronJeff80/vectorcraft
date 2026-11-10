@@ -511,6 +511,9 @@ antiAlias	Sharp	शार्प
 	Basic Character Formats	बुनियादी कैरेक्टर फ़ॉर्मैट
 	Basic Latin	बेसिक लैटिन
 	Basic Shapes	बुनियादी शेप्स
+	Button	बटन
+	Panel	पैनल
+	UI Frames	UI फ़्रेम
 	Batch	बैच
 	Batch Trace Folder	फ़ोल्डर बैच ट्रेस करें
 	Batch…	बैच…
@@ -5540,7 +5543,7 @@ antiAlias	Sharp	शार्प
 @msg	`{name}` is a built-in workspace; choose another name	`{name}` एक अंतर्निहित वर्कस्पेस है; एक और नाम चुनें
 @msg	`{name}` is a process colour: tints apply to global and spot colours	`{name}` एक प्रक्रिया रंग है: टिंट वैश्विक और स्पॉट रंगों पर लागू होते हैं
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` एक स्थिर सिंबल है: अपने सिंबल प्रकार को पहले गतिशील करने के लिए सेट करें
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	सिंबल इंस्टेंस में चुने गए पाथ, कंपाउंड पाथ या टाइप का केवल ठोस रंग वाला फ़िल और स्ट्रोक बदला जा सकता है
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	प्रतीक इंस्टेंस में चयनित पथ, संयोजित पथ या पाठ का केवल भराव, स्ट्रोक, अपारदर्शिता और ब्लेंड बदला जा सकता है
 @msg	`{name}` is a tint of `{base}`: edit `{base}` (a tint swatch only takes a new name)	`{name}` `{base}` का एक टिंट है: `{base}` संपादित करें (केवल एक टिंट swatch केवल एक नया नाम लेता है)
 @msg	`{name}` is a working space: choose another with edit.colorSettings first	`{name}` वर्किंग स्पेस है: पहले edit.colorSettings से दूसरा चुनें
 @msg	`{name}` is built in and stays	`{name}` बनाया गया है और रहता है
@@ -7791,6 +7794,11 @@ antiAlias	Sharp	शार्प
 @msg	unknown parameter `{key}`; did you mean `{near}`?	अज्ञात पैरामीटर `{key}`; क्या आपको `{near}` का मतलब है?
 @msg	unknown parameter `{key}`; the command takes no parameters	अज्ञात पैरामीटर `{key}`; कमांड कोई पैरामीटर नहीं लेता है
 @msg	unknown parameter `{key}`; the command takes: {keys}	अज्ञात पैरामीटर `{key}`; कमांड लेता है: {keys}
+@msg	the params must be an object, not {got}	पैरामीटर एक ऑब्जेक्ट होने चाहिए, {got} नहीं
+@msg	unknown parameter `{path}`; the object takes no keys	अज्ञात पैरामीटर `{path}`; ऑब्जेक्ट कोई कुंजी नहीं लेता
+@msg	unknown parameter `{path}`; it takes: {keys}	अज्ञात पैरामीटर `{path}`; यह लेता है: {keys}
+@msg	missing `{path}`	लापता `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` {expected} होना चाहिए, {got} नहीं
 @msg	unknown PDF preset `{name}` (presets: {_1})	अज्ञात PDF प्रीसेट `{name}` (presets: {_1})
 @msg	unknown pieLegend `{v}` (none, standard or wedges)	अज्ञात pieLegend `{v}` (one, मानक या wedges)
 @msg	unknown piePosition `{v}` (even, ratio or stacked)	अज्ञात piePosition `{v}` (यहां तक कि अनुपात या स्टैक्ड)

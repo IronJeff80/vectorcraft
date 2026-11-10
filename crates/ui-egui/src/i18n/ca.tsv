@@ -441,6 +441,9 @@ antiAlias	Sharp	Nítid
 	Basic	Bàsic
 	Basic Latin	Llatí bàsic
 	Basic Shapes	Formes bàsiques
+	Button	Botó
+	Panel	Panell
+	UI Frames	Marcs d’IU
 	Batch	Lot
 	Batch…	Lot…
 	Bearing	Orientació
@@ -5851,6 +5854,11 @@ digits	Malayalam	Malaiàlam
 @msg	unknown parameter `{key}`; did you mean `{near}`?	paràmetre desconegut `{key}`; volies dir `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	paràmetre desconegut `{key}`; l’ordre no admet cap paràmetre
 @msg	unknown parameter `{key}`; the command takes: {keys}	paràmetre desconegut `{key}`; l’ordre admet: {keys}
+@msg	the params must be an object, not {got}	els paràmetres han de ser un objecte, no {got}
+@msg	unknown parameter `{path}`; the object takes no keys	paràmetre desconegut `{path}`; l’objecte no admet claus
+@msg	unknown parameter `{path}`; it takes: {keys}	paràmetre desconegut `{path}`; admet: {keys}
+@msg	missing `{path}`	falta `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` ha de ser {expected}, no {got}
 @msg	unknown preference `{key}`	preferència desconeguda `{key}`
 @msg	unknown preset (one of {_1})	preajust desconegut (un de {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	preajust desconegut `{name}` (high, medium, low o un de desat: consulta flattener.presets.list)
@@ -6490,7 +6498,7 @@ breakText	Glyphs	Glifs
 	Reset Symbol Instance	Restableix la instància de símbol
 @msg	type must be static or dynamic, not {v}	type ha de ser static o dynamic, no {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` és un símbol estàtic: primer establiu el tipus de símbol a Dinàmic
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	D'un traçat, un traçat compost o un text seleccionat en una instància de símbol només es pot canviar el color sòlid de l'emplenament i el traç
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	En un traçat, traçat compost o text seleccionat en una instància de símbol només es poden canviar l'emplenament, el traç, l'opacitat i la fusió
 @msg	path must be a list of child indices	path ha de ser una llista d’índexs de fills
 @msg	no object at path {shown} in the symbol's art	no hi ha cap objecte al camí {shown} de l’art del símbol
 @msg	give fill, stroke, opacity and/or blend	indiqueu fill, stroke, opacity i/o blend

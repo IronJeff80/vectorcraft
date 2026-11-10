@@ -5291,6 +5291,11 @@ lighting	Light	光源
 @msg	unknown parameter `{key}`; did you mean `{near}`?	未知的參數 `{key}`；您是指 `{near}` 嗎？
 @msg	unknown parameter `{key}`; the command takes no parameters	未知的參數 `{key}`；此指令沒有參數
 @msg	unknown parameter `{key}`; the command takes: {keys}	未知的參數 `{key}`；此指令接受：{keys}
+@msg	the params must be an object, not {got}	參數必須是物件，而不是 {got}
+@msg	unknown parameter `{path}`; the object takes no keys	未知的參數 `{path}`；此物件不接受任何鍵
+@msg	unknown parameter `{path}`; it takes: {keys}	未知的參數 `{path}`；它接受：{keys}
+@msg	missing `{path}`	未提供 `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` 必須是 {expected}，而不是 {got}
 	Load EPS into Clipboard	將 EPS 載入剪貼簿
 @msg	an image of {w} × {h} pixels is too large to draw	{w} × {h} 像素的影像過大，無法繪製
 @msg	{path}: not a PNG, JPEG, WebP, TIFF or BMP image	{path}：不是 PNG、JPEG、WebP、TIFF 或 BMP 影像
@@ -5657,6 +5662,9 @@ axis	Y Axis	Y 軸
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`：應為 all 或 1, 3-5 這類範圍，而不是 {v}
 	Add to Symbols	新增至符號
 	Basic Shapes	基本形狀
+	Button	按鈕
+	Panel	面板
+	UI Frames	UI 框架
 	Open Symbol Library	開啟符號資料庫
 	Save Symbol Library	儲存符號資料庫
 	Save Symbol Library…	儲存符號資料庫…
@@ -6148,7 +6156,7 @@ breakText	Glyphs	字符
 	Reset Symbol Instance	重設符號實體
 @msg	type must be static or dynamic, not {v}	type 必須是 static 或 dynamic,而不是 {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` 是靜態符號:請先將其符號類型設為動態
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	在符號實體中選取的路徑、複合路徑或文字只能變更填色和筆畫的純色
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	在符號實體中選取的路徑、複合路徑或文字只能變更填色、筆畫、不透明度和混合模式
 @msg	path must be a list of child indices	path 必須是子項索引清單
 @msg	no object at path {shown} in the symbol's art	符號圖稿中路徑 {shown} 處沒有物件
 @msg	give fill, stroke, opacity and/or blend	請提供 fill、stroke、opacity 和/或 blend

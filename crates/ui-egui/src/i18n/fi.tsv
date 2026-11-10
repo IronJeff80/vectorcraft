@@ -5479,6 +5479,11 @@ mark-style	Japanese	Japanilainen
 @msg	unknown parameter `{key}`; did you mean `{near}`?	tuntematon parametri `{key}`; tarkoititko `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	tuntematon parametri `{key}`; komento ei ota parametreja
 @msg	unknown parameter `{key}`; the command takes: {keys}	tuntematon parametri `{key}`; komennon parametrit: {keys}
+@msg	the params must be an object, not {got}	parametrien on oltava objekti, ei {got}
+@msg	unknown parameter `{path}`; the object takes no keys	tuntematon parametri `{path}`; objekti ei ota avaimia
+@msg	unknown parameter `{path}`; it takes: {keys}	tuntematon parametri `{path}`; parametrit: {keys}
+@msg	missing `{path}`	`{path}` puuttuu
+@msg	`{path}` must be {expected}, not {got}	`{path}` on oltava {expected}, ei {got}
 	Load EPS into Clipboard	Lataa EPS leikepöydälle
 @msg	an image of {w} × {h} pixels is too large to draw	kuva, jonka koko on {w} × {h} pikseliä, on liian suuri piirrettäväksi
 @msg	{path}: not a PNG, JPEG, WebP, TIFF or BMP image	{path}: ei ole PNG-, JPEG-, WebP-, TIFF- tai BMP-kuva
@@ -6052,6 +6057,9 @@ axis	Y Axis	Y-akseli
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all tai alue, kuten 1, 3-5, ei {v}
 	Add to Symbols	Lisää symboleihin
 	Basic Shapes	Perusmuodot
+	Button	Painike
+	Panel	Paneeli
+	UI Frames	UI-kehykset
 	Open Symbol Library	Avaa symbolikirjasto
 	Save Symbol Library	Tallenna symbolikirjasto
 	Save Symbol Library…	Tallenna symbolikirjasto…
@@ -6539,7 +6547,7 @@ breakText	Glyphs	Merkit
 	Reset Symbol Instance	Palauta symboli-ilmentymä
 @msg	type must be static or dynamic, not {v}	type-arvon on oltava static tai dynamic, ei {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` on staattinen symboli: aseta ensin sen symbolin tyypiksi Dynaaminen
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	Symboli-ilmentymästä valitusta polusta, yhdistelmäpolusta tai tekstistä voi muuttaa vain täytön ja viivan yhtenäistä väriä
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	Symbolin esiintymässä valitun polun, yhdistelmäpolun tai tekstin täyttöä, viivaa, peittävyyttä ja sekoitusta voi vain muuttaa
 @msg	path must be a list of child indices	path-arvon on oltava luettelo alikohteiden indeksejä
 @msg	no object at path {shown} in the symbol's art	symbolin kuvituksessa ei ole objektia polussa {shown}
 @msg	give fill, stroke, opacity and/or blend	anna fill, stroke, opacity ja/tai blend

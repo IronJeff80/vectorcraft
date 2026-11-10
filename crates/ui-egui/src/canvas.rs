@@ -69,12 +69,12 @@ pub(crate) use raster::{color_image, color_image_owned, render_job};
 pub use selection_marks::SelectionMarks;
 use task_bar::task_bar;
 pub(crate) use task_bar::{has_colors, task_bar_rect};
-pub use tool_overlays::HiddenChars;
 #[cfg(test)]
 use tool_overlays::{DIAL_RADIUS, HiddenMarks};
+pub use tool_overlays::{HiddenChars, SpellingMarks};
 use tool_overlays::{
     grid_repeat_overlay, hidden_chars_overlay, live_paint_gap_overlays, mirror_axis_overlay, nine_slice_overlay, original_path_overlay,
-    print_tiling_overlay, rotate_view_dial, shaper_widget_overlay, slice_overlay, thread_overlays,
+    print_tiling_overlay, rotate_view_dial, shaper_widget_overlay, slice_overlay, spelling_overlay, thread_overlays,
 };
 pub(crate) use view::animated_zoom;
 pub use view::fit;
@@ -739,6 +739,10 @@ fn draw_frame(app: &mut VectorcraftApp, ui: &Ui, frame: Frame) {
         // rendered again, here, into the texture. `last_ms` stays the whole frame's.
         (_, _, Some(region)) => {
             let t0 = now_ms();
+            if region.is_none() {
+                // Nothing in view to draw again: what was made to measure the edit isn't drawn.
+                app.canvas.renderer.let_go_of_measured();
+            }
             if let (Some([x0, y0, x1, y1]), Some(tex)) = (region, &mut app.canvas.texture) {
                 let part = app.canvas.renderer.render(doc, x1 - x0, y1 - y0, Affine::translate((-f64::from(x0), -f64::from(y0))) * view, &opts);
                 let color = color_image(&part);
@@ -751,6 +755,9 @@ fn draw_frame(app: &mut VectorcraftApp, ui: &Ui, frame: Frame) {
             app.perf.render_ms = now_ms() - t0;
         }
         (Some(worker), true, None) => {
+            // The worker draws the frame: what this thread's renderer made to measure the edit
+            // isn't drawn here.
+            app.canvas.renderer.let_go_of_measured();
             let queued = worker.submit(crate::render_worker::Job {
                 key: key.clone(),
                 doc: doc.clone(),
@@ -1107,6 +1114,13 @@ fn selection_visuals(
             app.canvas.hidden_chars = hidden_chars;
             hidden_chars_overlay(app, painter, xf);
         }
+    }
+    // Edit › Spelling › Auto Spell Check: shown with the edges hidden too, as it marks the type
+    // rather than the selection.
+    if app.ui.view.auto_spell_check && !revolve_edit {
+        spelling_overlay(app, painter, xf);
+    } else {
+        app.canvas.spelling = SpellingMarks::default();
     }
     overlays
 }

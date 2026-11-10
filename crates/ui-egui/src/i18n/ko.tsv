@@ -5165,6 +5165,11 @@ lighting	Light	광원
 @msg	unknown parameter `{key}`; did you mean `{near}`?	알 수 없는 매개변수 `{key}`: `{near}`을(를) 의미하셨습니까?
 @msg	unknown parameter `{key}`; the command takes no parameters	알 수 없는 매개변수 `{key}`: 이 명령에는 매개변수가 없습니다
 @msg	unknown parameter `{key}`; the command takes: {keys}	알 수 없는 매개변수 `{key}`: 이 명령이 받는 매개변수: {keys}
+@msg	the params must be an object, not {got}	매개변수는 객체여야 합니다({got} 사용 불가)
+@msg	unknown parameter `{path}`; the object takes no keys	알 수 없는 매개변수 `{path}`: 이 객체는 키를 받지 않습니다
+@msg	unknown parameter `{path}`; it takes: {keys}	알 수 없는 매개변수 `{path}`: 받는 매개변수: {keys}
+@msg	missing `{path}`	`{path}`이(가) 없습니다
+@msg	`{path}` must be {expected}, not {got}	`{path}`은(는) {expected}이어야 합니다({got} 사용 불가)
 	Load EPS into Clipboard	EPS를 클립보드로 불러오기
 @msg	an image of {w} × {h} pixels is too large to draw	{w} × {h}픽셀 이미지는 너무 커서 그릴 수 없습니다
 @msg	{path}: not a PNG, JPEG, WebP, TIFF or BMP image	{path}: PNG, JPEG, WebP, TIFF 또는 BMP 이미지가 아닙니다
@@ -5600,6 +5605,9 @@ axis	Y Axis	Y축
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all 또는 1, 3-5 같은 범위여야 합니다({v}이(가) 아님)
 	Add to Symbols	심볼에 추가
 	Basic Shapes	기본 모양
+	Button	버튼
+	Panel	패널
+	UI Frames	UI 프레임
 	Open Symbol Library	심볼 라이브러리 열기
 	Save Symbol Library	심볼 라이브러리 저장
 	Save Symbol Library…	심볼 라이브러리 저장…
@@ -6091,7 +6099,7 @@ breakText	Glyphs	글리프
 	Reset Symbol Instance	심볼 인스턴스 재설정
 @msg	type must be static or dynamic, not {v}	type은 static 또는 dynamic이어야 합니다({v}는 안 됨)
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}`은(는) 정적 심볼입니다. 먼저 심볼 유형을 동적으로 설정하세요
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	심볼 인스턴스에서 선택한 패스, 컴파운드 패스 또는 문자는 칠과 선의 단색만 변경할 수 있습니다
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	심볼 인스턴스에서 선택한 패스, 복합 패스 또는 텍스트는 칠, 선, 불투명도, 혼합만 변경할 수 있습니다
 @msg	path must be a list of child indices	path는 자식 인덱스 목록이어야 합니다
 @msg	no object at path {shown} in the symbol's art	심볼 아트의 경로 {shown}에 개체가 없습니다
 @msg	give fill, stroke, opacity and/or blend	fill, stroke, opacity 및/또는 blend를 지정하세요

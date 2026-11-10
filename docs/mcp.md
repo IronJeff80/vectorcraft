@@ -779,7 +779,7 @@ point (72 times that value in ppi); `options.ppi` wins over either scale option.
 default 72 ppi still use 72 ppi; use `--ppi 300` for print output from those documents.
 
 Raster exports take more options in `options`: `ppi` (72, 150, 300…; stored in the file, except in GIF, WebP and
-Targa), `background` (`transparent`, `white`, `black` or `"#rrggbb"`; `#rrggbbaa` and `#rgba` are refused), `antiAlias` (`none`, `art`, `type`: text
+Targa), `background` (`transparent`, `white`, `black` or `"#rrggbb"`; `#rrggbbaa` and `#rgba` are refused; drawn under the finished art, so blend modes do not read it), `antiAlias` (`none`, `art`, `type`: text
 snapped to pixels) and, for PNG, `interlaced`. `width` or `height` sets the size of each file in pixels: each artboard
 (with `useArtboards`, each file), `rect` or art bounds gets the scale that makes it that wide or high, within 0.01–64
 pixels per point, and the file stores the resolution that results, as with `ppi`. `width` wins over `height`, and
@@ -1382,6 +1382,42 @@ reference that names no value fails the step, so a command never runs with one l
 vectorcraft-cli run --cmd file.new --params '{"width":600,"height":200}'   --cmd text.create --params '{"x":10,"y":60,"text":"plain and bold words","size":30}'   --cmd text.setRangeStyle --params '{"id":"$1.id","start":10,"end":14,"style":"Bold"}'
 ```
 
+### Parameter schemas
+
+Some commands have a machine-readable parameter schema: at present `view.capsLock`, `view.saved.new`,
+`view.saved.edit`, `view.saved.list`, `view.transparencyGrid` and `view.snapToGlyph.options`. The engine's
+`engine.commands` list gives such a command a `schema` field: an object schema in the shape of JSON Schema 2020-12
+(https://json-schema.org/draft/2020-12), with `type`, `properties`, `required`, `additionalProperties: false`,
+`minimum`, `maximum`, `exclusiveMinimum` and `exclusiveMaximum` for ranges, `enum`, and `default` for a default the engine fills in. VectorCraft's own
+fields are `x-since` (the API level that added the command or the parameter), `x-deprecatedSince`, `x-lenient`,
+`x-unit`, `x-kind` (`id`, `color` or `point`), `x-default` (a default the command works out, such as `toggle`),
+`x-cost`, `x-writes` (`nothing`, `session`, `preferences` or `document`) and `x-returns`. A parameter that reads null
+as left out is an `anyOf` with `{"type": "null"}`. Null params read as `{}`, so a schema with no required parameter has
+the root `type` `["object", "null"]`. A schema with a required parameter has the root `type` `"object"`, and the engine
+refuses null params for it as a missing parameter. A number with no fractional part, such as `2.0`, is an integer, as
+JSON Schema defines one, and the command receives `2`. An `x-lenient` parameter's schema states the documented type,
+and the engine also passes a value of another type to the command. The command's `params` text equals the text the
+schema writes, and a test checks that they are the same.
+
+The engine checks the params of such a command against its schema before the command runs, for every new call: from
+the desktop app, the control channel, MCP or the CLI, and when one command runs another. The steps of `command.batch`
+and `action.batch` are checked before the first step runs. A value of the wrong type, out of range or not in its list,
+a missing required parameter or an unknown key is refused with a parameter error that names the parameter, with the
+path to a value inside a list or an object, and the document and its undo history stay as they were:
+
+```json
+{"id": "view.saved.new", "params": {"center": [0, 0], "zoom": 0}}
+→ invalid parameters for `view.saved.new`: `zoom` must be a number > 0, not 0
+{"id": "view.saved.edit", "params": {"edits": [{"name": "A", "delete": 1}]}}
+→ invalid parameters for `view.saved.edit`: `edits[0].delete` must be true or false, not 1
+```
+
+An omitted value with a `default` takes it (`rotation` 0 in `view.saved.new`); the journal keeps the params as they
+were given. Saved steps played from a journal or an action keep a key the schema does not name, unless its value nests
+more than 16 levels deep, and the values of the parameters it names are checked as in a new call. The schemas of built-in commands belong to API level 1
+(`vectorcraft_engine::schemas::API_VERSION`); a change to any of them raises the level. Commands that plug-ins add have
+no schema here.
+
 ## Checking scripts written for the reference app
 
 `script.check {path? | data? | dataBase64?, name?, includes?}` reads a script written for the reference app
@@ -1859,16 +1895,23 @@ already walks Image Trace. Short agent entry points:
   one back to the symbol. It is refused for a static symbol and for a path that names no object. On the canvas (VectorCraft's own rule), a Direct Selection click on an instance of a
   dynamic symbol selects the path, compound path or type object of its art under the pointer and outlines it
   (`symbol.instance.selectPart {id, path}`; Alt or Shift selects the instance whole). While it is selected,
-  `paint.setFill` and `paint.setStroke` with a solid color or none, `paint.invert` and `paint.complement` on a solid
-  color, all without `ids`, `id` or `item`, and the Eyedropper's `appearance.copyFrom` with a solid fill and stroke
-  change that object's fill or stroke for this instance only, each as one undo step. A painted stroke on type without a
-  weight gets 1 pt. A gradient or pattern for the object is refused with a status message, and so are `paint.invert` and
-  `paint.complement` on type whose characters differ in color, Eyedropper options that pick up neither color, an
-  Eyedropper source that is not a path, compound path or type (a symbol instance or a group, for which the paint defaults
-  stay as they are too), and a click
-  or `symbol.instance.selectPart` on any other object of the art (a group, image, blend or nested instance among them).
+  `paint.setFill` and `paint.setStroke` (solid, none, gradient or pattern) and `paint.invert` and `paint.complement`
+  on a solid color change that object's fill or stroke for this instance only when `ids`, `id` and `item` are omitted.
+  `transparency.set` with opacity and/or blend does the same when `ids`, `id` and `item` are omitted; with `ids` or
+  `id` it edits those objects, so the instance's id changes the instance. `appearance.copyFrom` takes the source's
+  fill and stroke (including a gradient or pattern) for this instance only when `ids` is omitted and `reverse`,
+  `append` and `defaultsOnly` are false or omitted, and only for each paint the Eyedropper Options pick up and
+  apply; a paint disabled in either tree stays as it was. With `ids`, and `reverse` false or omitted, it copies
+  onto those objects; with `reverse` true it copies from the first of `ids` onto `source`. The paint commands,
+  Transparency and the Eyedropper each record an undo step only when the override changes; an unchanged override
+  records none. A painted stroke on type without a weight gets 1 pt. `paint.invert` and `paint.complement`
+  on a gradient or pattern, or on type whose characters differ in color, are refused with a status message, and so are
+  Eyedropper options that pick up neither color, an Eyedropper source that is not a path, compound path or type (a
+  symbol instance or a group, for which the paint defaults stay as they are too), isolate, knockout, knockoutShape,
+  aligned and target on `transparency.set`, and a click or `symbol.instance.selectPart` on any other object of the art
+  (a group, image, blend or nested instance among them).
   The commands that change the selected objects without `ids` are refused the same way and change nothing, among them
-  opacity and blending mode, moving and transforming, `path.moveAnchors`, `file.place` with `replace`, Puppet Warp, Delete
+  moving and transforming, `path.moveAnchors`, `file.place` with `replace`, Puppet Warp, Delete
   and Cut, Group, Hide, Lock, Arrange, Expand,
   Recolor Artwork, plug-in filters, effects, the gradient commands, `gradient.selectStop`, the Appearance panel's rows and
   `symbol.instance.setAppearance`. A Cmd-drag that lends the Selection or Group Selection tool selects the instance whole
@@ -2464,6 +2507,8 @@ the image; linked images are left alone) and the tiles of pattern fills and stro
 pattern swatch, e.g. "Dots 2"; the original pattern is untouched). Colorized image fills are recolored when fills are in
 scope, but their pixels are never recolored. `includeImages: false` leaves other images' pixels unchanged.
 For `edit.colors.*`, `fill: false` leaves colorized image fills unchanged. `recolor.apply` always includes fills.
+`edit.colors.toGrayscale` and `edit.colors.adjustBalance` with `mode: "gray"` and `convert: true` store an embedded image
+with one gray channel, so a PDF writes it in gray.
 `includePatterns: false` leaves patterns out. The Blend commands also grade gradient meshes, which keep their shading.
 `edit.colors.saturate` needs `intensity`, a number from -100 to 100 (a number outside the range counts as its nearest
 end). Without one, or with a value that is not a number, it answers `` missing number `intensity` `` and changes nothing.
@@ -2865,7 +2910,7 @@ where the layout puts it.
 `object.flattenTransparency {ids?, preset?, …options}` turns transparent art into opaque art that looks the same, in
 one undo step. The targets split into groups of overlapping objects; groups without transparency stay as they are.
 Each other group becomes one group of atomic regions: paths filled with the flat colour the art showed there (over
-white; over nothing, keeping alpha, with `preserveAlpha: true`), plus one image where gradients, patterns, images,
+white, which blend modes do not read; over nothing, keeping alpha, with `preserveAlpha: true`), plus one image where gradients, patterns, images,
 opacity masks or raster effects reach (clipped to those regions with `clipComplexRegions`, a rectangle without).
 `preset` is `high`, `medium` (the default) or `low`; option keys (`balance` 0–100, `lineArtPpi`, `gradientPpi`,
 `textToOutlines`, `strokesToOutlines`, `clipComplexRegions`, `antiAlias`, `preserveAlpha`, `preserveOverprints`)
@@ -3988,9 +4033,11 @@ desktop app): in View › Pixel Preview, on softens placed and embedded bitmaps;
 `disableAutoAddDelete` (off by default): on, the Pen no longer adds or deletes an anchor when a click lands on a
 segment or an anchor of a selected path.
 
-`ctrlWheelScrollsSideways` (on by default): on, Cmd/Ctrl-wheel scrolls the canvas sideways instead of zooming while
-`zoomWithMouseWheel` is off; off, Cmd/Ctrl-wheel zooms about the pointer. Alt + Cmd/Ctrl-wheel and a pinch on a Mac
-trackpad, on a touch screen or in the web build still zoom about the pointer. With `zoomWithMouseWheel` off, once a
+`ctrlWheelScrollsSideways` (on by default): on, Cmd/Ctrl with a mouse wheel's whole notches scrolls the canvas sideways
+instead of zooming while `zoomWithMouseWheel` is off; off, Cmd/Ctrl-wheel zooms about the pointer. Alt + Cmd/Ctrl-wheel
+and a pinch on a Mac trackpad, on a touch screen or in the web build still zoom about the pointer. Under either
+wheel preference, Cmd/Ctrl zooms about the pointer for the rest of a wheel turn once the turn has a trackpad event,
+point deltas from an unnamed source in the desktop app, or line deltas that are not whole notches. With `zoomWithMouseWheel` off, once a
 trackpad gesture holds Alt, it zooms until it ends, also after Alt is let go. The control channel's
 `ui.wheel` with `cmd: true` turns the wheel with Cmd/Ctrl held.
 
@@ -5925,6 +5972,10 @@ any case, while the document is open. It is not saved and not an undo step.
 {"name":"run_command","arguments":{"command":"text.spelling.addWord","params":{"word":"VectorCraft"}}}
 {"name":"run_command","arguments":{"command":"text.spelling.ignoreAll","params":{"word":"Zqvwkx"}}}
 ```
+
+In the app, Edit › Spelling › Auto Spell Check (the UI command `edit.autoSpellCheck`, which returns whether it is now
+on) underlines on the canvas the words `text.spelling.check` lists, in the visible type without effects, and keeps the
+lines up to date as the type, the custom dictionary and the Ignore All words change.
 
 
 ## Justification options

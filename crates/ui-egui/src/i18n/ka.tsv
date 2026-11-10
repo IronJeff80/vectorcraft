@@ -4967,6 +4967,11 @@ font-technology	Variable	ცვლადი
 @msg	unknown parameter `{key}`; did you mean `{near}`?	უცნობი პარამეტრი `{key}`; იქნებ `{near}` იგულისხმეთ?
 @msg	unknown parameter `{key}`; the command takes no parameters	უცნობი პარამეტრი `{key}`; ბრძანება პარამეტრებს არ იღებს
 @msg	unknown parameter `{key}`; the command takes: {keys}	უცნობი პარამეტრი `{key}`; ბრძანება იღებს: {keys}
+@msg	the params must be an object, not {got}	პარამეტრები უნდა იყოს ობიექტი და არა {got}
+@msg	unknown parameter `{path}`; the object takes no keys	უცნობი პარამეტრი `{path}`; ობიექტი გასაღებებს არ იღებს
+@msg	unknown parameter `{path}`; it takes: {keys}	უცნობი პარამეტრი `{path}`; იღებს: {keys}
+@msg	missing `{path}`	აკლია `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` უნდა იყოს {expected} და არა {got}
 file-filter	All readable files	ყველა წაკითხვადი ფაილი
 file-filter	All placeable files	ყველა განთავსებადი ფაილი
 file-filter	Swatch libraries	ფერის ნიმუშების ბიბლიოთეკები
@@ -5945,6 +5950,9 @@ axis	Y Axis	Y ღერძი
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all ან დიაპაზონი, მაგალითად 1, 3-5, და არა {v}
 	Add to Symbols	სიმბოლოებში დამატება
 	Basic Shapes	ძირითადი ფიგურები
+	Button	ღილაკი
+	Panel	პანელი
+	UI Frames	UI ჩარჩოები
 	Open Symbol Library	სიმბოლოების ბიბლიოთეკის გახსნა
 	Save Symbol Library	სიმბოლოების ბიბლიოთეკის შენახვა
 	Save Symbol Library…	სიმბოლოების ბიბლიოთეკის შენახვა…
@@ -6506,7 +6514,7 @@ breakText	Glyphs	გლიფები
 	Reset Symbol Instance	სიმბოლოს ეგზემპლარის ჩამოყრა
 @msg	type must be static or dynamic, not {v}	type უნდა იყოს static ან dynamic და არა {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` სტატიკური სიმბოლოა: ჯერ სიმბოლოს ტიპად დააყენეთ „დინამიკური“
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	სიმბოლოს ეგზემპლარში მონიშნულ ტრაექტორიას, შედგენილ ტრაექტორიას ან ტექსტს მხოლოდ შევსებისა და კონტურის მთლიანი ფერი შეეცვლება
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	სიმბოლოს ეგზემპლარში მონიშნული მრუდის, შედგენილი მრუდის ან ტექსტის მხოლოდ შევსება, კონტური, გამჭვირვალობა და შერევა შეიძლება შეიცვალოს
 @msg	path must be a list of child indices	path უნდა იყოს შვილობილი ინდექსების სია
 @msg	no object at path {shown} in the symbol's art	სიმბოლოს გრაფიკაში გზაზე {shown} ობიექტი არ არის
 @msg	give fill, stroke, opacity and/or blend	მიუთითეთ fill, stroke, opacity და/ან blend

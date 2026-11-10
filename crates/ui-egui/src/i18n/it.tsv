@@ -5204,6 +5204,11 @@ lighting	Light	Luce
 @msg	unknown parameter `{key}`; did you mean `{near}`?	parametro sconosciuto `{key}`; forse intendevate `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	parametro sconosciuto `{key}`; il comando non ha parametri
 @msg	unknown parameter `{key}`; the command takes: {keys}	parametro sconosciuto `{key}`; il comando accetta: {keys}
+@msg	the params must be an object, not {got}	i parametri devono essere un oggetto, non {got}
+@msg	unknown parameter `{path}`; the object takes no keys	parametro sconosciuto `{path}`; l'oggetto non accetta chiavi
+@msg	unknown parameter `{path}`; it takes: {keys}	parametro sconosciuto `{path}`; accetta: {keys}
+@msg	missing `{path}`	manca `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` deve essere {expected}, non {got}
 	Load EPS into Clipboard	Carica EPS negli appunti
 @msg	an image of {w} × {h} pixels is too large to draw	un'immagine di {w} × {h} pixel è troppo grande per essere disegnata
 @msg	{path}: not a PNG, JPEG, WebP, TIFF or BMP image	{path}: non è un'immagine PNG, JPEG, WebP, TIFF o BMP
@@ -5639,6 +5644,9 @@ axis	Y Axis	Asse Y
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all o un intervallo come 1, 3-5, non {v}
 	Add to Symbols	Aggiungi ai simboli
 	Basic Shapes	Forme di base
+	Button	Pulsante
+	Panel	Pannello
+	UI Frames	Cornici UI
 	Open Symbol Library	Apri libreria simboli
 	Save Symbol Library	Salva libreria simboli
 	Save Symbol Library…	Salva libreria simboli…
@@ -6130,7 +6138,7 @@ breakText	Glyphs	Glifi
 	Reset Symbol Instance	Reimposta istanza di simbolo
 @msg	type must be static or dynamic, not {v}	type deve essere static o dynamic, non {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` è un simbolo statico: imposta prima il tipo di simbolo su Dinamico
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	Di un tracciato, un tracciato composto o un testo selezionato in un'istanza di simbolo si può modificare solo il colore pieno di riempimento e traccia
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	Di un tracciato, un tracciato composto o un testo selezionato in un'istanza di simbolo si possono modificare solo riempimento, traccia, opacità e fusione
 @msg	path must be a list of child indices	path deve essere un elenco di indici figlio
 @msg	no object at path {shown} in the symbol's art	nessun oggetto al percorso {shown} nella grafica del simbolo
 @msg	give fill, stroke, opacity and/or blend	specifica fill, stroke, opacity e/o blend

@@ -5465,6 +5465,11 @@ lighting	Light	光源
 @msg	unknown parameter `{key}`; did you mean `{near}`?	未知参数 `{key}`；您是否想输入 `{near}`？
 @msg	unknown parameter `{key}`; the command takes no parameters	未知参数 `{key}`；该命令没有参数
 @msg	unknown parameter `{key}`; the command takes: {keys}	未知参数 `{key}`；该命令接受：{keys}
+@msg	the params must be an object, not {got}	参数必须是对象，而不是 {got}
+@msg	unknown parameter `{path}`; the object takes no keys	未知参数 `{path}`；该对象不接受任何键
+@msg	unknown parameter `{path}`; it takes: {keys}	未知参数 `{path}`；它接受：{keys}
+@msg	missing `{path}`	缺少 `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` 必须是 {expected}，而不是 {got}
 	Load EPS into Clipboard	将 EPS 载入剪贴板
 @msg	an image of {w} × {h} pixels is too large to draw	{w} × {h} 像素的图像过大，无法绘制
 @msg	the JPEG XL file is cut short	JPEG XL 文件不完整
@@ -5860,6 +5865,9 @@ axis	Y Axis	Y 轴
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`：应为 all 或 1, 3-5 这样的范围，而不是 {v}
 	Add to Symbols	添加到符号
 	Basic Shapes	基本形状
+	Button	按钮
+	Panel	面板
+	UI Frames	UI 框架
 	Open Symbol Library	打开符号库
 	Save Symbol Library	保存符号库
 	Save Symbol Library…	保存符号库…
@@ -6350,7 +6358,7 @@ breakText	Glyphs	字形
 	Reset Symbol Instance	重置符号实例
 @msg	type must be static or dynamic, not {v}	type 必须是 static 或 dynamic,而不是 {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` 是静态符号:请先将其符号类型设为动态
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	在符号实例中选中的路径、复合路径或文字只能更改填色和描边的纯色
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	在符号实例中选中的路径、复合路径或文字只能更改填色、描边、不透明度和混合模式
 @msg	path must be a list of child indices	path 必须是子项索引列表
 @msg	no object at path {shown} in the symbol's art	符号图稿中路径 {shown} 处没有对象
 @msg	give fill, stroke, opacity and/or blend	请提供 fill、stroke、opacity 和/或 blend

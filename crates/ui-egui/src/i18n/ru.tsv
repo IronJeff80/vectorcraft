@@ -5198,6 +5198,11 @@ lighting	Light	Свет
 @msg	unknown parameter `{key}`; did you mean `{near}`?	неизвестный параметр `{key}`; возможно, имелся в виду `{near}`?
 @msg	unknown parameter `{key}`; the command takes no parameters	неизвестный параметр `{key}`; у команды нет параметров
 @msg	unknown parameter `{key}`; the command takes: {keys}	неизвестный параметр `{key}`; команда принимает: {keys}
+@msg	the params must be an object, not {got}	параметры должны быть объектом, а не {got}
+@msg	unknown parameter `{path}`; the object takes no keys	неизвестный параметр `{path}`; объект не принимает ключей
+@msg	unknown parameter `{path}`; it takes: {keys}	неизвестный параметр `{path}`; принимает: {keys}
+@msg	missing `{path}`	отсутствует `{path}`
+@msg	`{path}` must be {expected}, not {got}	`{path}` должно быть {expected}, а не {got}
 	Load EPS into Clipboard	Загрузить EPS в буфер обмена
 @msg	an image of {w} × {h} pixels is too large to draw	изображение размером {w} × {h} пикселей слишком велико для отрисовки
 @msg	{path}: not a PNG, JPEG, WebP, TIFF or BMP image	{path}: это не изображение PNG, JPEG, WebP, TIFF или BMP
@@ -5633,6 +5638,9 @@ axis	Y Axis	Ось Y
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all или диапазон, например 1, 3-5, а не {v}
 	Add to Symbols	Добавить в символы
 	Basic Shapes	Базовые фигуры
+	Button	Кнопка
+	Panel	Панель
+	UI Frames	UI-рамки
 	Open Symbol Library	Открыть библиотеку символов
 	Save Symbol Library	Сохранить библиотеку символов
 	Save Symbol Library…	Сохранить библиотеку символов…
@@ -6486,7 +6494,7 @@ breakText	Glyphs	Глифы
 	Reset Symbol Instance	Сбросить экземпляр символа
 @msg	type must be static or dynamic, not {v}	type должен быть static или dynamic, а не {v}
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` — статический символ: сначала задайте для него тип символа «Динамический»
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	У контура, составного контура или текста, выделенного в экземпляре символа, можно изменить только сплошной цвет заливки и обводки
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	У контура, составного контура или текста, выделенного в экземпляре символа, можно изменить только заливку, обводку, непрозрачность и режим наложения
 @msg	path must be a list of child indices	path должен быть списком индексов дочерних объектов
 @msg	no object at path {shown} in the symbol's art	в графике символа нет объекта по пути {shown}
 @msg	give fill, stroke, opacity and/or blend	укажите fill, stroke, opacity и/или blend

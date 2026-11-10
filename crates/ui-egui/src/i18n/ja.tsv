@@ -5246,6 +5246,11 @@ lighting	Light	ライト
 @msg	unknown parameter `{key}`; did you mean `{near}`?	`{key}` は不明なパラメーターです。`{near}` のことですか?
 @msg	unknown parameter `{key}`; the command takes no parameters	`{key}` は不明なパラメーターです。このコマンドにパラメーターはありません
 @msg	unknown parameter `{key}`; the command takes: {keys}	`{key}` は不明なパラメーターです。このコマンドで使えるパラメーター: {keys}
+@msg	the params must be an object, not {got}	パラメーターはオブジェクトにしてください ({got} は使えません)
+@msg	unknown parameter `{path}`; the object takes no keys	`{path}` は不明なパラメーターです。このオブジェクトにはキーを指定できません
+@msg	unknown parameter `{path}`; it takes: {keys}	`{path}` は不明なパラメーターです。使えるパラメーター: {keys}
+@msg	missing `{path}`	`{path}` が指定されていません
+@msg	`{path}` must be {expected}, not {got}	`{path}` は {expected} にしてください ({got} は使えません)
 	Load EPS into Clipboard	EPS をクリップボードに読み込む
 @msg	an image of {w} × {h} pixels is too large to draw	{w} × {h} ピクセルの画像は大きすぎて描画できません
 @msg	{path}: not a PNG, JPEG, WebP, TIFF or BMP image	{path}: PNG、JPEG、WebP、TIFF、BMP のいずれの画像でもありません
@@ -5704,6 +5709,9 @@ axis	Y Axis	Y 軸
 @msg	`artboards`: all or a range such as 1, 3-5, not {v}	`artboards`: all または 1, 3-5 のような範囲を指定してください ({v} ではなく)
 	Add to Symbols	シンボルに追加
 	Basic Shapes	基本シェイプ
+	Button	ボタン
+	Panel	パネル
+	UI Frames	UIフレーム
 	Open Symbol Library	シンボルライブラリを開く
 	Save Symbol Library	シンボルライブラリを保存
 	Save Symbol Library…	シンボルライブラリを保存…
@@ -6195,7 +6203,7 @@ breakText	Glyphs	字形
 	Reset Symbol Instance	シンボルインスタンスをリセット
 @msg	type must be static or dynamic, not {v}	type は static または dynamic にしてください({v} は無効です)
 @msg	`{name}` is a static symbol: set its Symbol Type to Dynamic first	`{name}` はスタティックシンボルです。先にシンボルの種類をダイナミックに設定してください
-@msg	Only the solid color fill and stroke of a path, compound path or type selected in a symbol instance can change	シンボルインスタンス内で選択したパス、複合パス、テキストは、塗りと線の単色のみ変更できます
+@msg	Only the fill, stroke, opacity and blend of a path, compound path or type selected in a symbol instance can change	シンボルインスタンス内で選択したパス、複合パス、または文字について変更できるのは塗り、線、不透明度、描画モードだけです
 @msg	path must be a list of child indices	path は子のインデックスのリストにしてください
 @msg	no object at path {shown} in the symbol's art	シンボルのアートのパス {shown} にオブジェクトがありません
 @msg	give fill, stroke, opacity and/or blend	fill、stroke、opacity、blend のいずれかを指定してください
