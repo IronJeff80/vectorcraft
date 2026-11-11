@@ -522,6 +522,7 @@
 	Show Guides	დამხმარე ხაზების ჩვენება
 	Lock Guides	დამხმარე ხაზების ჩაკეტვა
 	Lock Guides by Default	დამხმარე ხაზების ნაგულისხმევად ჩაკეტვა
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	სამუშაო დაფის დამხმარე ხაზები Cmd/Ctrl + სახაზავიდან გადათრევით
 	Unlock Guides	დამხმარე ხაზების განბლოკვა
 	Make Guides	დამხმარე ხაზების შექმნა
 	Release Guides	დამხმარე ხაზების მოხსნა
@@ -3307,6 +3308,12 @@ theme	Appearance	იერსახე
 	Real-time Drawing and Editing	რეალურ დროში ხატვა და რედაქტირება
 	Render Threads (-1 = Automatic)	ნაკადები (-1 = ავტომატური)
 	Reset Preferences	პარამეტრების ჩამოყრა
+	Export Preferences…	პარამეტრების ექსპორტირება…
+	Import Preferences…	პარამეტრების იმპორტირება…
+	Save the applied preferences to a JSON file	გამოყენებული პარამეტრების შენახვა JSON ფაილში
+	Apply the preferences in a file Export Preferences saved	პარამეტრების გამოყენება ფაილიდან, რომელიც „პარამეტრების ექსპორტირებამ“ შეინახა
+	Export Preferences	პარამეტრების ექსპორტირება
+	Import Preferences	პარამეტრების იმპორტირება
 	Search Preferences	პარამეტრებში ძიება
 	No settings found	პარამეტრები ვერ მოიძებნა
 	Scale Corners	კუთხეების მასშტაბირება
@@ -3648,6 +3655,8 @@ font-technology	Variable	ცვლადი
 	Preferences	პარამეტრები
 	Previous	წინა
 	Restore every preference to its default (applied on OK)	ყველა პარამეტრის ნაგულისხმევ მნიშვნელობაზე დაბრუნება (გამოიყენება OK-ზე დაჭერისას)
+	Reset all preferences to their defaults?	დავაბრუნოთ ყველა პარამეტრი ნაგულისხმევ მნიშვნელობებზე?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	ნაგულისხმევი მნიშვნელობები გამოიყენება, როცა პარამეტრებში OK-ს დააჭერთ. იქ გაუქმება ინარჩუნებს თქვენს მიმდინარე პარამეტრებს.
 	Smaller ↔ Larger	უფრო პატარა ↔ უფრო დიდი
 	Smart Guides (View → Smart Guides)	ჭკვიანი დამხმარე ხაზები (ხედი → ჭკვიანი დამხმარე ხაზები)
 	Couldn't save recovery data: {e}	აღდგენის მონაცემები ვერ შეინახა: {e}
@@ -4405,6 +4414,20 @@ font-technology	Variable	ცვლადი
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	უცნობი ზედდაბეჭდვა `{o}` (preserve, simulate ან discard)
 @msg	unknown panel `{raw}`	უცნობი პანელი `{raw}`
 @msg	unknown preference `{key}`	უცნობი პარამეტრი `{key}`
+@msg	Preferences imported.	პარამეტრები იმპორტირებულია.
+@msg	not a preferences file: {e}	ეს არ არის პარამეტრების ფაილი: {e}
+@msg	not a preferences file: no JSON object	ეს არ არის პარამეტრების ფაილი: JSON ობიექტი არ არის
+@msg	not a preferences file (format `{format}`)	ეს არ არის პარამეტრების ფაილი (ფორმატი `{format}`)
+@msg	not a preferences file: no `format`	ეს არ არის პარამეტრების ფაილი: `format` არ არის
+@msg	not a preferences file: no `version`	ეს არ არის პარამეტრების ფაილი: `version` არ არის
+@msg	not a preferences file: no `prefs`	ეს არ არის პარამეტრების ფაილი: `prefs` არ არის
+@msg	the file was saved by a newer version of VectorCraft (version {v})	ფაილი შენახულია VectorCraft-ის უფრო ახალი ვერსიით (ვერსია {v})
+@msg	the file holds no preferences	ფაილში პარამეტრები არ არის
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` საქაღალდეს მიუთითებს, პარამეტრების ფაილები კი საქაღალდეებს არ შეიცავს
+@msg	the file is larger than 1 MB	ფაილი 1 MB-ზე დიდია
+@msg	give `path` or `data`	მიუთითეთ `path` ან `data`
+@msg	`{key}` must be an object	`{key}` უნდა იყოს ობიექტი
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` ცალკე სრულდება და არა პაკეტის ნაბიჯად
 @msg	unknown preset (one of {_1})	უცნობი პრესეტი (ერთ-ერთი: {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	უცნობი პრესეტი `{name}` (high, medium, low ან შენახული: იხ. flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	უცნობი პრესეტი `{name}` (იხ. flattener.presets.list)
@@ -4991,6 +5014,7 @@ file-filter	Swatch libraries	ფერის ნიმუშების ბი�
 file-filter	Flattener presets	გაბრტყელების პრესეტები
 file-filter	PDF presets	PDF-ის პრესეტები
 file-filter	Print presets	ბეჭდვის პრესეტები
+file-filter	Preferences	პარამეტრები
 file-filter	Export presets	ექსპორტის პრესეტები
 file-filter	SVG Compressed	შეკუმშული SVG
 file-filter	PDF-compatible .ai	PDF-თან თავსებადი .ai
@@ -5287,6 +5311,7 @@ imageTrace	Outline	კონტური
 	Preview (1 inch on the page)	წინასწარი ნახვა (1 დუიმი გვერდზე)
 	Set as Default	ნაგულისხმევად დაყენება
 	 out from a highlighted edge to place its dimension  |  	 — გამოკვეთილი კიდიდან გარეთ, მისი ზომის დასასმელად  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 — ორ წერტილზე, შემდეგ გადაადგილეთ და დააწკაპუნეთ გასწორებული, ჰორიზონტალური ან ვერტიკალური ზომის დასასმელად  |  
 	 cancels  |  Double-click the tool for options	 — გაუქმება  |  პარამეტრებისთვის ორჯერ დაწკაპეთ ხელსაწყოზე
 	Angular	კუთხური
 	Away from the Line	ხაზისგან მოშორებით
@@ -5318,12 +5343,14 @@ imageTrace	Outline	კონტური
 @msg	Measured anchor no longer exists	გაზომილი საყრდენი წერტილი აღარ არსებობს
 @msg	Measured segment no longer exists	გაზომილი სეგმენტი აღარ არსებობს
 @msg	Non-finite dimension	ზომა სასრული რიცხვი არ არის
+@msg	Only linear dimensions are horizontal or vertical	მხოლოდ ხაზოვანი ზომებია ჰორიზონტალური ან ვერტიკალური
 @msg	Scale Text Attributes: selected type has no scale to bake	ტექსტის ატრიბუტების მასშტაბირება: არჩეულ ტექსტს არ აქვს გადასაყვანი მასშტაბი
 @msg	Scale must be drawing:real, for example 1:10	მასშტაბი უნდა იყოს ნახაზი:რეალური, მაგალითად 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	მასშტაბის შეფარდება 1:1000000-სა და 1000000:1-ს შორის უნდა იყოს
 @msg	Second measured segment no longer exists	მეორე გაზომილი სეგმენტი აღარ არსებობს
 @msg	Unknown dimension mode	ზომის უცნობი რეჟიმი
 @msg	Unknown dimension option {k}	ზომის უცნობი პარამეტრი {k}
+@msg	Unknown dimension orientation	ზომის უცნობი ორიენტაცია
 @msg	Unknown dimension style	ზომის უცნობი სტილი
 @msg	Unknown unit	უცნობი ერთეული
 	Close the circular ends of open profiles. Partial sweeps keep their cut sides open.	ღია პროფილების წრიული ბოლოების დახურვა. ნაწილობრივი ბრუნვისას ჭრის მხარეები ღია რჩება.

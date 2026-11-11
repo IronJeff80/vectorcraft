@@ -601,6 +601,7 @@
 	Show Guides	Prikaži vodilice
 	Lock Guides	Zaključaj vodilice
 	Lock Guides by Default	Zaključaj vodilice po zadanom
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Vodilice radne ploče uz Cmd/Ctrl + povlačenje s ravnala
 	Unlock Guides	Otključaj vodilice
 	Make Guides	Napravi vodilice
 	Release Guides	Oslobodi vodilice
@@ -3712,6 +3713,12 @@ theme	Appearance	Izgled
 	Real-time Drawing and Editing	Crtanje i uređivanje u stvarnom vremenu
 	Render Threads (-1 = Automatic)	Niti iscrtavanja (-1 = automatski)
 	Reset Preferences	Vrati postavke na početne
+	Export Preferences…	Izvezi postavke…
+	Import Preferences…	Uvezi postavke…
+	Save the applied preferences to a JSON file	Sačuvaj primijenjene postavke u JSON datoteku
+	Apply the preferences in a file Export Preferences saved	Primijeni postavke iz datoteke sačuvane naredbom Izvezi postavke
+	Export Preferences	Izvezi postavke
+	Import Preferences	Uvezi postavke
 	Search Preferences	Pretraga postavki
 	No settings found	Nema pronađenih postavki
 	Scale Corners	Skaliraj uglove
@@ -4091,6 +4098,8 @@ font-technology	Variable	Varijabilni
 	Preferences	Postavke
 	Previous	Prethodno
 	Restore every preference to its default (applied on OK)	Vrati svaku postavku na zadanu vrijednost (primjenjuje se na U redu)
+	Reset all preferences to their defaults?	Vratiti sve postavke na zadane vrijednosti?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Zadane vrijednosti primjenjuju se kada kliknete U redu u Postavkama. Otkaži tamo zadržava vaše trenutne postavke.
 	Smaller ↔ Larger	Manje ↔ veće
 	Smart Guides (View → Smart Guides)	Pametne vodilice (Prikaz → Pametne vodilice)
 	Couldn't save recovery data: {e}	Nije moguće sačuvati podatke za oporavak: {e}
@@ -4905,6 +4914,20 @@ imageTrace	Outline	Obris
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	nepoznati pretisci `{o}` (preserve, simulate ili discard)
 @msg	unknown panel `{raw}`	nepoznat panel `{raw}`
 @msg	unknown preference `{key}`	nepoznata postavka `{key}`
+@msg	Preferences imported.	Postavke su uvezene.
+@msg	not a preferences file: {e}	nije datoteka postavki: {e}
+@msg	not a preferences file: no JSON object	nije datoteka postavki: nema JSON objekta
+@msg	not a preferences file (format `{format}`)	nije datoteka postavki (format `{format}`)
+@msg	not a preferences file: no `format`	nije datoteka postavki: nema `format`
+@msg	not a preferences file: no `version`	nije datoteka postavki: nema `version`
+@msg	not a preferences file: no `prefs`	nije datoteka postavki: nema `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	datoteku je sačuvala novija verzija programa VectorCraft (verzija {v})
+@msg	the file holds no preferences	datoteka ne sadrži postavke
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` navodi folder, a datoteke postavki ne sadrže foldere
+@msg	the file is larger than 1 MB	datoteka je veća od 1 MB
+@msg	give `path` or `data`	navedite `path` ili `data`
+@msg	`{key}` must be an object	`{key}` mora biti objekat
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` se pokreće samostalno, ne kao korak paketa
 @msg	unknown preset (one of {_1})	nepoznat predložak (jedan od {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	nepoznat predložak `{name}` (high, medium, low ili sačuvani: vidi flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	nepoznat predložak `{name}` (vidi flattener.presets.list)
@@ -5445,6 +5468,7 @@ file-filter	Swatch libraries	Biblioteke uzoraka boja
 file-filter	Flattener presets	Predlošci spljoštavanja
 file-filter	PDF presets	PDF predlošci
 file-filter	Print presets	Predlošci štampanja
+file-filter	Preferences	Postavke
 file-filter	Export presets	Predlošci izvoza
 file-filter	SVG Compressed	Komprimirani SVG
 file-filter	PDF-compatible .ai	.ai kompatibilan s PDF-om
@@ -5551,6 +5575,7 @@ mark-style	Japanese	Japanski
 	Preview (1 inch on the page)	Pregled (1 inč na stranici)
 	Set as Default	Postavi kao zadano
 	 out from a highlighted edge to place its dimension  |  	 od istaknute ivice da postavite njenu kotu  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 na dvije tačke, zatim pomjerite i kliknite da postavite poravnatu, horizontalnu ili vertikalnu kotu  |  
 	 cancels  |  Double-click the tool for options	 otkazuje  |  Dvostruki klik na alat za opcije
 	Angular	Ugaono
 	Away from the Line	Dalje od linije
@@ -5581,12 +5606,14 @@ mark-style	Japanese	Japanski
 @msg	Measured anchor no longer exists	Izmjereno sidro više ne postoji
 @msg	Measured segment no longer exists	Izmjereni segment više ne postoji
 @msg	Non-finite dimension	Nekonačna kota
+@msg	Only linear dimensions are horizontal or vertical	Samo linearne kote su horizontalne ili vertikalne
 @msg	Scale Text Attributes: selected type has no scale to bake	Skaliraj atribute teksta: odabrani tekst nema skalu za primjenu
 @msg	Scale must be drawing:real, for example 1:10	Skala mora biti crtež:stvarno, npr. 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Omjer skale mora biti između 1:1000000 i 1000000:1
 @msg	Second measured segment no longer exists	Drugi izmjereni segment više ne postoji
 @msg	Unknown dimension mode	Nepoznat način kote
 @msg	Unknown dimension option {k}	Nepoznata opcija kote {k}
+@msg	Unknown dimension orientation	Nepoznata orijentacija kote
 @msg	Unknown dimension style	Nepoznat stil kote
 @msg	Unknown unit	Nepoznata jedinica
 	Close the circular ends of open profiles. Partial sweeps keep their cut sides open.	Zatvori kružne krajeve otvorenih profila. Djelimična izvlačenja zadržavaju otvorene rezane strane.

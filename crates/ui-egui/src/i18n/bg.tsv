@@ -1826,6 +1826,7 @@ font-technology	Variable	Променливи
 	Lock Grid	Заключване на мрежата
 	Lock Guides	Заключване на водачите
 	Lock Guides by Default	Заключване на водачите по подразбиране
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Водачи за работната област с Cmd/Ctrl + плъзгане от линийка
 	Lock Others	Заключване на другите
 	Lock Slices	Заключване на фрагментите
 	Lock Station Point	Заключване на базовата точка
@@ -2744,6 +2745,12 @@ digits	Malayalam	Малаялам
 	Reset OpenType Features	Нулиране на OpenType характеристиките
 	Reset Panel	Нулиране на панела
 	Reset Preferences	Нулиране на настройките
+	Export Preferences…	Експортиране на настройките…
+	Import Preferences…	Импортиране на настройките…
+	Save the applied preferences to a JSON file	Запазване на приложените настройки във файл JSON
+	Apply the preferences in a file Export Preferences saved	Прилагане на настройките от файл, запазен с „Експортиране на настройките“
+	Export Preferences	Експортиране на настройките
+	Import Preferences	Импортиране на настройките
 	Search Preferences	Търсене в настройките
 	No settings found	Няма намерени настройки
 	Reset Profiles	Нулиране на профилите
@@ -2766,6 +2773,8 @@ digits	Malayalam	Малаялам
 	Responsive	Адаптивен
 	Restore	Възстановяване
 	Restore every preference to its default (applied on OK)	Възстановяване на всички настройки по подразбиране (прилага се при ОПК)
+	Reset all preferences to their defaults?	Да се нулират ли всички настройки до стойностите по подразбиране?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Стойностите по подразбиране се прилагат, когато щракнете върху ОК в Настройки. Отказ там запазва текущите ви настройки.
 	Restore Recovered Documents	Възстановяване на възстановените документи
 	Restored documents open unsaved: save them to keep them.	Възстановените документи се отварят незаписани: запазете ги, за да ги съхраните.
 	Restrict printing, editing and other tasks	Ограничаване на печата, редактирането и други задачи
@@ -4506,6 +4515,20 @@ axis	Both	И двете
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	непознати надписи `{o}` (запазване, симулиране или отхвърляне)
 @msg	unknown panel `{raw}`	непознат панел `{raw}`
 @msg	unknown preference `{key}`	непозната настройка `{key}`
+@msg	Preferences imported.	Настройките са импортирани.
+@msg	not a preferences file: {e}	не е файл с настройки: {e}
+@msg	not a preferences file: no JSON object	не е файл с настройки: няма обект JSON
+@msg	not a preferences file (format `{format}`)	не е файл с настройки (формат `{format}`)
+@msg	not a preferences file: no `format`	не е файл с настройки: няма `format`
+@msg	not a preferences file: no `version`	не е файл с настройки: няма `version`
+@msg	not a preferences file: no `prefs`	не е файл с настройки: няма `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	файлът е запазен от по-нова версия на VectorCraft (версия {v})
+@msg	the file holds no preferences	файлът не съдържа настройки
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` указва папка, а файловете с настройки не съдържат папки
+@msg	the file is larger than 1 MB	файлът е по-голям от 1 MB
+@msg	give `path` or `data`	посочете `path` или `data`
+@msg	`{key}` must be an object	`{key}` трябва да бъде обект
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` се изпълнява самостоятелно, а не като стъпка от пакет
 @msg	unknown preset (one of {_1})	непозната предварителна настройка (една от {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	непозната предварителна настройка `{name}` (висока, средна, ниска или запазена: вижте flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	непозната предварителна настройка `{name}` (вижте flattener.presets.list)
@@ -5421,6 +5444,7 @@ file-filter	Flattener presets	Предварителни настройки за
 file-filter	PDF presets	Предварителни настройки за PDF
 file-filter	PDF-compatible .ai	Съвместими с PDF .ai файлове
 file-filter	Print presets	Предварителни настройки за печат
+file-filter	Preferences	Настройки
 file-filter	Export presets	Набори за експортиране
 file-filter	SVG Compressed	Компресиран SVG
 file-filter	Swatch libraries	Библиотеки с образци
@@ -5502,6 +5526,7 @@ theme	Appearance	Външен вид
 	Preview (1 inch on the page)	Преглед (1 инч на страницата)
 	Set as Default	Задаване по подразбиране
 	 out from a highlighted edge to place its dimension  |  	 навън от осветен ръб, за да поставите размера му  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 върху две точки, после преместете и щракнете, за да поставите подравнен, хоризонтален или вертикален размер  |  
 	 cancels  |  Double-click the tool for options	 отказва  |  Двойно щракване върху инструмента за опции
 	Angular	Ъглов
 	Away from the Line	Встрани от линията
@@ -5533,12 +5558,14 @@ theme	Appearance	Външен вид
 @msg	Measured anchor no longer exists	Измерената опорна точка вече не съществува
 @msg	Measured segment no longer exists	Измереният сегмент вече не съществува
 @msg	Non-finite dimension	Размерът не е крайно число
+@msg	Only linear dimensions are horizontal or vertical	Само линейните размери са хоризонтални или вертикални
 @msg	Scale Text Attributes: selected type has no scale to bake	Мащабиране на текстови атрибути: избраният текст няма мащаб за прилагане
 @msg	Scale must be drawing:real, for example 1:10	Мащабът трябва да е чертеж:реалност, например 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Съотношението на мащаба трябва да е между 1:1000000 и 1000000:1
 @msg	Second measured segment no longer exists	Вторият измерен сегмент вече не съществува
 @msg	Unknown dimension mode	Непознат режим на размера
 @msg	Unknown dimension option {k}	Непозната опция за размер {k}
+@msg	Unknown dimension orientation	Непозната ориентация на размера
 @msg	Unknown dimension style	Непознат стил на размера
 @msg	Unknown unit	Непозната единица
 	Close the circular ends of open profiles. Partial sweeps keep their cut sides open.	Затваря кръговите краища на отворени профили. При частично завъртане срязаните страни остават отворени.

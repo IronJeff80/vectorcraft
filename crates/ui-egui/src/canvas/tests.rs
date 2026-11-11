@@ -1412,6 +1412,52 @@ fn new_ruler_guide_alt_cancel_keeps_document_and_redo() {
     }
 }
 
+/// With Preferences › Guides & Grid › Artboard Guides with Cmd/Ctrl + Ruler Drag on, Cmd/Ctrl held
+/// when a drag leaves either ruler makes a guide of the active artboard, even when the key is let
+/// go before the release; a guide outside the artboard is not made. With the preference off, the
+/// same drag makes a canvas guide.
+#[test]
+fn cmd_ruler_drags_make_artboard_guides_with_the_preference_on() {
+    use egui::{Event, Modifiers};
+    for source_vertical in [false, true] {
+        for on in [false, true] {
+            let mut app = VectorcraftApp::new(Session::new(), Default::default());
+            app.session.execute("file.new", &json!({"width": 400, "height": 300})).unwrap();
+            app.session.execute("prefs.set", &json!({"key": "cmdRulerDragArtboardGuides", "value": on})).unwrap();
+            app.ui.view.rulers = true;
+            app.ui.view.smart_guides = false;
+            app.ui.view.snap_to_point = false;
+            app.select_tool("rectangle");
+            let ctx = egui::Context::default();
+            frame(&mut app, &ctx, vec![]);
+            let rect = app.canvas_rect.unwrap();
+            let xf = Xf::new(rect, app.view().unwrap());
+            let from =
+                if source_vertical { pos2(rect.left() - RULER / 2.0, rect.center().y) } else { pos2(rect.center().x, rect.top() - RULER / 2.0) };
+            let drag = |app: &mut VectorcraftApp, to: Point| {
+                let at = xf.to_screen(to);
+                assert!(rect.contains(at));
+                let button = |pos, pressed, modifiers| Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers };
+                frame(app, &ctx, vec![Event::ModifiersChanged(Modifiers::COMMAND), Event::PointerMoved(from)]);
+                frame(app, &ctx, vec![button(from, true, Modifiers::COMMAND)]);
+                frame(app, &ctx, vec![Event::PointerMoved(at)]);
+                frame(app, &ctx, vec![Event::ModifiersChanged(Modifiers::NONE), Event::PointerMoved(at), button(at, false, Modifiers::NONE)]);
+            };
+            let board = app.session.active().unwrap().doc.artboards[0].id;
+            drag(&mut app, Point::new(80.0, 120.0));
+            let st = app.session.active().unwrap();
+            assert_eq!(st.doc.guides.len(), 1, "vertical {source_vertical}, on {on}");
+            assert_eq!(st.doc.guides[0].vertical, source_vertical);
+            assert_eq!(st.doc.guides[0].artboard, on.then_some(board), "vertical {source_vertical}, on {on}");
+            // Beyond the artboard's right or bottom edge.
+            let beyond = xf.to_doc(rect.right_bottom() - egui::vec2(2.0, 2.0));
+            assert!(beyond.x > 400.0 && beyond.y > 300.0, "{beyond:?}");
+            drag(&mut app, beyond);
+            assert_eq!(app.session.active().unwrap().doc.guides.len(), if on { 1 } else { 2 }, "vertical {source_vertical}, on {on}");
+        }
+    }
+}
+
 /// #451: a guide dragged out of a ruler lands on the art's side midpoints (halving an
 /// artboard-sized rectangle) and on the artboard's edges; an artboard guide is drawn across
 /// its artboard only.
@@ -3721,6 +3767,34 @@ fn snap_to_grid_and_pixel_preview_hide_the_hover_outline() {
     assert_eq!(outlines(&mut app), 0, "Pixel Preview on");
     app.run("view.pixelPreview", json!({})).unwrap();
     assert!(outlines(&mut app) > 0, "Pixel Preview off again");
+}
+
+/// View › Pixel Preview turns Smart Guides off in the tools: a square moved to 3 pt below another
+/// square's top lines up with it only while Pixel Preview is off.
+#[test]
+fn pixel_preview_stops_smart_guides_snapping_a_move() {
+    for pixel in [false, true] {
+        let mut app = VectorcraftApp::new(Session::new(), Default::default());
+        app.session.execute("file.new", &json!({"width": 800, "height": 600})).unwrap();
+        app.session.execute("shape.rectangle", &json!({"x": 100, "y": 100, "width": 100, "height": 100})).unwrap();
+        let id = app.session.execute("shape.rectangle", &json!({"x": 400, "y": 300, "width": 50, "height": 50})).unwrap()["id"].as_u64().unwrap();
+        if pixel {
+            app.run("view.pixelPreview", json!({})).unwrap();
+        }
+        assert!(app.ui.view.smart_guides);
+        assert_eq!(app.ui.view.pixel_preview, pixel);
+        app.run("select.set", json!({"ids": [id]})).unwrap();
+        app.select_tool("selection");
+        let view = app.view_info();
+        let mut at = |kind: PointerKind, y: f64| crate::canvas::dispatch(&mut app, &PointerEvent::new(kind, 425.0, y), view);
+        at(PointerKind::Down, 325.0);
+        for y in [300.0, 250.0, 200.0, 150.0, 128.0] {
+            at(PointerKind::Drag, y);
+        }
+        at(PointerKind::Up, 128.0);
+        let top = app.session.active().unwrap().doc.node(vectorcraft_doc::NodeId(id)).unwrap().geometric_bounds().unwrap().y0;
+        assert_eq!(top, if pixel { 103.0 } else { 100.0 }, "Pixel Preview {pixel}");
+    }
 }
 
 /// #2452: while the view scrolls under a resting pointer, the art under it isn't hit-tested:
@@ -10590,6 +10664,48 @@ fn a_whole_pixel_pan_copies_the_pixels_that_stay_on_screen() {
     }
 }
 
+/// Installing, replacing or removing a plug-in draws a document with a plug-in effect again, and a
+/// pan from the frame drawn before the change renders whole instead of copying its pixels. The key
+/// of a document without a plug-in effect does not follow the plug-ins. The other tests share the
+/// plug-in registry, and the plug-in is removed after.
+#[test]
+fn a_plug_in_change_draws_the_document_s_plug_in_effects_again() {
+    use vectorcraft_plugins::wat as tpl;
+    let id = "test.canvas.redraw";
+    let module = vectorcraft_format::base64_encode(&wat::parse_str(tpl::module(&tpl::manifest(id, "effect", "{}"), tpl::ECHO, "", 1)).unwrap());
+    let mut app = VectorcraftApp::new(Session::new(), Default::default());
+    app.run("plugin.install", json!({"dataBase64": module})).unwrap();
+    app.session.execute("file.new", &json!({"width": 256, "height": 128})).unwrap();
+    let rect = app.run("shape.rectangle", json!({"x": 16, "y": 16, "width": 64, "height": 96})).unwrap()["id"].clone();
+    app.canvas.worker_started = true; // render on this thread
+    let ctx = egui::Context::default();
+    shapes(&mut app, &ctx);
+    // Other keys' fields (placed documents' bitmaps) follow what other tests do; this one's don't.
+    let plugins = |app: &VectorcraftApp| app.canvas.key.as_ref().expect("a frame was rendered").plugins;
+    let plain = plugins(&app);
+    app.run("plugin.install", json!({"dataBase64": module})).unwrap();
+    shapes(&mut app, &ctx);
+    assert_eq!(plugins(&app), plain, "no plug-in effect, so nothing to draw again");
+    app.run("effect.apply", json!({"effect": vectorcraft_plugins::effect::effect_id(id), "ids": [rect]})).unwrap();
+    shapes(&mut app, &ctx);
+    let before = app.canvas.key.clone().expect("a frame was rendered");
+    app.run("plugin.install", json!({"dataBase64": module})).unwrap();
+    shapes(&mut app, &ctx);
+    let after = plugins(&app);
+    assert_ne!(after, before.plugins, "drawn again once the plug-in was replaced");
+    // The worker's frame from before the change gives no pixels to the next pan.
+    let doc = app.session.active().unwrap().doc.clone();
+    let at_100 = CacheKey { zoom: 1.0, rot: 0.0, ppp: 1.0, pixel: None, ..before };
+    let mut r = vectorcraft_render::Renderer::new();
+    let mut kept = None;
+    render_job(&mut r, &mut kept, &pan_job(&doc, &at_100, (0.0, 0.0)));
+    let pan = pan_job(&doc, &CacheKey { plugins: after, ..at_100.clone() }, (10.0, 0.0));
+    assert!(!render_job(&mut r, &mut kept, &pan).reused, "copied from the frame before the change");
+    app.run("plugin.remove", json!({"id": id})).unwrap();
+    shapes(&mut app, &ctx);
+    assert_ne!(plugins(&app), after, "drawn again once the plug-in was removed");
+}
+
 /// A frame does not copy from the last one when the view moves by part of a pixel or over half the
 /// frame, when copying is not allowed, or when a listed key field, render option, zoom, rotation,
 /// canvas size or device scale differs. Each such frame has the job's size. The session test
@@ -10643,6 +10759,7 @@ fn a_frame_renders_whole_when_anything_but_a_whole_pixel_pan_changed() {
         ("outline key", other_key(&|k| k.outline = true)),
         ("Pixel Preview", other_key(&|k| k.pixel = Some([0, 0, 256, 128]))),
         ("placed bitmaps", other_key(&|k| k.placed += 1)),
+        ("plug-ins", other_key(&|k| k.plugins += 1)),
         ("outline", other_opts(&|o| o.outline = true)),
         ("proof", other_opts(&|o| o.proof = Some(Default::default()))),
         ("overprint preview", other_opts(&|o| o.overprint_preview = true)),

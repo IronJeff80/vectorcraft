@@ -1617,6 +1617,7 @@ antiAlias	Sharp	Nítido
 	Lock Grid	Bloquear Grade
 	Lock Guides	Bloquear Guias
 	Lock Guides by Default	Bloquear Guias por Padrão
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Guias de Prancheta com Cmd/Ctrl + Arrastar da Régua
 	Lock Slices	Bloquear Fatias
 	Lock Station Point	Bloquear Ponto de Estação
 	Lossless (lossy WebP isn't available yet)	Sem Perdas (WebP com perdas ainda não está disponível)
@@ -2356,6 +2357,12 @@ digits	Malayalam	Malaiala
 	Reset OpenType Features	Redefinir Recursos OpenType
 	Reset Panel	Redefinir Painel
 	Reset Preferences	Redefinir Preferências
+	Export Preferences…	Exportar Preferências…
+	Import Preferences…	Importar Preferências…
+	Save the applied preferences to a JSON file	Salvar as preferências aplicadas em um arquivo JSON
+	Apply the preferences in a file Export Preferences saved	Aplicar as preferências de um arquivo salvo com Exportar Preferências
+	Export Preferences	Exportar Preferências
+	Import Preferences	Importar Preferências
 	Search Preferences	Pesquisar nas Preferências
 	No settings found	Nenhuma configuração encontrada
 	Reset Profiles	Redefinir Perfis
@@ -2377,6 +2384,8 @@ digits	Malayalam	Malaiala
 	Restore	Restaurar
 	Restore Recovered Documents	Restaurar Documentos Recuperados
 	Restore every preference to its default (applied on OK)	Restaurar toda preferência ao padrão (aplicado em OK)
+	Reset all preferences to their defaults?	Redefinir todas as preferências para o padrão?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Os padrões são aplicados quando você clica em OK em Preferências. Cancelar ali mantém suas preferências atuais.
 	Restored documents open unsaved: save them to keep them.	Os documentos restaurados abrem sem salvar: salve-os para mantê-los.
 	Restrict printing, editing and other tasks	Restringir impressão, edição e outras tarefas
 	Reverse Front to Back	Inverter da Frente para Trás
@@ -4229,6 +4238,20 @@ axis	Both	Ambos
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	sobreimpressões desconhecidas `{o}` (preserve, simulate ou discard)
 @msg	unknown panel `{raw}`	painel desconhecido `{raw}`
 @msg	unknown preference `{key}`	preferência desconhecida `{key}`
+@msg	Preferences imported.	Preferências importadas.
+@msg	not a preferences file: {e}	não é um arquivo de preferências: {e}
+@msg	not a preferences file: no JSON object	não é um arquivo de preferências: nenhum objeto JSON
+@msg	not a preferences file (format `{format}`)	não é um arquivo de preferências (formato `{format}`)
+@msg	not a preferences file: no `format`	não é um arquivo de preferências: falta `format`
+@msg	not a preferences file: no `version`	não é um arquivo de preferências: falta `version`
+@msg	not a preferences file: no `prefs`	não é um arquivo de preferências: falta `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	o arquivo foi salvo por uma versão mais recente do VectorCraft (versão {v})
+@msg	the file holds no preferences	o arquivo não contém preferências
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` indica uma pasta, e os arquivos de preferências não incluem pastas
+@msg	the file is larger than 1 MB	o arquivo tem mais de 1 MB
+@msg	give `path` or `data`	informe `path` ou `data`
+@msg	`{key}` must be an object	`{key}` deve ser um objeto
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` é executado sozinho, não como etapa de um lote
 @msg	unknown preset (one of {_1})	predefinição desconhecida (uma de {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	predefinição desconhecida `{name}` (high, medium, low ou uma salva: veja flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	predefinição desconhecida `{name}` (veja flattener.presets.list)
@@ -5436,6 +5459,7 @@ file-filter	Swatch libraries	Bibliotecas de amostras
 file-filter	Flattener presets	Predefinidos de achatamento
 file-filter	PDF presets	Predefinidos de PDF
 file-filter	Print presets	Predefinidos de impressão
+file-filter	Preferences	Preferências
 file-filter	Export presets	Predefinições de exportação
 file-filter	SVG Compressed	SVG Compactado
 file-filter	PDF-compatible .ai	.ai compatível com PDF
@@ -5644,12 +5668,14 @@ mark-style	Japanese	Japonesas
 @msg	Measured anchor no longer exists	O ponto de ancoragem medido não existe mais
 @msg	Measured segment no longer exists	O segmento medido não existe mais
 @msg	Non-finite dimension	Cota não finita
+@msg	Only linear dimensions are horizontal or vertical	Somente cotas lineares são horizontais ou verticais
 @msg	Scale Text Attributes: selected type has no scale to bake	Dimensionar Atributos de Texto: o texto selecionado não tem escala para aplicar
 @msg	Scale must be drawing:real, for example 1:10	A escala deve ser desenho:real, por exemplo 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	A proporção da escala deve estar entre 1:1000000 e 1000000:1
 @msg	Second measured segment no longer exists	O segundo segmento medido não existe mais
 @msg	Unknown dimension mode	Modo de cota desconhecido
 @msg	Unknown dimension option {k}	Opção de cota desconhecida {k}
+@msg	Unknown dimension orientation	Orientação de cota desconhecida
 @msg	the Color Picker is not open	o Seletor de Cores não está aberto
 @msg	the Simplify slider is not open	o controle deslizante Simplificar não está aberto
 @msg	the Smooth slider is not open	o controle deslizante Suavizar não está aberto
@@ -5669,6 +5695,7 @@ mark-style	Japanese	Japonesas
 	This system has no screen color sampler	Este sistema não tem coletor de cores da tela
 	 cancels  |  Double-click the tool for options	 cancela  |  Clique duas vezes na ferramenta para ver as opções
 	 out from a highlighted edge to place its dimension  |  	 para fora a partir de uma borda destacada para posicionar a cota  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 em dois pontos, depois mova e clique para posicionar uma cota alinhada, horizontal ou vertical  |  
 	Color Panel Options	Opções do Painel Cor
 @msg	`mode` must be grayscale, rgb, hsb, cmyk or websafe	`mode` deve ser grayscale, rgb, hsb, cmyk ou websafe
 @msg	the image can't be read as a texture	a imagem não pode ser lida como textura

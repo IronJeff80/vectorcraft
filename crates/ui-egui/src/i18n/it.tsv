@@ -1278,6 +1278,7 @@ file-filter	Swatch libraries	Librerie campioni
 file-filter	Flattener presets	Preset di appiattimento
 file-filter	PDF presets	Preset PDF
 file-filter	Print presets	Preset di stampa
+file-filter	Preferences	Preferenze
 file-filter	Export presets	Predefiniti di esportazione
 file-filter	SVG Compressed	SVG compresso
 file-filter	PDF-compatible .ai	.ai compatibile con PDF
@@ -1925,6 +1926,7 @@ file-filter	Templates	Modelli
 	Lock Grid	Blocca griglia
 	Lock Guides	Blocca guide
 	Lock Guides by Default	Blocca guide per impostazione predefinita
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Guide della tavola da disegno con Cmd/Ctrl + trascinamento dal righello
 	Lock Others	Blocca altri
 	Lock Slices	Blocca sezioni
 	Lock Station Point	Blocca punto di osservazione
@@ -2852,6 +2854,12 @@ digits	Malayalam	Malayalam
 	Reset OpenType Features	Reimposta funzioni OpenType
 	Reset Panel	Reimposta pannello
 	Reset Preferences	Reimposta preferenze
+	Export Preferences…	Esporta preferenze…
+	Import Preferences…	Importa preferenze…
+	Save the applied preferences to a JSON file	Salva le preferenze applicate in un file JSON
+	Apply the preferences in a file Export Preferences saved	Applica le preferenze di un file salvato con Esporta preferenze
+	Export Preferences	Esporta preferenze
+	Import Preferences	Importa preferenze
 	Search Preferences	Cerca nelle preferenze
 	No settings found	Nessuna impostazione trovata
 	Reset Profiles	Reimposta profili
@@ -2875,6 +2883,8 @@ digits	Malayalam	Malayalam
 	Responsive	Adattivo
 	Restore	Ripristina
 	Restore every preference to its default (applied on OK)	Ripristina tutte le preferenze ai valori predefiniti (applicato con OK)
+	Reset all preferences to their defaults?	Ripristinare tutte le preferenze ai valori predefiniti?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	I valori predefiniti vengono applicati quando fai clic su OK in Preferenze. Annulla lì mantiene le preferenze attuali.
 	Restore Recovered Documents	Ripristina documenti recuperati
 	Restored documents open unsaved: save them to keep them.	I documenti ripristinati si aprono senza essere salvati: salvali per conservarli.
 	Restrict printing, editing and other tasks	Limita la stampa, la modifica e altre operazioni
@@ -4723,6 +4733,20 @@ axis	Both	Entrambi
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	valore di sovrastampa sconosciuto `{o}` (preserve, simulate o discard)
 @msg	unknown panel `{raw}`	pannello sconosciuto `{raw}`
 @msg	unknown preference `{key}`	preferenza sconosciuta `{key}`
+@msg	Preferences imported.	Preferenze importate.
+@msg	not a preferences file: {e}	non è un file di preferenze: {e}
+@msg	not a preferences file: no JSON object	non è un file di preferenze: nessun oggetto JSON
+@msg	not a preferences file (format `{format}`)	non è un file di preferenze (formato `{format}`)
+@msg	not a preferences file: no `format`	non è un file di preferenze: manca `format`
+@msg	not a preferences file: no `version`	non è un file di preferenze: manca `version`
+@msg	not a preferences file: no `prefs`	non è un file di preferenze: manca `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	il file è stato salvato da una versione più recente di VectorCraft (versione {v})
+@msg	the file holds no preferences	il file non contiene preferenze
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` indica una cartella, e i file di preferenze non includono cartelle
+@msg	the file is larger than 1 MB	il file supera 1 MB
+@msg	give `path` or `data`	specifica `path` o `data`
+@msg	`{key}` must be an object	`{key}` deve essere un oggetto
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` viene eseguito da solo, non come passo di un batch
 @msg	unknown preset (one of {_1})	preset sconosciuto (uno dei seguenti: {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	preset sconosciuto `{name}` (high, medium, low o uno salvato: vedi flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	preset sconosciuto `{name}` (vedi flattener.presets.list)
@@ -5290,6 +5314,7 @@ lighting	Light	Luce
 	Preview (1 inch on the page)	Anteprima (1 pollice sulla pagina)
 	Set as Default	Imposta come predefinito
 	 out from a highlighted edge to place its dimension  |  	 verso l'esterno da un bordo evidenziato per posizionarne la quota  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 su due punti, poi sposta e fai clic per posizionare una quota allineata, orizzontale o verticale  |  
 	 cancels  |  Double-click the tool for options	 annulla  |  Doppio clic sullo strumento per le opzioni
 	Linear	Lineare
 	Angular	Angolare
@@ -5324,12 +5349,14 @@ lighting	Light	Luce
 @msg	Measured anchor no longer exists	Il punto di ancoraggio misurato non esiste più
 @msg	Measured segment no longer exists	Il segmento misurato non esiste più
 @msg	Non-finite dimension	Quota non finita
+@msg	Only linear dimensions are horizontal or vertical	Solo le quote lineari sono orizzontali o verticali
 @msg	Scale Text Attributes: selected type has no scale to bake	Scala attributi di testo: il testo selezionato non ha una scala da incorporare
 @msg	Scale must be drawing:real, for example 1:10	La scala deve essere disegno:reale, ad esempio 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Il rapporto di scala deve essere compreso tra 1:1000000 e 1000000:1
 @msg	Second measured segment no longer exists	Il secondo segmento misurato non esiste più
 @msg	Unknown dimension mode	Modalità di quota sconosciuta
 @msg	Unknown dimension option {k}	Opzione di quota sconosciuta {k}
+@msg	Unknown dimension orientation	Orientamento della quota sconosciuto
 @msg	Unknown dimension style	Stile di quota sconosciuto
 @msg	Unknown unit	Unità sconosciuta
 # Revolve cap description

@@ -1248,6 +1248,7 @@ file-filter	Swatch libraries	Farbfeldbibliotheken
 file-filter	Flattener presets	Reduzierungsvorgaben
 file-filter	PDF presets	PDF-Vorgaben
 file-filter	Print presets	Druckvorgaben
+file-filter	Preferences	Voreinstellungen
 file-filter	Export presets	Exportvorgaben
 file-filter	SVG Compressed	SVG komprimiert
 file-filter	PDF-compatible .ai	PDF-kompatible .ai
@@ -1893,6 +1894,7 @@ file-filter	Templates	Vorlagen
 	Lock Grid	Raster sperren
 	Lock Guides	Hilfslinien sperren
 	Lock Guides by Default	Hilfslinien standardmäßig sperren
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Zeichenflächen-Hilfslinien mit Cmd/Ctrl + Ziehen aus dem Lineal
 	Lock Others	Andere sperren
 	Lock Slices	Slices sperren
 	Lock Station Point	Standpunkt sperren
@@ -2776,6 +2778,12 @@ digits	Malayalam	Malayalam
 	Reset OpenType Features	OpenType-Funktionen zurücksetzen
 	Reset Panel	Bedienfeld zurücksetzen
 	Reset Preferences	Voreinstellungen zurücksetzen
+	Export Preferences…	Voreinstellungen exportieren…
+	Import Preferences…	Voreinstellungen importieren…
+	Save the applied preferences to a JSON file	Die angewendeten Voreinstellungen in einer JSON-Datei speichern
+	Apply the preferences in a file Export Preferences saved	Die Voreinstellungen aus einer mit „Voreinstellungen exportieren“ gespeicherten Datei anwenden
+	Export Preferences	Voreinstellungen exportieren
+	Import Preferences	Voreinstellungen importieren
 	Search Preferences	Voreinstellungen durchsuchen
 	No settings found	Keine Einstellungen gefunden
 	Reset Profiles	Profile zurücksetzen
@@ -2799,6 +2807,8 @@ digits	Malayalam	Malayalam
 	Responsive	Responsiv
 	Restore	Wiederherstellen
 	Restore every preference to its default (applied on OK)	Alle Voreinstellungen auf ihre Standardwerte zurücksetzen (wird bei OK angewendet)
+	Reset all preferences to their defaults?	Alle Voreinstellungen auf ihre Standardwerte zurücksetzen?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Die Standardwerte werden angewendet, wenn Sie in den Voreinstellungen auf OK klicken. Abbrechen dort behält Ihre aktuellen Voreinstellungen.
 	Restore Recovered Documents	Wiederhergestellte Dokumente öffnen
 	Restored documents open unsaved: save them to keep them.	Wiederhergestellte Dokumente werden ungespeichert geöffnet: Speichern Sie sie, um sie zu behalten.
 	Restrict printing, editing and other tasks	Drucken, Bearbeiten und andere Aufgaben einschränken
@@ -4597,6 +4607,20 @@ theme	Appearance	Erscheinungsbild
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	unbekannter Wert für overprints `{o}` (preserve, simulate oder discard)
 @msg	unknown panel `{raw}`	unbekanntes Bedienfeld `{raw}`
 @msg	unknown preference `{key}`	unbekannte Voreinstellung `{key}`
+@msg	Preferences imported.	Voreinstellungen importiert.
+@msg	not a preferences file: {e}	keine Voreinstellungsdatei: {e}
+@msg	not a preferences file: no JSON object	keine Voreinstellungsdatei: kein JSON-Objekt
+@msg	not a preferences file (format `{format}`)	keine Voreinstellungsdatei (Format `{format}`)
+@msg	not a preferences file: no `format`	keine Voreinstellungsdatei: kein `format`
+@msg	not a preferences file: no `version`	keine Voreinstellungsdatei: keine `version`
+@msg	not a preferences file: no `prefs`	keine Voreinstellungsdatei: keine `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	die Datei wurde mit einer neueren Version von VectorCraft gespeichert (Version {v})
+@msg	the file holds no preferences	die Datei enthält keine Voreinstellungen
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` nennt einen Ordner, und Voreinstellungsdateien enthalten keine Ordner
+@msg	the file is larger than 1 MB	die Datei ist größer als 1 MB
+@msg	give `path` or `data`	geben Sie `path` oder `data` an
+@msg	`{key}` must be an object	`{key}` muss ein Objekt sein
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` läuft für sich allein, nicht als Stapelschritt
 @msg	unknown preset (one of {_1})	unbekannte Vorgabe (eine von {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	unbekannte Vorgabe `{name}` (high, medium, low oder eine gespeicherte: siehe flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	unbekannte Vorgabe `{name}` (siehe flattener.presets.list)
@@ -5255,6 +5279,7 @@ effect	Soft	Weich
 	Preview (1 inch on the page)	Vorschau (1 Zoll auf der Seite)
 	Set as Default	Als Standard festlegen
 	 out from a highlighted edge to place its dimension  |  	 von einer hervorgehobenen Kante nach außen, um ihre Bemaßung zu platzieren  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 auf zwei Punkte, dann bewegen und klicken, um eine ausgerichtete, horizontale oder vertikale Bemaßung zu platzieren  |  
 	 cancels  |  Double-click the tool for options	 bricht ab  |  Doppelklick auf das Werkzeug für Optionen
 	Linear	Linear
 	Angular	Winkel
@@ -5289,12 +5314,14 @@ effect	Soft	Weich
 @msg	Measured anchor no longer exists	Der gemessene Ankerpunkt existiert nicht mehr
 @msg	Measured segment no longer exists	Das gemessene Segment existiert nicht mehr
 @msg	Non-finite dimension	Die Bemaßung ist keine endliche Zahl
+@msg	Only linear dimensions are horizontal or vertical	Nur lineare Bemaßungen sind horizontal oder vertikal
 @msg	Scale Text Attributes: selected type has no scale to bake	Textattribute skalieren: Der ausgewählte Text weist keine zu übernehmende Skalierung auf
 @msg	Scale must be drawing:real, for example 1:10	Der Maßstab muss Zeichnung:Realität sein, zum Beispiel 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Das Maßstabsverhältnis muss zwischen 1:1000000 und 1000000:1 liegen
 @msg	Second measured segment no longer exists	Das zweite gemessene Segment existiert nicht mehr
 @msg	Unknown dimension mode	Unbekannter Bemaßungsmodus
 @msg	Unknown dimension option {k}	Unbekannte Bemaßungsoption {k}
+@msg	Unknown dimension orientation	Unbekannte Bemaßungsausrichtung
 @msg	Unknown dimension style	Unbekannter Bemaßungsstil
 @msg	Unknown unit	Unbekannte Einheit
 # Revolve cap description

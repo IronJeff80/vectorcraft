@@ -1725,6 +1725,7 @@ font-technology	Variable	Μεταβλητές
 	Lock	Κλείδωμα
 	Lock Guides	Κλείδωμα οδηγών
 	Lock Guides by Default	Κλείδωμα οδηγών από προεπιλογή
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Οδηγοί πίνακα σχεδίασης με Cmd/Ctrl + σύρσιμο από χάρακα
 	Lock Slices	Κλείδωμα τομών
 	Low	Χαμηλή
 	Luminosity	Φωτεινότητα
@@ -1919,6 +1920,12 @@ font-technology	Variable	Μεταβλητές
 	Reselect	Επαναφορά προηγούμενης επιλογής
 	Reset	Επαναφορά
 	Reset Preferences	Επαναφορά προτιμήσεων
+	Export Preferences…	Εξαγωγή προτιμήσεων…
+	Import Preferences…	Εισαγωγή προτιμήσεων…
+	Save the applied preferences to a JSON file	Αποθήκευση των εφαρμοσμένων προτιμήσεων σε αρχείο JSON
+	Apply the preferences in a file Export Preferences saved	Εφαρμογή των προτιμήσεων από αρχείο που αποθήκευσε η Εξαγωγή προτιμήσεων
+	Export Preferences	Εξαγωγή προτιμήσεων
+	Import Preferences	Εισαγωγή προτιμήσεων
 	Search Preferences	Αναζήτηση στις προτιμήσεις
 	No settings found	Δεν βρέθηκαν ρυθμίσεις
 	Reset to Default	Επαναφορά προεπιλογής
@@ -2616,6 +2623,7 @@ file-filter	Flattener presets	Προεπιλογές ισοπέδωσης
 file-filter	PDF presets	Προεπιλογές PDF
 file-filter	PDF-compatible .ai	.ai συμβατό με PDF
 file-filter	Print presets	Προεπιλογές εκτύπωσης
+file-filter	Preferences	Προτιμήσεις
 file-filter	Export presets	Προκαθορισμένα εξαγωγής
 file-filter	SVG Compressed	Συμπιεσμένο SVG
 file-filter	Swatch libraries	Βιβλιοθήκες δειγμάτων χρωμάτων
@@ -3421,6 +3429,8 @@ digits	Malayalam	Μαλαγιάλαμ
 	Reshape Type Area	Αναδιαμόρφωση περιοχής κειμένου
 	Responsive	Αποκρινόμενο
 	Restore every preference to its default (applied on OK)	Επαναφορά όλων των προτιμήσεων στις προεπιλογές τους (εφαρμογή με το Εντάξει)
+	Reset all preferences to their defaults?	Επαναφορά όλων των προτιμήσεων στις προεπιλογές τους;
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Οι προεπιλογές εφαρμόζονται όταν κάνετε κλικ στο Εντάξει στις Προτιμήσεις. Το Ακύρωση εκεί διατηρεί τις τρέχουσες προτιμήσεις σας.
 	Restore Recovered Documents	Επαναφορά ανακτημένων εγγράφων
 	Restored documents open unsaved: save them to keep them.	Τα ανακτημένα έγγραφα ανοίγουν χωρίς να είναι αποθηκευμένα: αποθηκεύστε τα για να τα διατηρήσετε.
 	Restrict printing, editing and other tasks	Περιορισμός εκτύπωσης, επεξεργασίας και άλλων ενεργειών
@@ -4629,6 +4639,20 @@ digits	Malayalam	Μαλαγιάλαμ
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	άγνωστη επιλογή υπερεκτύπωσης `{o}` (preserve, simulate ή discard)
 @msg	unknown panel `{raw}`	άγνωστος πίνακας `{raw}`
 @msg	unknown preference `{key}`	άγνωστη προτίμηση `{key}`
+@msg	Preferences imported.	Οι προτιμήσεις εισήχθησαν.
+@msg	not a preferences file: {e}	δεν είναι αρχείο προτιμήσεων: {e}
+@msg	not a preferences file: no JSON object	δεν είναι αρχείο προτιμήσεων: δεν υπάρχει αντικείμενο JSON
+@msg	not a preferences file (format `{format}`)	δεν είναι αρχείο προτιμήσεων (μορφή `{format}`)
+@msg	not a preferences file: no `format`	δεν είναι αρχείο προτιμήσεων: δεν υπάρχει `format`
+@msg	not a preferences file: no `version`	δεν είναι αρχείο προτιμήσεων: δεν υπάρχει `version`
+@msg	not a preferences file: no `prefs`	δεν είναι αρχείο προτιμήσεων: δεν υπάρχει `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	το αρχείο αποθηκεύτηκε από νεότερη έκδοση του VectorCraft (έκδοση {v})
+@msg	the file holds no preferences	το αρχείο δεν περιέχει προτιμήσεις
+@msg	`{key}` names a folder, which preferences files leave out	το `{key}` ορίζει φάκελο, και τα αρχεία προτιμήσεων δεν περιέχουν φακέλους
+@msg	the file is larger than 1 MB	το αρχείο είναι μεγαλύτερο από 1 MB
+@msg	give `path` or `data`	δώστε `path` ή `data`
+@msg	`{key}` must be an object	το `{key}` πρέπει να είναι αντικείμενο
+@msg	`prefs.import` runs on its own, not as a batch step	το `prefs.import` εκτελείται μόνο του, όχι ως βήμα δέσμης
 @msg	unknown preset (one of {_1})	άγνωστη προεπιλογή (μία από τις {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	άγνωστη προεπιλογή `{name}` (high, medium, low ή αποθηκευμένη: δείτε flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	άγνωστη προεπιλογή `{name}` (δείτε flattener.presets.list)
@@ -5569,6 +5593,7 @@ effect	Points	Σημεία
 # Strings added upstream after this catalog was written (machine-drafted; review welcome).
 	 cancels  |  Double-click the tool for options	 για ακύρωση  |  Διπλό κλικ στο εργαλείο για επιλογές
 	 out from a highlighted edge to place its dimension  |  	 προς τα έξω από μια επισημασμένη ακμή για τοποθέτηση της διάστασής της  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 σε δύο σημεία, μετά μετακινήστε και κάντε κλικ για τοποθέτηση ευθυγραμμισμένης, οριζόντιας ή κατακόρυφης διάστασης  |  
 	A legacy .ai file holds one artboard: each artboard you check is saved as a separate file.	Ένα αρχείο .ai παλαιού τύπου περιέχει έναν πίνακα σχεδίασης: κάθε πίνακας σχεδίασης που επιλέγετε αποθηκεύεται ως ξεχωριστό αρχείο.
 	Arrange Intertwine Area	Διάταξη περιοχής διαπλοκής
 	Batch…	Μαζική επεξεργασία…
@@ -5667,12 +5692,14 @@ effect	Points	Σημεία
 @msg	Measured anchor no longer exists	Το μετρημένο σημείο αγκύρωσης δεν υπάρχει πλέον
 @msg	Measured segment no longer exists	Το μετρημένο τμήμα δεν υπάρχει πλέον
 @msg	Non-finite dimension	Η διάσταση δεν είναι πεπερασμένος αριθμός
+@msg	Only linear dimensions are horizontal or vertical	Μόνο οι γραμμικές διαστάσεις είναι οριζόντιες ή κατακόρυφες
 @msg	Scale Text Attributes: selected type has no scale to bake	Κλιμάκωση ιδιοτήτων κειμένου: το επιλεγμένο κείμενο δεν έχει κλίμακα προς εφαρμογή
 @msg	Scale must be drawing:real, for example 1:10	Η κλίμακα πρέπει να είναι σχέδιο:πραγματικό, για παράδειγμα 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Ο λόγος κλίμακας πρέπει να είναι μεταξύ 1:1000000 και 1000000:1
 @msg	Second measured segment no longer exists	Το δεύτερο μετρημένο τμήμα δεν υπάρχει πλέον
 @msg	Unknown dimension mode	Άγνωστη λειτουργία διάστασης
 @msg	Unknown dimension option {k}	Άγνωστη επιλογή διάστασης {k}
+@msg	Unknown dimension orientation	Άγνωστος προσανατολισμός διάστασης
 @msg	`mode` must be grayscale, rgb, hsb, cmyk or websafe	το `mode` πρέπει να είναι grayscale, rgb, hsb, cmyk ή websafe
 @msg	`{key}` must be an array of these names: {_1}	το `{key}` πρέπει να είναι πίνακας με αυτά τα ονόματα: {_1}
 @msg	choose a destination folder	επιλέξτε φάκελο προορισμού

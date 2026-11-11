@@ -560,6 +560,7 @@
 	Show Guides	Vis hjælpelinjer
 	Lock Guides	Lås hjælpelinjer
 	Lock Guides by Default	Lås hjælpelinjer som standard
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Hjælpelinjer til kunstplade med Cmd/Ctrl + træk fra lineal
 	Unlock Guides	Lås hjælpelinjer op
 	Make Guides	Opret hjælpelinjer
 	Release Guides	Frigør hjælpelinjer
@@ -3487,6 +3488,12 @@ theme	Appearance	Udseende
 	Real-time Drawing and Editing	Tegning og redigering i realtid
 	Render Threads (-1 = Automatic)	Renderingstråde (-1 = automatisk)
 	Reset Preferences	Nulstil indstillinger
+	Export Preferences…	Eksportér præferencer…
+	Import Preferences…	Importér præferencer…
+	Save the applied preferences to a JSON file	Gem de anvendte præferencer i en JSON-fil
+	Apply the preferences in a file Export Preferences saved	Anvend præferencerne i en fil, som Eksportér præferencer har gemt
+	Export Preferences	Eksportér præferencer
+	Import Preferences	Importér præferencer
 	Search Preferences	Søg i præferencer
 	No settings found	Ingen indstillinger fundet
 	Scale Corners	Skalér hjørner
@@ -3857,6 +3864,8 @@ font-technology	Variable	Variable
 	Preferences	Præferencer
 	Previous	Forrige
 	Restore every preference to its default (applied on OK)	Gendan alle præferencer til standard (anvendes ved OK)
+	Reset all preferences to their defaults?	Nulstil alle præferencer til standard?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Standardværdierne anvendes, når du klikker på OK i Præferencer. Annullér der beholder dine nuværende præferencer.
 	Smaller ↔ Larger	Mindre ↔ Større
 	Smart Guides (View → Smart Guides)	Smarte hjælpelinjer (Vis → Smarte hjælpelinjer)
 	Couldn't save recovery data: {e}	Kunne ikke gemme gendannelsesdata: {e}
@@ -4602,6 +4611,20 @@ imageTrace	Outline	Kontur
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	ukendt overprint `{o}` (bevar, simulér eller forkast)
 @msg	unknown panel `{raw}`	ukendt panel `{raw}`
 @msg	unknown preference `{key}`	ukendt præference `{key}`
+@msg	Preferences imported.	Præferencerne er importeret.
+@msg	not a preferences file: {e}	ikke en præferencefil: {e}
+@msg	not a preferences file: no JSON object	ikke en præferencefil: intet JSON-objekt
+@msg	not a preferences file (format `{format}`)	ikke en præferencefil (format `{format}`)
+@msg	not a preferences file: no `format`	ikke en præferencefil: intet `format`
+@msg	not a preferences file: no `version`	ikke en præferencefil: ingen `version`
+@msg	not a preferences file: no `prefs`	ikke en præferencefil: ingen `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	filen er gemt af en nyere version af VectorCraft (version {v})
+@msg	the file holds no preferences	filen indeholder ingen præferencer
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` angiver en mappe, og præferencefiler indeholder ikke mapper
+@msg	the file is larger than 1 MB	filen er større end 1 MB
+@msg	give `path` or `data`	angiv `path` eller `data`
+@msg	`{key}` must be an object	`{key}` skal være et objekt
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` køres alene, ikke som et trin i en batch
 @msg	unknown preset (one of {_1})	ukendt forudindstilling (én af {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	ukendt forudindstilling `{name}` (høj, mellem, lav eller en gemt: se flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	ukendt forudindstilling `{name}` (se flattener.presets.list)
@@ -5098,6 +5121,7 @@ file-filter	Swatch libraries	Farveprøvebiblioteker
 file-filter	Flattener presets	Flattener-forudindstillinger
 file-filter	PDF presets	PDF-forudindstillinger
 file-filter	Print presets	Printforudindstillinger
+file-filter	Preferences	Præferencer
 file-filter	Export presets	Eksportforudindstillinger
 file-filter	SVG Compressed	Komprimeret SVG
 file-filter	PDF-compatible .ai	PDF-kompatibel .ai
@@ -5272,6 +5296,7 @@ mark-style	Japanese	Japansk
 	Preview (1 inch on the page)	Forhåndsvisning (1 tomme på siden)
 	Set as Default	Angiv som standard
 	 out from a highlighted edge to place its dimension  |  	 ud fra en fremhævet kant for at placere dens mål  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 på to punkter, flyt derefter, og klik for at placere et justeret, vandret eller lodret mål  |  
 	 cancels  |  Double-click the tool for options	 annullerer  |  Dobbeltklik på værktøjet for indstillinger
 	Angular	Vinklet
 	Away from the Line	Væk fra linjen
@@ -5303,12 +5328,14 @@ mark-style	Japanese	Japansk
 @msg	Measured anchor no longer exists	Det målte ankerpunkt findes ikke længere
 @msg	Measured segment no longer exists	Det målte segment findes ikke længere
 @msg	Non-finite dimension	Ikke-endeligt mål
+@msg	Only linear dimensions are horizontal or vertical	Kun lineære mål er vandrette eller lodrette
 @msg	Scale Text Attributes: selected type has no scale to bake	Skalér tekstattributter: den valgte tekst har ingen skalering at anvende
 @msg	Scale must be drawing:real, for example 1:10	Målestokken skal være tegning:virkelig, for eksempel 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Målestoksforholdet skal være mellem 1:1000000 og 1000000:1
 @msg	Second measured segment no longer exists	Det andet målte segment findes ikke længere
 @msg	Unknown dimension mode	Ukendt måltilstand
 @msg	Unknown dimension option {k}	Ukendt målindstilling {k}
+@msg	Unknown dimension orientation	Ukendt målretning
 @msg	Unknown dimension style	Ukendt målstil
 @msg	Unknown unit	Ukendt enhed
 	Close the circular ends of open profiles. Partial sweeps keep their cut sides open.	Luk de runde ender af åbne profiler. Delvise omdrejninger beholder deres skårne sider åbne.

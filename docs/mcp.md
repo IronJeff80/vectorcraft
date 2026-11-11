@@ -460,7 +460,7 @@ opens the picker through `run_command` with the remote backend.
 | `set_paint` | `{fill?, stroke?, strokeWidth?, ids?}` | Applies to the selection (or `ids`) and becomes the default for new art. Returns `{applied, objects}`: `objects` is the number of objects painted, as the `objects` of the `paint.setFill`, `paint.setStroke` and `stroke.set` replies (the largest of them): a selected group counts the objects inside it. When it is 0, a `note` says that only the paint for new art changed. |
 | `press_key` | `{key, mods?}` | Remote: a real key event. Headless: runs the command or tool bound to that shortcut, or sends the key to the busy tool (digits too: `5` while dragging with the Perspective Selection tool; `e` while dragging a Selection or Group Selection marquee; `c` and `f` while dragging out an arc; `f`, `v`, `x` and `c` while dragging out a rectangular or polar grid). |
 | `type_text` | `{text}` | Remote only. |
-| `answer_dialog` | `{set?: [{field, value?}], action?}` | Remote only. Sets fields of the app's open dialog in the order given with one `ui.dialog.set {fields}` (a missing `value` is `null`). The app stores all of them or none. When the app refuses the `ui.dialog.set`, for example because no dialog is open, the call is an error and `action` is not sent. Then `action` `confirm` (OK, `ui.dialog.confirm`) or `cancel` (`ui.dialog.cancel`). Give `set`, `action` or both; `set` holds at most 256 fields. `inspect_ui` shows the open dialog and its fields as `ui.dialog`. Returns `{dialog, result}`: the dialog after the fields were set (or `null`) and the reply to `confirm` or `cancel` (or `null`). After `invoke_menu` `app.quit`, `file.close` or `file.closeAll` replies `{"pending": "saveChanges"}`, `{action: "confirm"}` saves, `{set: [{field: "discard", value: true}], action: "confirm"}` closes without saving and `{action: "cancel"}` cancels the close or quit. |
+| `answer_dialog` | `{set?: [{field, value?}], action?}` | Remote only. Sets fields of the app's open dialog in the order given with one `ui.dialog.set {fields, action?}` (a missing `value` is `null`). The app stores all of them or none, then answers that same dialog with `action` in the same request: `confirm` (OK) or `cancel`. Another connection cannot open a dialog between the two steps. When the app refuses the `ui.dialog.set`, for example because no dialog is open, the call is an error and the dialog is not confirmed or canceled. `action` alone is sent as `ui.dialog.confirm` or `ui.dialog.cancel`. Give `set`, `action` or both; `set` holds at most 256 fields. `inspect_ui` shows the open dialog and its fields as `ui.dialog`. Returns `{dialog, result}`: the dialog after the fields were set (or `null`) and the reply to `confirm` or `cancel` (or `null`). After `invoke_menu` `app.quit`, `file.close` or `file.closeAll` replies `{"pending": "saveChanges"}`, `{action: "confirm"}` saves, `{set: [{field: "discard", value: true}], action: "confirm"}` closes without saving and `{action: "cancel"}` cancels the close or quit. |
 | `invoke_menu` | `{command, params?}` | Invokes a menu item by command id. Includes UI commands such as `view.*` and `window.*` in remote mode. |
 | `open_panel` | `{panel}` | Remote only. `panel` is a panel id (`layers`, `swatches`, `colorGuide`, …, as `window.panel` takes) or its display label (`"Color Guide"`), in any case. |
 | `screenshot` | `{path?, scale?, artboard?, window?, max_side?, traceViews?}` | Returns MCP image content (`image/png`, base64) plus a text block. Renders the artboard with the pixels of a PNG `export` with `background: "white"` at the same scale; `traceViews:true` draws Image Trace objects in the view set with `imageTrace.setView`, as in the app's window; `window:true` captures the app window (remote only), as `ui_screenshot` does, and `max_side` (1–4096, window captures only) scales the returned image down as described for `ui_screenshot`. With `path` the backend (the headless session or the app) writes the PNG there too; a window capture written there keeps its full size with `max_side`. |
@@ -1371,7 +1371,7 @@ naming the key, and change nothing: `radius` in `shape.rectangle`; `sides` and `
 in `shape.flare`; `decay` and `segments` in `shape.spiral`; `rows` and `columns` in `shape.rectangularGrid`; `concentric`
 and `radial` in `shape.polarGrid`; `size` and the `width`, `height` and `fitMinPercent` of `area` in `text.create`;
 `size` and `fitMinPercent` in `text.createInPath`; `start`, `end`, `size`, `tracking`,
-`baselineShift`, `hScale`, `vScale`, `rotation` and `strokeWidth` in `text.setRangeStyle`; `start` and `end` in
+`baselineShift`, `hScale`, `vScale`, `rotation` and `strokeWidth` in `text.setRangeStyle`; `strokeWidth` in `text.setStyle`; `start` and `end` in
 `text.editRange` and `text.getRange`; `at` in `text.startList`; `start`, `hScale`, `vScale` and `rotation` in `text.touchType`; `start` in
 `text.glyphAlternates` and `text.setGlyphAlternate`; `by`, `start` and
 `end` in `type.step`; `by` in `type.size.increase` and `type.size.decrease`; `size` in `type.ruby`; `width`, `height`
@@ -1382,6 +1382,15 @@ and `amount` in `color.harmony`; `angle` in `paint.editGradient` and in the `gra
 `paint.freeform.splitLine`; `tolerance` and `gap` in `shapeBuilder.merge`; `gap` in `shapeBuilder.regions`; and
 `width` and `tolerance` in `livePaint.strokeEdge`. A null is read as a key left out. A gradient stop that names a
 swatch refuses a `tint` that is not a number with `` stop 0: `tint` must be a number ``.
+
+`text.setStyle` refuses a `size` that is neither a number nor a length with a unit (`"12 pt"`, `"5 mm"`) with
+`` `size` must be a number, not true ``, and a `tracking` that is neither a number nor a number written as a string
+(`"20"`) with `` `tracking` must be a number, not false ``. It and `text.setRangeStyle` refuse a `font` or `style` that is not a string
+with `` `font` must be a string ``, and a `features` list with an entry that is not a string with
+`features must be a list of tags`; `text.setStyle` refuses such a `justify` too. `type.ruby` refuses a `text`,
+`position` or `align` that is not a string, and `text.setPathHandle` refuses a `which` other than `in` or `out` with
+`` `which` must be one of in, out ``. Each leaves the document, the selection and the undo history as they were, also
+when the call gives another param it could apply. A null is read as a key left out.
 
 A byte offset must be a whole number of at least 0. `at` in `text.startList`, and `start` and `end` in
 `text.editRange`, `text.getRange` and `text.setRangeStyle`, and in `type.step` and `addon.type.textTweaker` given an `id`,
@@ -1620,6 +1629,12 @@ the editing layer. With gradient mesh points picked, `opacity` goes to those poi
 {"name":"run_command","arguments":{"command":"transparency.setOpacityMask","params":{"id":12,"clip":false}}}
 {"name":"run_command","arguments":{"command":"transparency.info","params":{"ids":[12,20]}}}
 ```
+
+`transparency.makeOpacityMask` rejects a `clip` or `invert` value that is not a boolean, such as `"clip": "false"`,
+and `transparency.setOpacityMask` does the same for `clip`, `invert`, `disabled` and `linked`. The toggles
+`transparency.toggleNewMasksClipping`, `transparency.toggleNewMasksInverted`, `transparency.togglePageKnockoutGroup`
+and `transparency.togglePageIsolatedBlending` reject a `value` that is not a boolean. A rejected call changes nothing.
+Omitting a param or giving null keeps its default.
 
 Knockout Group has three states: `transparency.set {knockout: "on"|"off"|"neutral"}` (`true` = on, `false` =
 neutral, the default). In a knockout group each child hides what it covers of the children below it; neutral groups
@@ -1971,6 +1986,12 @@ Guides off, View › Snap to Point pulls it onto anchors. In the desktop app a g
 same way and is made where it is released over the canvas (with the Artboard tool, as an artboard guide of the
 active artboard), a guide dropped off the canvas onto its ruler is deleted, and hidden guides (View › Guides › Hide
 Guides) can't be picked. An artboard guide is picked, drawn and snapped to across its artboard only.
+Preferences › Guides & Grid › Artboard Guides with Cmd/Ctrl + Ruler Drag (`cmdRulerDragArtboardGuides`, off by
+default) is VectorCraft's own option. With it on, Cmd/Ctrl held when a drag leaves a ruler makes the guide an artboard
+guide of the active artboard, with any tool but the Artboard tool, and with the Artboard tool a canvas guide. The key
+is read when the drag starts, so letting it go during the drag keeps the kind of guide. Such an artboard guide shows,
+and is made, only where it lies within the active artboard: a vertical guide between its left and right edges, a
+horizontal guide between its top and bottom. Released anywhere else, it makes no guide and no undo step.
 
 ```json
 {"name":"run_command","arguments":{"command":"guide.add","params":{"vertical":true,"pos":100}}}
@@ -2596,7 +2617,8 @@ Every 3D type, `threeD.classicExtrude` and `threeD.revolve` included, also appli
 symbol instance, alone or in a group, and builds from the art it shows, the same way for the canvas, exports and
 `assets.add3D` ([three-d.md](three-d.md#clipping-groups-blends-and-symbol-instances)); like a group, it takes the
 effect on the object itself, not on a fill or stroke. An image, alone or in a group, is refused with "trace it first
-with Object › Image Trace › Make", and nothing changes.
+with Object › Image Trace › Make", and nothing changes. On a group, an opacity mask on a member, or on a group inside
+it, masks that member's solids ([three-d.md](three-d.md#groups)).
 
 `threeD.extrude`: `depth` (points, 0..2000, default 50), `twist` (degrees, 0..360, 0), `taper` (1..100%, 100),
 `cap` (true solid, false hollow), `bevel` (`none`, `classic`, `rounded`, `cove`, `step`, `ogee`), `bevelWidth`
@@ -3081,6 +3103,22 @@ pattern's own swatches have (a name Swatch Options gave the pattern's swatch, fo
 the old name. A rename gives the new name to the pattern's swatches that had the old one; any other swatch that has the
 old name keeps it. A blank name gives "New Pattern N" in `object.pattern.make` and "`<pattern>` copy" in
 `object.pattern.saveCopy`, and `pattern.options` keeps the name.
+
+The pattern commands (`object.pattern.make`, `object.pattern.edit`, `object.pattern.saveCopy`, `pattern.options`,
+`pattern.delete`) and the Repeat commands (`object.repeat.radial`, `object.repeat.grid`, `object.repeat.mirror`,
+`object.repeat.options`) reject a param of the wrong type, such as `"instances": "8"`, `"edit": "false"` or
+`"tileType": 2`, and change nothing. `pattern.options` also rejects an `overlap` that is not an object, and an
+`overlap.h` other than `left` or `right` or an `overlap.v` other than `top` or `bottom`. `object.repeat.options` rejects
+a `center` that is not `[x, y]`, and `object.repeat.radial` rejects a negative `radius`. In `object.pattern.make`,
+`object.pattern.saveCopy`, `object.repeat.radial`, `object.repeat.grid` and `object.repeat.mirror`, omitting a param or
+giving null keeps its default. In `pattern.options` and `object.repeat.options`, omitting a param or giving null keeps
+the pattern's or the repeat's current value, with two exceptions. A brick `tileType` in `pattern.options` or a brick
+`gridType` in `object.repeat.options` with `brickOffset` omitted or null sets the offset to 0.5. While `sizeTileToArt`
+is on, each `pattern.options` call sizes the tile to the art plus `hSpacing` and `vSpacing` again and ignores `width`
+and `height`, so a new `hSpacing` changes the tile's width. `pattern.options` still rejects a non-null `width` or
+`height` that is not a positive number, such as `"width": 0`, and changes nothing. Without a `name`,
+`object.pattern.edit` edits the pattern that fills or strokes a selected object, and `pattern.options` changes the
+pattern being edited; each returns an error when there is no such pattern. `pattern.delete` requires `name`.
 
 ```json
 {"name":"run_command","arguments":{"command":"pattern.options","params":{"showSwatchBounds":true}}}
@@ -3582,7 +3620,9 @@ Selected End Points) joins the ends again; `path.join {ids: [a, b], ends: ["last
 (Average & Join, Cmd+Alt+Shift+J) moves two ends to their midpoint and joins them there, the joined anchor a corner or a smooth point, in one
 undo step: the two direct-selected anchors when they are open path ends, else the nearest ends of the two open paths in `ids` or the
 selection (both ends of one, closing it); anything else is refused. `path.convertAnchor {id, subpath?, anchor, to, x?, y?}` and
-`path.split {id, subpath?, anchor}` do the same to one anchor (the Anchor Point and Scissors tools); the Pen with Alt
+`path.split {id, subpath?, anchor}` do the same to one anchor (the Anchor Point and Scissors tools); `path.split`,
+at an anchor or at `segment` and `t`, leaves the first anchor of the piece after the cut selected alone, and a Direct
+Selection press on two anchors on top of each other takes the selected one; the Pen with Alt
 held over a selected path's handle, anchor or segment works as the Anchor Point tool. `press_key` Escape between two
 `pointer_gesture` calls of an Anchor Point drag cancels it: the path goes back and no undo step is added. `path.reshapeSegment {id,
 subpath?, segment, t, dx, dy, perpendicular?}` (a segment dragged with Direct Selection or the Anchor Point tool) moves the segment's
@@ -3600,6 +3640,22 @@ the canvas (coordinates out of range)".
 `path.setHandle`, `path.moveAnchor` and `path.insertAnchor` edit subpath 0 when `subpath` is absent or null, and refuse a `subpath` that
 is not a whole number of 0 or more, such as 1.5, -1 or "1" ("missing integer `subpath`"); `path.split` refuses such
 an `anchor` or `segment` in the same way. The document does not change and no undo step is recorded.
+
+`path.reshape {id, x, y, dx, dy, tol?, radius?}` (a Reshape tool drag) grabs the path at `x`, `y`, adding an anchor
+there unless one lies within `tol` (3 by default), and moves that point by `dx`, `dy`.
+[Adjust path segments](https://helpx.adobe.com/illustrator/desktop/draw-shapes-and-paths/modify-paths/adjust-path-segments.html)
+has the Reshape tool stretch part of a path from the dragged point without losing the path's general form. How far
+the stretch reaches and the share of the drag each point takes are VectorCraft's own rule. An open path stretches from
+the grabbed point to its two ends: the two end anchors stay in place, and each anchor between an end and the grabbed
+point takes `u² (3 - 2u)` of the drag, where `u` is its distance from that end along the path's control polygon
+(anchor, out handle, the next in handle, the next anchor) divided by the grabbed point's distance from that end. A
+handle takes the share on the tangent line of that curve at its anchor, so the handles of a smooth anchor stay in line
+with it; a handle that is long beside the distance from the end to the grabbed point takes a share below 0 or above 1,
+and moves against the drag or farther than the grabbed point. On a closed path, or when `radius` is given, the anchors
+within `radius` of the grabbed point along the path follow with a smooth falloff and the others stay; `radius`
+defaults to half the diagonal of the subpath's bounding box, and a negative `radius` is refused ("`radius` must be 0
+or more"). A drag of no length on an anchor (`dx` and `dy` 0 or left out) leaves the path as it is and records no undo
+step.
 
 These commands refuse a string or another value that is not a number with `` `dy` must be a number, not "10" ``,
 naming the key; the document does not change and no undo step is recorded: `t`, `dx` and `dy` in
@@ -4484,7 +4540,8 @@ four: General (rulers, positions and sizes, the Info panel, dialog distances, ca
 (weights, dashes), Type (font size, leading, baseline shift) and East Asian Type (no field uses it yet). General is the active document's units
 (`document.inspect` → `units`): `document.setUnits {units}` (Document Setup) sets it for that document, and
 `prefs.set {key: "unitsGeneral", value}` sets it for the active document too (one undo step) and is the units
-`file.new` starts in when it gets no `units`. Stroke, Type and East Asian Type are the preferences `unitsStroke`,
+`file.new` starts in when it gets no `units`. With `documentUnits: false`, `prefs.set` sets only the preference and
+leaves the document's units as they are; Reset Preferences followed by OK in the Preferences dialog does this. Stroke, Type and East Asian Type are the preferences `unitsStroke`,
 `unitsType` and `unitsAsianType`. Only `unitsAsianType` also takes `q` (Q, `Q`) and `ha` (Ha, `Ha`), each a quarter of
 a millimetre (0.709 pt); the other preferences, `document.setUnits` and the rulers do not list them, and it is Points
 by default. A length typed with a unit
@@ -4509,10 +4566,31 @@ a string with a unit. Unit names: `Points`, `Picas`, `Inches`, `Millimeters`, `C
 settings whose label, section or category contains it, ignoring case, in the interface language or in English, or by
 "No settings found". Choosing a setting sets `__category` to its category, sets `__found` to its key (the row is
 highlighted until another category is shown) and clears `__search`. Cmd/Ctrl+F focuses the field again; Escape in the
-field with text clears it, and Escape in the empty field closes the dialog.
+field with text clears it, and Escape in the empty field closes the dialog. Its Reset Preferences button opens a
+`resetPreferences` question (fields `message`, `detail`) over Preferences: `ui.dialog.cancel` shows Preferences again
+as it was, and `ui.dialog.confirm` shows it again with every preference at its default value, applied by OK in
+Preferences. `prefs.reset` resets the preferences at once, without the question.
 
 ```json
 {"name":"run_command","arguments":{"command":"prefs.set","params":{"key":"unitsGeneral","value":"millimeters"}}}
+```
+
+`prefs.export {path?}` writes the preferences as a JSON file, `{"format": "vectorcraft-preferences", "version": 1,
+"prefs": {…}}`, and replies `{path, count}`; without `path` it replies `{data, count}` with the file's text. The file
+holds every preference `prefs.list` lists and the `eyedropper`, `perspectiveWidget`, `pathfinder` and `glyphSnap`
+groups. It leaves out the folder preferences (`fontsFolder`, `pluginsFolder`, `recoveryFolder`, `templatesFolder`) and
+saved presets. An export over 1 MB, the most `prefs.import` reads, is an error and writes nothing.
+`prefs.import {path | data}` applies such a file and replies `{imported}`, the number of preferences it
+set. It checks every value first, as `prefs.set` does: a file over 1 MB, malformed JSON, another `format`, a newer
+`version`, an empty `prefs`, an unknown preference, a value of the wrong type or out of range, or a folder preference
+is an error, and nothing changes. Preferences the file leaves out keep their values. An import leaves the open
+document's units as they are, records no undo step, and is saved with the other preferences. An open Preferences
+dialog shows the imported values. `prefs.import` is refused as a `command.batch` step. The dialog's Export Preferences… and Import Preferences… buttons run the two
+commands with a save or open dialog; the web build downloads the exported file and has no Import Preferences… button.
+Exporting and importing preferences is an optional VectorCraft feature.
+
+```json
+{"name":"run_command","arguments":{"command":"prefs.import","params":{"data":"{\"format\":\"vectorcraft-preferences\",\"version\":1,\"prefs\":{\"uiAccent\":\"green\"}}"}}}
 ```
 
 ## Document Setup
@@ -7471,8 +7549,12 @@ bounding-box handles scale it in plane space (`perspective.transform`; Shift kee
 centre), and `press_key` `5` during a drag switches the move to perpendicular to the plane (press again to switch
 back). Holding Shift during an in-plane move constrains each object's displacement to an axis or 45° diagonal of its
 own plane. `perspective.move` accepts `constrain: true` (default false) and adjusts Snap to Grid along the constrained
-direction on the first object's plane and depth. With Snap to Grid, every object on the first object's plane moves
-by the same plane offset, whatever its depth, and the edge of their joint bounds nearer a gridline lands on it.
+direction on the first object's plane and depth. With Snap to Grid, an in-plane move moves every object on the first
+object's plane by the same plane offset, whatever its depth. Without `constrain`, on each axis, the edge of their joint
+bounds nearer a gridline lands on it when that edge ends within a quarter cell of the gridline. With `constrain`, an
+edge also lands only when it ends within a quarter cell of a gridline: a horizontal or vertical move can land only an
+edge on its own axis, and a 45° move lands the edge on the axis whose nonzero correction is smaller. When no edge on
+those axes is that close, the move does not snap. A perpendicular move does not snap.
 `press_key` Escape during a move, a resize or a plane widget drag cancels it and puts the objects and the
 grid back. The arrow keys nudge a selection in perspective by the keyboard increment (`perspective.nudge`; Shift ×10, Alt
 copies). Object › Transform › Transform Again repeats the last perspective move or scale in plane space.

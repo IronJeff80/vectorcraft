@@ -1890,6 +1890,7 @@ font-technology	Variable	Variables
 	Lock Grid	Verrouiller la grille
 	Lock Guides	Verrouiller les repères
 	Lock Guides by Default	Verrouiller les repères par défaut
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Repères de plan de travail avec Cmd/Ctrl + glissement depuis la règle
 	Lock Others	Verrouiller les autres
 	Lock Slices	Verrouiller les tranches
 	Lock Station Point	Verrouiller le point d’observation
@@ -2811,6 +2812,12 @@ digits	Malayalam	Malayalam
 	Reset OpenType Features	Réinitialiser les fonctions OpenType
 	Reset Panel	Réinitialiser le panneau
 	Reset Preferences	Réinitialiser les préférences
+	Export Preferences…	Exporter les préférences…
+	Import Preferences…	Importer des préférences…
+	Save the applied preferences to a JSON file	Enregistrer les préférences appliquées dans un fichier JSON
+	Apply the preferences in a file Export Preferences saved	Appliquer les préférences d’un fichier enregistré par Exporter les préférences
+	Export Preferences	Exporter les préférences
+	Import Preferences	Importer des préférences
 	Search Preferences	Rechercher dans les préférences
 	No settings found	Aucun réglage trouvé
 	Reset Profiles	Réinitialiser les profils
@@ -2833,6 +2840,8 @@ digits	Malayalam	Malayalam
 	Responsive	Adaptatif
 	Restore	Restaurer
 	Restore every preference to its default (applied on OK)	Rétablir toutes les préférences à leur valeur par défaut (appliqué avec OK)
+	Reset all preferences to their defaults?	Rétablir toutes les préférences à leur valeur par défaut ?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Les valeurs par défaut sont appliquées lorsque vous cliquez sur OK dans Préférences. Annuler y conserve vos préférences actuelles.
 	Restore Recovered Documents	Restaurer les documents récupérés
 	Restored documents open unsaved: save them to keep them.	Les documents restaurés s’ouvrent sans être enregistrés : enregistrez-les pour les conserver.
 	Restrict printing, editing and other tasks	Restreindre l’impression, la modification et d’autres tâches
@@ -4670,6 +4679,20 @@ axis	Both	Les deux
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	surimpressions inconnues `{o}` (preserve, simulate ou discard)
 @msg	unknown panel `{raw}`	panneau inconnu `{raw}`
 @msg	unknown preference `{key}`	préférence inconnue `{key}`
+@msg	Preferences imported.	Préférences importées.
+@msg	not a preferences file: {e}	ce n’est pas un fichier de préférences : {e}
+@msg	not a preferences file: no JSON object	ce n’est pas un fichier de préférences : aucun objet JSON
+@msg	not a preferences file (format `{format}`)	ce n’est pas un fichier de préférences (format `{format}`)
+@msg	not a preferences file: no `format`	ce n’est pas un fichier de préférences : `format` manquant
+@msg	not a preferences file: no `version`	ce n’est pas un fichier de préférences : `version` manquant
+@msg	not a preferences file: no `prefs`	ce n’est pas un fichier de préférences : `prefs` manquant
+@msg	the file was saved by a newer version of VectorCraft (version {v})	le fichier a été enregistré par une version plus récente de VectorCraft (version {v})
+@msg	the file holds no preferences	le fichier ne contient aucune préférence
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` désigne un dossier, et les fichiers de préférences n’incluent pas les dossiers
+@msg	the file is larger than 1 MB	le fichier dépasse 1 Mo
+@msg	give `path` or `data`	indiquez `path` ou `data`
+@msg	`{key}` must be an object	`{key}` doit être un objet
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` s’exécute seul, pas comme étape d’un lot
 @msg	unknown preset (one of {_1})	paramètre prédéfini inconnu (valeurs possibles : {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	paramètre prédéfini inconnu `{name}` (high, medium, low ou un paramètre enregistré : voir flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	paramètre prédéfini inconnu `{name}` (voir flattener.presets.list)
@@ -5623,6 +5646,7 @@ file-filter	Flattener presets	Paramètres prédéfinis d’aplatissement
 file-filter	PDF presets	Paramètres prédéfinis PDF
 file-filter	PDF-compatible .ai	.ai compatible PDF
 file-filter	Print presets	Paramètres prédéfinis d’impression
+file-filter	Preferences	Préférences
 file-filter	Export presets	Paramètres prédéfinis d’export
 file-filter	SVG Compressed	SVG compressé
 file-filter	Swatch libraries	Bibliothèques de nuances
@@ -5676,6 +5700,7 @@ theme	Appearance	Apparence
 	Preview (1 inch on the page)	Aperçu (1 pouce sur la page)
 	Set as Default	Définir par défaut
 	 out from a highlighted edge to place its dimension  |  	 vers l'extérieur depuis un bord mis en évidence pour placer sa cote  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 sur deux points, puis déplacez et cliquez pour placer une cote alignée, horizontale ou verticale  |  
 	 cancels  |  Double-click the tool for options	 annule  |  Double-clic sur l'outil pour les options
 	Angular	Angulaire
 	Away from the Line	À l'écart de la ligne
@@ -5707,12 +5732,14 @@ theme	Appearance	Apparence
 @msg	Measured anchor no longer exists	Le point d’ancrage mesuré n’existe plus
 @msg	Measured segment no longer exists	Le segment mesuré n’existe plus
 @msg	Non-finite dimension	Cote non finie
+@msg	Only linear dimensions are horizontal or vertical	Seules les cotes linéaires sont horizontales ou verticales
 @msg	Scale Text Attributes: selected type has no scale to bake	Mettre à l’échelle les attributs de texte : le texte sélectionné n’a pas d’échelle à intégrer
 @msg	Scale must be drawing:real, for example 1:10	L’échelle doit être dessin:réel, par exemple 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Le rapport d’échelle doit être compris entre 1:1000000 et 1000000:1
 @msg	Second measured segment no longer exists	Le second segment mesuré n’existe plus
 @msg	Unknown dimension mode	Mode de cote inconnu
 @msg	Unknown dimension option {k}	Option de cote inconnue {k}
+@msg	Unknown dimension orientation	Orientation de cote inconnue
 @msg	Unknown dimension style	Style de cote inconnu
 @msg	Unknown unit	Unité inconnue
 # Revolve cap description

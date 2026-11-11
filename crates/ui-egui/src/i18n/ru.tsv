@@ -1275,6 +1275,7 @@ file-filter	Swatch libraries	Библиотеки образцов
 file-filter	Flattener presets	Наборы объединения
 file-filter	PDF presets	Наборы PDF
 file-filter	Print presets	Наборы печати
+file-filter	Preferences	Настройки
 file-filter	Export presets	Наборы настроек экспорта
 file-filter	SVG Compressed	Сжатый SVG
 file-filter	PDF-compatible .ai	.ai, совместимый с PDF
@@ -1922,6 +1923,7 @@ file-filter	Templates	Шаблоны
 	Lock Grid	Заблокировать сетку
 	Lock Guides	Заблокировать направляющие
 	Lock Guides by Default	Блокировать направляющие по умолчанию
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Направляющие монтажной области с Cmd/Ctrl + перетаскиванием с линейки
 	Lock Others	Заблокировать остальные
 	Lock Slices	Заблокировать фрагменты
 	Lock Station Point	Заблокировать точку стояния
@@ -2847,6 +2849,12 @@ digits	Malayalam	Малаялам
 	Reset OpenType Features	Сбросить функции OpenType
 	Reset Panel	Сбросить панель
 	Reset Preferences	Сбросить настройки
+	Export Preferences…	Экспортировать настройки…
+	Import Preferences…	Импортировать настройки…
+	Save the applied preferences to a JSON file	Сохранить применённые настройки в файл JSON
+	Apply the preferences in a file Export Preferences saved	Применить настройки из файла, сохранённого командой «Экспортировать настройки»
+	Export Preferences	Экспортировать настройки
+	Import Preferences	Импортировать настройки
 	Search Preferences	Поиск в настройках
 	No settings found	Настройки не найдены
 	Reset Profiles	Сбросить профили
@@ -2870,6 +2878,8 @@ digits	Malayalam	Малаялам
 	Responsive	Адаптивный
 	Restore	Восстановить
 	Restore every preference to its default (applied on OK)	Восстановить все настройки по умолчанию (применяется при нажатии ОК)
+	Reset all preferences to their defaults?	Сбросить все настройки до значений по умолчанию?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Значения по умолчанию применяются, когда вы нажимаете ОК в окне «Настройки». Отмена там сохраняет текущие настройки.
 	Restore Recovered Documents	Восстановить восстановленные документы
 	Restored documents open unsaved: save them to keep them.	Восстановленные документы открываются несохранёнными: сохраните их, чтобы оставить.
 	Restrict printing, editing and other tasks	Ограничить печать, редактирование и другие задачи
@@ -4717,6 +4727,20 @@ axis	Both	Оба
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	неизвестные наложения `{o}` (preserve, simulate или discard)
 @msg	unknown panel `{raw}`	неизвестная панель `{raw}`
 @msg	unknown preference `{key}`	неизвестная настройка `{key}`
+@msg	Preferences imported.	Настройки импортированы.
+@msg	not a preferences file: {e}	не является файлом настроек: {e}
+@msg	not a preferences file: no JSON object	не является файлом настроек: нет объекта JSON
+@msg	not a preferences file (format `{format}`)	не является файлом настроек (формат `{format}`)
+@msg	not a preferences file: no `format`	не является файлом настроек: нет `format`
+@msg	not a preferences file: no `version`	не является файлом настроек: нет `version`
+@msg	not a preferences file: no `prefs`	не является файлом настроек: нет `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	файл сохранён более новой версией VectorCraft (версия {v})
+@msg	the file holds no preferences	файл не содержит настроек
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` указывает папку, а файлы настроек не содержат папок
+@msg	the file is larger than 1 MB	файл больше 1 МБ
+@msg	give `path` or `data`	укажите `path` или `data`
+@msg	`{key}` must be an object	`{key}` должен быть объектом
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` выполняется отдельно, а не как шаг пакета
 @msg	unknown preset (one of {_1})	неизвестный набор (один из: {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	неизвестный набор `{name}` (high, medium, low или сохранённый: см. flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	неизвестный набор `{name}` (см. flattener.presets.list)
@@ -5284,6 +5308,7 @@ lighting	Light	Свет
 	Preview (1 inch on the page)	Просмотр (1 дюйм на странице)
 	Set as Default	Установить по умолчанию
 	 out from a highlighted edge to place its dimension  |  	 наружу от подсвеченного края, чтобы разместить его размер  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 по двум точкам, затем переместите и щёлкните, чтобы разместить выровненный, горизонтальный или вертикальный размер  |  
 	 cancels  |  Double-click the tool for options	 отменяет  |  Двойной щелчок по инструменту открывает параметры
 	Linear	Линейный
 	Angular	Угловой
@@ -5318,12 +5343,14 @@ lighting	Light	Свет
 @msg	Measured anchor no longer exists	Измеряемая опорная точка больше не существует
 @msg	Measured segment no longer exists	Измеряемый сегмент больше не существует
 @msg	Non-finite dimension	Размер не является конечным числом
+@msg	Only linear dimensions are horizontal or vertical	Только линейные размеры бывают горизонтальными или вертикальными
 @msg	Scale Text Attributes: selected type has no scale to bake	Масштабировать атрибуты текста: у выбранного текста нет масштаба для применения
 @msg	Scale must be drawing:real, for example 1:10	Масштаб должен быть в виде чертёж:реальность, например 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Соотношение масштаба должно быть от 1:1000000 до 1000000:1
 @msg	Second measured segment no longer exists	Второй измеряемый сегмент больше не существует
 @msg	Unknown dimension mode	Неизвестный режим размера
 @msg	Unknown dimension option {k}	Неизвестный параметр размера {k}
+@msg	Unknown dimension orientation	Неизвестная ориентация размера
 @msg	Unknown dimension style	Неизвестный стиль размера
 @msg	Unknown unit	Неизвестная единица
 # Revolve cap description

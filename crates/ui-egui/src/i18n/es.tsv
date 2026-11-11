@@ -1896,6 +1896,7 @@ font-technology	Variable	Variables
 	Lock Grid	Bloquear cuadrícula
 	Lock Guides	Bloquear guías
 	Lock Guides by Default	Bloquear guías de forma predeterminada
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Guías de mesa de trabajo con Cmd/Ctrl + arrastre desde la regla
 	Lock Others	Bloquear otros
 	Lock Slices	Bloquear sectores
 	Lock Station Point	Bloquear punto de estación
@@ -2819,6 +2820,12 @@ digits	Malayalam	Malayálam
 	Reset OpenType Features	Restablecer funciones OpenType
 	Reset Panel	Restablecer panel
 	Reset Preferences	Restablecer preferencias
+	Export Preferences…	Exportar preferencias…
+	Import Preferences…	Importar preferencias…
+	Save the applied preferences to a JSON file	Guardar las preferencias aplicadas en un archivo JSON
+	Apply the preferences in a file Export Preferences saved	Aplicar las preferencias de un archivo guardado con Exportar preferencias
+	Export Preferences	Exportar preferencias
+	Import Preferences	Importar preferencias
 	Search Preferences	Buscar en preferencias
 	No settings found	No se encontraron ajustes
 	Reset Profiles	Restablecer perfiles
@@ -2841,6 +2848,8 @@ digits	Malayalam	Malayálam
 	Responsive	Adaptable
 	Restore	Restaurar
 	Restore every preference to its default (applied on OK)	Restaurar todas las preferencias a sus valores predeterminados (se aplica al Aceptar)
+	Reset all preferences to their defaults?	¿Restablecer todas las preferencias a sus valores predeterminados?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Los valores predeterminados se aplican al hacer clic en Aceptar en Preferencias. Cancelar ahí conserva sus preferencias actuales.
 	Restore Recovered Documents	Restaurar documentos recuperados
 	Restored documents open unsaved: save them to keep them.	Los documentos restaurados se abren sin guardar: guárdalos para conservarlos.
 	Restrict printing, editing and other tasks	Restringir la impresión, la edición y otras tareas
@@ -4681,6 +4690,20 @@ axis	Both	Ambos
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	sobreimpresiones desconocidas `{o}` (preserve, simulate o discard)
 @msg	unknown panel `{raw}`	panel desconocido `{raw}`
 @msg	unknown preference `{key}`	preferencia desconocida `{key}`
+@msg	Preferences imported.	Preferencias importadas.
+@msg	not a preferences file: {e}	no es un archivo de preferencias: {e}
+@msg	not a preferences file: no JSON object	no es un archivo de preferencias: no hay ningún objeto JSON
+@msg	not a preferences file (format `{format}`)	no es un archivo de preferencias (formato `{format}`)
+@msg	not a preferences file: no `format`	no es un archivo de preferencias: falta `format`
+@msg	not a preferences file: no `version`	no es un archivo de preferencias: falta `version`
+@msg	not a preferences file: no `prefs`	no es un archivo de preferencias: falta `prefs`
+@msg	the file was saved by a newer version of VectorCraft (version {v})	el archivo se guardó con una versión más reciente de VectorCraft (versión {v})
+@msg	the file holds no preferences	el archivo no contiene preferencias
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` indica una carpeta, y los archivos de preferencias no incluyen carpetas
+@msg	the file is larger than 1 MB	el archivo ocupa más de 1 MB
+@msg	give `path` or `data`	indique `path` o `data`
+@msg	`{key}` must be an object	`{key}` debe ser un objeto
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` se ejecuta por sí solo, no como paso de un lote
 @msg	unknown preset (one of {_1})	preajuste desconocido (uno de estos: {_1})
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	preajuste desconocido `{name}` (high, medium, low o uno guardado: consulta flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	preajuste desconocido `{name}` (consulta flattener.presets.list)
@@ -5429,6 +5452,7 @@ file-filter	Swatch libraries	Bibliotecas de muestras
 file-filter	Flattener presets	Preajustes del acoplador
 file-filter	PDF presets	Preajustes de PDF
 file-filter	Print presets	Preajustes de impresión
+file-filter	Preferences	Preferencias
 file-filter	Export presets	Ajustes de exportación
 file-filter	SVG Compressed	SVG comprimido
 file-filter	PDF-compatible .ai	.ai compatible con PDF
@@ -5630,6 +5654,7 @@ mark-style	Japanese	Japonesas
 	Preview (1 inch on the page)	Vista previa (1 pulgada en la página)
 	Set as Default	Establecer como predeterminado
 	 out from a highlighted edge to place its dimension  |  	 hacia fuera desde un borde resaltado para colocar su cota  |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 en dos puntos, luego mueva y haga clic para colocar una cota alineada, horizontal o vertical  |  
 	 cancels  |  Double-click the tool for options	 cancela  |  Doble clic en la herramienta para ver las opciones
 	Angular	Angular
 	Away from the Line	Lejos de la línea
@@ -5653,12 +5678,14 @@ mark-style	Japanese	Japonesas
 @msg	Measured anchor no longer exists	El punto de ancla medido ya no existe
 @msg	Measured segment no longer exists	El segmento medido ya no existe
 @msg	Non-finite dimension	Cota no finita
+@msg	Only linear dimensions are horizontal or vertical	Solo las cotas lineales son horizontales o verticales
 @msg	Scale Text Attributes: selected type has no scale to bake	Escalar atributos de texto: el texto seleccionado no tiene escala que aplicar
 @msg	Scale must be drawing:real, for example 1:10	La escala debe ser dibujo:real, por ejemplo 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	La relación de escala debe estar entre 1:1000000 y 1000000:1
 @msg	Second measured segment no longer exists	El segundo segmento medido ya no existe
 @msg	Unknown dimension mode	Modo de cota desconocido
 @msg	Unknown dimension option {k}	Opción de cota desconocida {k}
+@msg	Unknown dimension orientation	Orientación de cota desconocida
 @msg	Unknown dimension style	Estilo de cota desconocido
 @msg	Unknown unit	Unidad desconocida
 # Revolve cap description

@@ -1730,6 +1730,7 @@ font-technology	Variable	Değişken
 	Lock Grid	Izgarayı Kilitle
 	Lock Guides	Kilit Kılavuzları
 	Lock Guides by Default	Kılavuzları Varsayılan Olarak Kilitle
+	Artboard Guides with Cmd/Ctrl + Ruler Drag	Cmd/Ctrl + Cetvelden Sürükleme ile Çalışma Yüzeyi Kılavuzları
 	Lock Others	Diğerlerini Kilitle
 	Lock Slices	Dilimleri Kilitle
 	Lock Station Point	Kilit İstasyon Noktası
@@ -2624,6 +2625,12 @@ digits	Malayalam	Malayalam
 	Reset OpenType Features	OpenType Özelliklerini Sıfırla
 	Reset Panel	Paneli Sıfırla
 	Reset Preferences	Tercihleri Sıfırla
+	Export Preferences…	Tercihleri Dışa Aktar…
+	Import Preferences…	Tercihleri İçe Aktar…
+	Save the applied preferences to a JSON file	Uygulanan tercihleri bir JSON dosyasına kaydet
+	Apply the preferences in a file Export Preferences saved	Tercihleri Dışa Aktar ile kaydedilen bir dosyadaki tercihleri uygula
+	Export Preferences	Tercihleri Dışa Aktar
+	Import Preferences	Tercihleri İçe Aktar
 	Search Preferences	Tercihlerde Ara
 	No settings found	Ayar bulunamadı
 	Reset Profiles	Profilleri Sıfırla
@@ -2646,6 +2653,8 @@ digits	Malayalam	Malayalam
 	Responsive	duyarlı
 	Restore	Geri yükle
 	Restore every preference to its default (applied on OK)	Her tercihi varsayılana geri yükleyin (Tamam'a uygulanır)
+	Reset all preferences to their defaults?	Tüm tercihler varsayılanlarına sıfırlansın mı?
+	The defaults are applied when you click OK in Preferences. Cancel there keeps your current preferences.	Varsayılanlar, Tercihler'de Tamam'a tıkladığınızda uygulanır. Oradaki İptal, mevcut tercihlerinizi korur.
 	Restore Recovered Documents	Kurtarılan Belgeleri Geri Yükle
 	Restored documents open unsaved: save them to keep them.	Geri yüklenen belgeler kaydedilmeden açılır: saklamak için kaydedin.
 	Restrict printing, editing and other tasks	Yazdırmayı, düzenlemeyi ve diğer görevleri kısıtlayın
@@ -4428,6 +4437,20 @@ axis	Both	Her İkisi
 @msg	unknown overprints `{o}` (preserve, simulate or discard)	bilinmeyen üst baskılar `{o}` (koru, benzet veya at)
 @msg	unknown panel `{raw}`	bilinmeyen panel `{raw}`
 @msg	unknown preference `{key}`	bilinmeyen tercih `{key}`
+@msg	Preferences imported.	Tercihler içe aktarıldı.
+@msg	not a preferences file: {e}	tercih dosyası değil: {e}
+@msg	not a preferences file: no JSON object	tercih dosyası değil: JSON nesnesi yok
+@msg	not a preferences file (format `{format}`)	tercih dosyası değil (biçim `{format}`)
+@msg	not a preferences file: no `format`	tercih dosyası değil: `format` yok
+@msg	not a preferences file: no `version`	tercih dosyası değil: `version` yok
+@msg	not a preferences file: no `prefs`	tercih dosyası değil: `prefs` yok
+@msg	the file was saved by a newer version of VectorCraft (version {v})	dosya VectorCraft'ın daha yeni bir sürümüyle kaydedilmiş (sürüm {v})
+@msg	the file holds no preferences	dosyada tercih yok
+@msg	`{key}` names a folder, which preferences files leave out	`{key}` bir klasör belirtir ve tercih dosyaları klasör içermez
+@msg	the file is larger than 1 MB	dosya 1 MB'tan büyük
+@msg	give `path` or `data`	`path` veya `data` verin
+@msg	`{key}` must be an object	`{key}` bir nesne olmalıdır
+@msg	`prefs.import` runs on its own, not as a batch step	`prefs.import` tek başına çalışır, toplu iş adımı olarak değil
 @msg	unknown preset (one of {_1})	bilinmeyen ön ayar ({_1}'den biri)
 @msg	unknown preset `{name}` (high, medium, low or a saved one: see flattener.presets.list)	bilinmeyen ön ayar `{name}` (yüksek, orta, düşük veya kaydedilmiş bir ayar: bkz. flattener.presets.list)
 @msg	unknown preset `{name}` (see flattener.presets.list)	bilinmeyen ön ayar `{name}` (bkz. düzleştirici.presets.list)
@@ -5324,6 +5347,7 @@ file-filter	Flattener presets	Düzleştirici önayarları
 file-filter	PDF presets	PDF önayarları
 file-filter	PDF-compatible .ai	PDF ile uyumlu .ai
 file-filter	Print presets	Baskı önayarları
+file-filter	Preferences	Tercihler
 file-filter	SVG Compressed	Sıkıştırılmış SVG
 file-filter	Swatch libraries	Renk örneği kitaplıkları
 file-filter	Templates	Şablonlar
@@ -5361,6 +5385,7 @@ theme	Appearance	Görünüm
 	Preview (1 inch on the page)	Önizleme (sayfada 1 inç)
 	Set as Default	Varsayılan Olarak Ayarla
 	 out from a highlighted edge to place its dimension  |  	 boyutunu yerleştirmek için vurgulanan kenardan dışarı |  
+	 two points, then move and click to place an aligned, horizontal or vertical dimension  |  	 ile iki nokta seçin, ardından hizalı, yatay veya dikey bir boyut yerleştirmek için hareket ettirip tıklayın  |  
 	 cancels  |  Double-click the tool for options	 iptal |  Seçenekler için araca çift tıklayın
 	Angular	Açısal
 	Away from the Line	Çizgiden Uzakta
@@ -5392,11 +5417,13 @@ theme	Appearance	Görünüm
 @msg	Measured anchor no longer exists	Ölçülen çapa artık mevcut değil
 @msg	Measured segment no longer exists	Ölçülen segment artık mevcut değil
 @msg	Non-finite dimension	Sonlu olmayan boyut
+@msg	Only linear dimensions are horizontal or vertical	Yalnızca doğrusal boyutlar yatay veya dikey olabilir
 @msg	Scale must be drawing:real, for example 1:10	Ölçek çizim olmalıdır:gerçek, örneğin 1:10
 @msg	Scale ratio must be between 1:1000000 and 1000000:1	Ölçek oranı 1:1000000 ile 1000000:1 arasında olmalıdır
 @msg	Second measured segment no longer exists	Ölçülen ikinci segment artık mevcut değil
 @msg	Unknown dimension mode	Bilinmeyen boyut modu
 @msg	Unknown dimension option {k}	Bilinmeyen boyut seçeneği {k}
+@msg	Unknown dimension orientation	Bilinmeyen boyut yönü
 @msg	Unknown dimension style	Bilinmeyen boyut stili
 @msg	Unknown unit	Bilinmeyen birim
 	Close the circular ends of open profiles. Partial sweeps keep their cut sides open.	Açık profillerin dairesel uçlarını kapatın. Kısmi süpürmeler kesik taraflarını açık tutar.
