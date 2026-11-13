@@ -588,7 +588,9 @@ fn expand_piece_leaves(
 /// Path `l` as the canvas paints its fills and strokes: its visible geometry effects applied to its
 /// path (a plain path then), and every geometry effect of its own removed, with each raster effect
 /// following the Transform effects after it
-/// ([`without_geometry`](vectorcraft_render::effects::without_geometry)). `None` when it has no
+/// ([`without_geometry`](vectorcraft_render::effects::without_geometry)) and those of its fills and
+/// strokes following its Transform effects
+/// ([`follow_items`](vectorcraft_render::effects::follow_items)). `None` when it has no
 /// visible geometry effect. The swatches and patterns that live-effect plug-ins painting their
 /// pieces name are looked up in `doc`. This merges the pieces of such a plug-in into one path, so a
 /// path that one paints goes through [`expand_pieces`] instead.
@@ -604,6 +606,8 @@ pub(crate) fn reshaped(doc: &Document, l: &Node) -> Option<Node> {
     if carry.moves(&m.appearance) {
         carry.apply(&mut m.appearance);
     }
+    // So do the raster effects of its fills and strokes.
+    vectorcraft_render::effects::follow_items(&mut m);
     m.appearance.effects = without_geometry(&m.appearance.effects);
     Some(m)
 }
@@ -880,8 +884,8 @@ fn blended(n: &Node) -> bool {
     n.opacity < 1.0 || n.blend != BlendMode::Normal
 }
 
-/// Whether `n` (art of `d`) is or holds an image with see-through pixels (key in `keys`), a
-/// colorize paint that `colorize` counts, opacity or a blending mode of its own or of a group in
+/// Whether `n` (art of `d`) is or holds an image with see-through pixels (key in `keys`, a
+/// color-masked image's masked pixels counted as its own), a colorize paint that `colorize` counts, opacity or a blending mode of its own or of a group in
 /// `n`, or anywhere when `on`, also in the tile art of the pattern fills of the paths in `n`, down
 /// to `levels` patterns. Hidden art doesn't count.
 fn transparent_image(d: &Document, n: &Node, keys: &BTreeSet<String>, colorize: &dyn Fn(&Document, &Node) -> bool, on: bool, levels: u32) -> bool {
@@ -890,7 +894,9 @@ fn transparent_image(d: &Document, n: &Node, keys: &BTreeSet<String>, colorize: 
     }
     let on = on || blended(n);
     match &n.kind {
-        NodeKind::Image(im) => on || keys.contains(&im.key) || (n.extras().colorize.is_some() && colorize(d, n)),
+        NodeKind::Image(im) => {
+            on || keys.contains(&im.key) || keys.contains(&d.shown_image(n, im).key) || (n.extras().colorize.is_some() && colorize(d, n))
+        }
         NodeKind::Path { .. } | NodeKind::Compound { .. } => {
             n.appearance.items.iter().any(|i| pattern_fill_holds_transparent_image(d, i, keys, colorize, on, levels))
         }
